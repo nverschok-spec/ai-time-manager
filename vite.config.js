@@ -7,6 +7,11 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      // We call registerSW() ourselves in main.jsx (virtual:pwa-register) so
+      // it can force a reload when a new version takes over — the default
+      // injected registerSW.js for injectManifest mode is a bare
+      // navigator.serviceWorker.register() with no update/reload logic at all.
+      injectRegister: false,
       strategies: 'injectManifest',
       srcDir: 'src',
       filename: 'sw.js',

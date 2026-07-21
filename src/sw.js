@@ -25,4 +25,8 @@ self.addEventListener('notificationclick', (event) => {
   event.waitUntil(clients.openWindow(event.notification.data?.url || '/'))
 })
 
+self.addEventListener('activate', (event) => {
+  event.waitUntil(clients.claim())
+})
+
 self.skipWaiting()
