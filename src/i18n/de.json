@@ -1,0 +1,48 @@
+{
+  "app": {
+    "title": "KI-Zeitmanager"
+  },
+  "nav": {
+    "today": "Heute",
+    "week": "Woche",
+    "settings": "Einstellungen"
+  },
+  "input": {
+    "placeholder": "Was möchtest du planen?",
+    "mic_start": "Spracheingabe starten",
+    "mic_unavailable": "Spracheingabe auf diesem Gerät nicht verfügbar",
+    "send": "Senden"
+  },
+  "suggestion": {
+    "title": "KI schlägt vor",
+    "accept": "Übernehmen",
+    "edit": "Bearbeiten",
+    "dismiss": "Ablehnen",
+    "conflict": "Terminkonflikt",
+    "low_confidence": "Bitte bestätigen"
+  },
+  "settings": {
+    "language": "Sprache",
+    "export": "Daten exportieren",
+    "import": "Daten importieren",
+    "privacy_note": "Der Aufgabentext wird zur Analyse kurzzeitig an die KI gesendet."
+  },
+  "calendar": {
+    "add_task": "Aufgabe",
+    "title_placeholder": "Titel der Aufgabe",
+    "duration": "Dauer, Min.",
+    "priority": "Priorität",
+    "save": "Speichern",
+    "cancel": "Abbrechen"
+  },
+  "priority": {
+    "high": "Hoch",
+    "medium": "Mittel",
+    "low": "Niedrig"
+  },
+  "stats": {
+    "today": "Heute",
+    "week": "Diese Woche",
+    "by_priority": "Nach Priorität"
+  }
+}
