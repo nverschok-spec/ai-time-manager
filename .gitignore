@@ -1,5 +1,6 @@
 node_modules
 dist
+dev-dist
 .vercel
 .env
 .env.local
@@ -7,3 +8,4 @@ dist
 .DS_Store
 
 .vercel
+.env*

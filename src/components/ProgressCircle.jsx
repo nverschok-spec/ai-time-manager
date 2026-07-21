@@ -3,7 +3,7 @@ const STROKE = 8
 const RADIUS = (SIZE - STROKE) / 2
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 
-export default function ProgressCircle({ done, total }) {
+export default function ProgressCircle({ done, total, children }) {
   const ratio = total > 0 ? done / total : 0
   const offset = CIRCUMFERENCE * (1 - ratio)
 
@@ -33,9 +33,11 @@ export default function ProgressCircle({ done, total }) {
         />
       </svg>
       <div className="absolute flex flex-col items-center">
-        <span className="text-lg font-semibold text-slate-100">
-          {done}/{total}
-        </span>
+        {children ?? (
+          <span className="text-lg font-semibold text-slate-100">
+            {done}/{total}
+          </span>
+        )}
       </div>
     </div>
   )

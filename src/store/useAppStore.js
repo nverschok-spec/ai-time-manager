@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { scheduleReminder } from '../lib/push'
 
 function makeId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
@@ -10,15 +11,45 @@ export const useAppStore = create(
     (set, get) => ({
       tasks: [],
       suggestions: [],
+      lastReviewDate: null,
+      deviceId: makeId(),
+      pushEnabled: false,
 
-      addTask: (task) =>
+      setLastReviewDate: (dateKey) => set({ lastReviewDate: dateKey }),
+      setPushEnabled: (pushEnabled) => set({ pushEnabled }),
+
+      addTask: (task) => {
+        const id = makeId()
         set((state) => ({
-          tasks: [...state.tasks, { id: makeId(), done: false, ...task }]
-        })),
+          tasks: [...state.tasks, { id, done: false, ...task }]
+        }))
+
+        const { pushEnabled, deviceId } = get()
+        if (pushEnabled && !task.recurrence && task.date && task.startTime) {
+          scheduleReminder({ deviceId, taskId: id, title: task.title, date: task.date, startTime: task.startTime })
+        }
+      },
 
       toggleTask: (id) =>
         set((state) => ({
           tasks: state.tasks.map((t) => (t.id === id ? { ...t, done: !t.done } : t))
+        })),
+
+      // For recurring tasks: completion is tracked per occurrence date, not on
+      // the template itself, so one series can be done on Monday and not Tuesday.
+      toggleTaskOccurrence: (id, dateKey) =>
+        set((state) => ({
+          tasks: state.tasks.map((t) => {
+            if (t.id !== id) return t
+            const completedDates = t.completedDates || []
+            const isDone = completedDates.includes(dateKey)
+            return {
+              ...t,
+              completedDates: isDone
+                ? completedDates.filter((d) => d !== dateKey)
+                : [...completedDates, dateKey]
+            }
+          })
         })),
 
       updateTask: (id, patch) =>
@@ -65,7 +96,12 @@ export const useAppStore = create(
     }),
     {
       name: 'ai-time-manager-store',
-      partialize: (state) => ({ tasks: state.tasks })
+      partialize: (state) => ({
+        tasks: state.tasks,
+        lastReviewDate: state.lastReviewDate,
+        deviceId: state.deviceId,
+        pushEnabled: state.pushEnabled
+      })
     }
   )
 )

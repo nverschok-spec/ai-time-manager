@@ -5,7 +5,20 @@
 // - НЕ сохранять историю обращений в файл/БД
 // - ключ читается только из process.env, никогда не возвращается клиенту
 
+import crypto from 'node:crypto'
 import Anthropic from '@anthropic-ai/sdk'
+
+function isValidToken(token, secret) {
+  if (typeof token !== 'string') return false
+  const [expiresAtStr, signature] = token.split('.')
+  const expiresAt = Number(expiresAtStr)
+  if (!expiresAt || !signature || expiresAt < Date.now()) return false
+
+  const expectedSig = crypto.createHmac('sha256', secret).update(expiresAtStr).digest('hex')
+  const provided = Buffer.from(signature)
+  const expected = Buffer.from(expectedSig)
+  return provided.length === expected.length && crypto.timingSafeEqual(provided, expected)
+}
 
 const SUGGESTION_SCHEMA = {
   type: 'object',
@@ -56,6 +69,15 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'ANTHROPIC_API_KEY is not configured' })
   }
 
+  const appPin = process.env.APP_PIN
+  if (appPin) {
+    const authHeader = req.headers.authorization || ''
+    const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null
+    if (!isValidToken(token, appPin)) {
+      return res.status(401).json({ error: 'Unauthorized' })
+    }
+  }
+
   const { text, scheduleContext, today } = req.body || {}
   if (!text) {
     return res.status(400).json({ error: 'Missing "text" in request body' })
@@ -66,7 +88,7 @@ export default async function handler(req, res) {
 
   try {
     const response = await client.messages.create({
-      model: 'claude-opus-4-8',
+      model: 'claude-haiku-4-5',
       max_tokens: 2048,
       system: buildSystemPrompt(resolvedToday),
       output_config: {

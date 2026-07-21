@@ -1,3 +1,5 @@
+import { clearStoredToken, getStoredToken } from '../components/PinGate'
+
 const CONTEXT_WINDOW_DAYS = 7
 const LOW_CONFIDENCE_THRESHOLD = 0.6
 
@@ -38,11 +40,21 @@ function rangesOverlap(aStart, aDuration, bStart, bDuration) {
 export async function parseUserInput(text, tasks) {
   const scheduleContext = buildScheduleContext(tasks)
 
+  const token = getStoredToken()
   const res = await fetch('/api/ai-parse', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    },
     body: JSON.stringify({ text, scheduleContext, today: toDateKey(new Date()) })
   })
+
+  if (res.status === 401) {
+    clearStoredToken()
+    window.location.reload()
+    throw new Error('ai-parse request failed: 401')
+  }
 
   if (!res.ok) {
     throw new Error(`ai-parse request failed: ${res.status}`)

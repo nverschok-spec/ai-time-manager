@@ -7,7 +7,18 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.js',
+      injectManifest: {
+        // service worker source has no other precacheable build output to inject beyond the app shell
+        injectionPoint: 'self.__WB_MANIFEST'
+      },
       includeAssets: ['favicon.ico', 'icons/icon-192.png', 'icons/icon-512.png'],
+      devOptions: {
+        enabled: true,
+        type: 'module'
+      },
       manifest: {
         name: 'AI Time Manager',
         short_name: 'AI Planner',

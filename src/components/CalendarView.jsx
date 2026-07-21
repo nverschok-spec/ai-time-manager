@@ -1,8 +1,12 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Plus, Trash2, X } from 'lucide-react'
+import { Plus, Repeat, Timer, Trash2, X } from 'lucide-react'
 import { useAppStore } from '../store/useAppStore'
 import { PRIORITY_ORDER, priorityMeta } from '../lib/priority'
+import { expandOccurrences } from '../lib/occurrences'
+import PomodoroTimer from './PomodoroTimer'
+
+const RECURRENCE_OPTIONS = ['none', 'daily', 'weekdays', 'weekly']
 
 function toDateKey(date) {
   return date.toISOString().slice(0, 10)
@@ -21,11 +25,19 @@ function AddTaskForm({ defaultDate, onCancel }) {
   const [startTime, setStartTime] = useState('09:00')
   const [durationMinutes, setDurationMinutes] = useState(30)
   const [priority, setPriority] = useState('medium')
+  const [recurrence, setRecurrence] = useState('none')
 
   function handleSubmit(e) {
     e.preventDefault()
     if (!title.trim()) return
-    addTask({ title: title.trim(), date, startTime, durationMinutes: Number(durationMinutes) || 30, priority })
+    addTask({
+      title: title.trim(),
+      date,
+      startTime,
+      durationMinutes: Number(durationMinutes) || 30,
+      priority,
+      recurrence: recurrence === 'none' ? undefined : recurrence
+    })
     onCancel()
   }
 
@@ -85,6 +97,23 @@ function AddTaskForm({ defaultDate, onCancel }) {
           })}
         </div>
       </div>
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-slate-400">{t('calendar.repeat')}</span>
+        <div className="inline-flex rounded-lg bg-slate-900 p-1 gap-1">
+          {RECURRENCE_OPTIONS.map((r) => (
+            <button
+              key={r}
+              type="button"
+              onClick={() => setRecurrence(r)}
+              className={`rounded-md px-2 py-1 text-xs transition-colors ${
+                recurrence === r ? 'bg-slate-700 text-slate-100' : 'text-slate-500 hover:text-slate-300'
+              }`}
+            >
+              {t(`calendar.repeat_${r}`)}
+            </button>
+          ))}
+        </div>
+      </div>
       <div className="flex gap-2 pt-1">
         <button
           type="submit"
@@ -108,9 +137,11 @@ export default function CalendarView() {
   const { t, i18n } = useTranslation()
   const tasks = useAppStore((s) => s.tasks)
   const toggleTask = useAppStore((s) => s.toggleTask)
+  const toggleTaskOccurrence = useAppStore((s) => s.toggleTaskOccurrence)
   const removeTask = useAppStore((s) => s.removeTask)
   const [view, setView] = useState('day')
   const [showAddForm, setShowAddForm] = useState(false)
+  const [timerTask, setTimerTask] = useState(null)
 
   const todayKey = toDateKey(new Date())
 
@@ -124,16 +155,20 @@ export default function CalendarView() {
   }, [view, todayKey])
 
   const tasksByDate = useMemo(() => {
-    const map = {}
-    for (const key of visibleDateKeys) map[key] = []
-    for (const task of tasks) {
-      if (map[task.date]) map[task.date].push(task)
-    }
+    const map = expandOccurrences(tasks, visibleDateKeys)
     for (const key of visibleDateKeys) {
       map[key].sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''))
     }
     return map
   }, [tasks, visibleDateKeys])
+
+  function handleToggle(task) {
+    if (task.recurrence) {
+      toggleTaskOccurrence(task.id, task.occurrenceDate)
+    } else {
+      toggleTask(task.id)
+    }
+  }
 
   return (
     <div className="space-y-4">
@@ -197,13 +232,13 @@ export default function CalendarView() {
                   const Icon = meta.icon
                   return (
                     <li
-                      key={task.id}
+                      key={`${task.id}_${task.occurrenceDate}`}
                       className="flex items-center gap-3 rounded-lg bg-slate-800/60 px-3 py-2"
                     >
                       <input
                         type="checkbox"
                         checked={task.done}
-                        onChange={() => toggleTask(task.id)}
+                        onChange={() => handleToggle(task)}
                         className="h-4 w-4 accent-emerald-400"
                       />
                       <Icon size={14} color={meta.color} className="shrink-0" />
@@ -211,6 +246,16 @@ export default function CalendarView() {
                       <span className={`flex-1 text-sm ${task.done ? 'line-through text-slate-500' : 'text-slate-100'}`}>
                         {task.title}
                       </span>
+                      {task.recurrence && (
+                        <Repeat size={13} className="shrink-0 text-slate-500" />
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => setTimerTask(task)}
+                        className="text-slate-500 hover:text-emerald-400 transition-colors"
+                      >
+                        <Timer size={16} />
+                      </button>
                       <button
                         type="button"
                         onClick={() => removeTask(task.id)}
@@ -226,6 +271,8 @@ export default function CalendarView() {
           )
         })}
       </div>
+
+      {timerTask && <PomodoroTimer task={timerTask} onClose={() => setTimerTask(null)} />}
     </div>
   )
 }

@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '../store/useAppStore'
 import { PRIORITY_ORDER, priorityMeta } from '../lib/priority'
+import { expandOccurrences } from '../lib/occurrences'
 import ProgressCircle from './ProgressCircle'
 
 function toDateKey(date) {
@@ -14,16 +15,15 @@ export default function StatsOverview() {
 
   const { today, week, byPriority } = useMemo(() => {
     const todayKey = toDateKey(new Date())
-    const weekKeys = new Set(
-      Array.from({ length: 7 }, (_, i) => {
-        const d = new Date()
-        d.setDate(d.getDate() + i)
-        return toDateKey(d)
-      })
-    )
+    const weekDateKeys = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date()
+      d.setDate(d.getDate() + i)
+      return toDateKey(d)
+    })
 
-    const todayTasks = tasks.filter((t) => t.date === todayKey)
-    const weekTasks = tasks.filter((t) => weekKeys.has(t.date))
+    const occurrencesByDate = expandOccurrences(tasks, weekDateKeys)
+    const todayTasks = occurrencesByDate[todayKey]
+    const weekTasks = weekDateKeys.flatMap((key) => occurrencesByDate[key])
 
     const counts = { high: 0, medium: 0, low: 0 }
     for (const task of weekTasks) {

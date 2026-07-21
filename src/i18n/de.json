@@ -25,6 +25,7 @@
     "language": "Sprache",
     "export": "Daten exportieren",
     "import": "Daten importieren",
+    "export_calendar": "Zu Apple Calendar hinzufügen",
     "privacy_note": "Der Aufgabentext wird zur Analyse kurzzeitig an die KI gesendet."
   },
   "calendar": {
@@ -32,8 +33,15 @@
     "title_placeholder": "Titel der Aufgabe",
     "duration": "Dauer, Min.",
     "priority": "Priorität",
+    "repeat": "Wiederholung",
+    "repeat_none": "Keine",
+    "repeat_daily": "Täglich",
+    "repeat_weekdays": "Werktags",
+    "repeat_weekly": "Wöchentlich",
     "save": "Speichern",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "overdue_message": "{{count}} unerledigte Aufgaben aus vergangenen Tagen",
+    "overdue_move": "Auf heute verschieben"
   },
   "priority": {
     "high": "Hoch",
@@ -44,5 +52,30 @@
     "today": "Heute",
     "week": "Diese Woche",
     "by_priority": "Nach Priorität"
+  },
+  "pomodoro": {
+    "focus": "Fokus",
+    "break": "Pause",
+    "start": "Start",
+    "pause": "Pause"
+  },
+  "morning": {
+    "title": "Guten Morgen!",
+    "empty": "Heute keine Aufgaben.",
+    "postpone": "Morgen",
+    "start": "Tag beginnen"
+  },
+  "push": {
+    "title": "Push-Benachrichtigungen",
+    "enable": "Aktivieren",
+    "disable": "Deaktivieren",
+    "ios_instructions": "Auf dem iPhone: zuerst über Teilen → „Zum Home-Bildschirm“ hinzufügen, dann von dort öffnen und hier aktivieren",
+    "error": "Benachrichtigungen konnten nicht aktiviert werden"
+  },
+  "pin": {
+    "title": "PIN eingeben",
+    "placeholder": "PIN",
+    "submit": "Entsperren",
+    "error": "Falscher PIN"
   }
 }

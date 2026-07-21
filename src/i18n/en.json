@@ -25,6 +25,7 @@
     "language": "Language",
     "export": "Export data",
     "import": "Import data",
+    "export_calendar": "Add to Apple Calendar",
     "privacy_note": "Task text is briefly sent to the AI for analysis."
   },
   "calendar": {
@@ -32,8 +33,15 @@
     "title_placeholder": "Task title",
     "duration": "Duration, min",
     "priority": "Priority",
+    "repeat": "Repeat",
+    "repeat_none": "None",
+    "repeat_daily": "Daily",
+    "repeat_weekdays": "Weekdays",
+    "repeat_weekly": "Weekly",
     "save": "Save",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "overdue_message": "{{count}} unfinished tasks from previous days",
+    "overdue_move": "Move to today"
   },
   "priority": {
     "high": "High",
@@ -44,5 +52,30 @@
     "today": "Today",
     "week": "This week",
     "by_priority": "By priority"
+  },
+  "pomodoro": {
+    "focus": "Focus",
+    "break": "Break",
+    "start": "Start",
+    "pause": "Pause"
+  },
+  "morning": {
+    "title": "Good morning!",
+    "empty": "No tasks for today.",
+    "postpone": "Tomorrow",
+    "start": "Start the day"
+  },
+  "push": {
+    "title": "Push notifications",
+    "enable": "Enable",
+    "disable": "Disable",
+    "ios_instructions": "On iPhone: first add via Share → \"Add to Home Screen\", then open it from there and enable here",
+    "error": "Couldn't enable notifications"
+  },
+  "pin": {
+    "title": "Enter PIN",
+    "placeholder": "PIN",
+    "submit": "Unlock",
+    "error": "Wrong PIN"
   }
 }

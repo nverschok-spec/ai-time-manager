@@ -25,6 +25,7 @@
     "language": "Язык",
     "export": "Экспорт данных",
     "import": "Импорт данных",
+    "export_calendar": "Добавить в Apple Calendar",
     "privacy_note": "Текст задачи временно отправляется ИИ для анализа."
   },
   "calendar": {
@@ -32,8 +33,15 @@
     "title_placeholder": "Название задачи",
     "duration": "Длительность, мин",
     "priority": "Приоритет",
+    "repeat": "Повтор",
+    "repeat_none": "Нет",
+    "repeat_daily": "Ежедневно",
+    "repeat_weekdays": "По будням",
+    "repeat_weekly": "Еженедельно",
     "save": "Сохранить",
-    "cancel": "Отмена"
+    "cancel": "Отмена",
+    "overdue_message": "Незавершённых задач с прошлых дней: {{count}}",
+    "overdue_move": "Перенести на сегодня"
   },
   "priority": {
     "high": "Важно",
@@ -44,5 +52,30 @@
     "today": "Сегодня",
     "week": "За неделю",
     "by_priority": "По приоритету"
+  },
+  "pomodoro": {
+    "focus": "Фокус",
+    "break": "Перерыв",
+    "start": "Старт",
+    "pause": "Пауза"
+  },
+  "morning": {
+    "title": "Доброе утро!",
+    "empty": "На сегодня задач нет.",
+    "postpone": "На завтра",
+    "start": "Начать день"
+  },
+  "push": {
+    "title": "Push-уведомления",
+    "enable": "Включить",
+    "disable": "Выключить",
+    "ios_instructions": "На iPhone: сначала добавь через Поделиться → «На экран Домой», затем открой оттуда и включи здесь",
+    "error": "Не удалось включить уведомления"
+  },
+  "pin": {
+    "title": "Введите PIN-код",
+    "placeholder": "PIN-код",
+    "submit": "Войти",
+    "error": "Неверный PIN-код"
   }
 }
