@@ -1,0 +1,13 @@
+name: Push reminder check
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger push-check
+        run: curl -sf "https://ai-time-manager-two.vercel.app/api/push-check?secret=${{ secrets.PUSH_CHECK_SECRET }}"
