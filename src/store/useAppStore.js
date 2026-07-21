@@ -64,6 +64,24 @@ export const useAppStore = create(
           tasks: state.tasks.map((t) => (t.id === id ? { ...t, ...patch } : t))
         })),
 
+      // Lets an already-created task opt into (or change) its reminder —
+      // addTask only schedules once, at creation time.
+      setTaskReminder: (id, offsetMinutes) => {
+        get().updateTask(id, { reminderOffsetMinutes: offsetMinutes })
+        const task = get().tasks.find((t) => t.id === id)
+        const { pushEnabled, deviceId } = get()
+        if (task && pushEnabled && !task.recurrence && task.date && task.startTime) {
+          scheduleReminder({
+            deviceId,
+            taskId: id,
+            title: task.title,
+            date: task.date,
+            startTime: task.startTime,
+            offsetMinutes
+          })
+        }
+      },
+
       removeTask: (id) =>
         set((state) => ({ tasks: state.tasks.filter((t) => t.id !== id) })),
 

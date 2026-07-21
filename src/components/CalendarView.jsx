@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Plus, Repeat, Timer, Trash2, X } from 'lucide-react'
+import { Bell, Plus, Repeat, Timer, Trash2, X } from 'lucide-react'
 import { useAppStore } from '../store/useAppStore'
 import { PRIORITY_ORDER, priorityMeta } from '../lib/priority'
 import { expandOccurrences } from '../lib/occurrences'
 import PomodoroTimer from './PomodoroTimer'
+import ReminderPicker from './ReminderPicker'
 
 const RECURRENCE_OPTIONS = ['none', 'daily', 'weekdays', 'weekly']
 const REMINDER_OFFSET_OPTIONS = [0, 5, 15, 30, 60]
@@ -164,9 +165,11 @@ export default function CalendarView() {
   const toggleTask = useAppStore((s) => s.toggleTask)
   const toggleTaskOccurrence = useAppStore((s) => s.toggleTaskOccurrence)
   const removeTask = useAppStore((s) => s.removeTask)
+  const pushEnabled = useAppStore((s) => s.pushEnabled)
   const [view, setView] = useState('day')
   const [showAddForm, setShowAddForm] = useState(false)
   const [timerTask, setTimerTask] = useState(null)
+  const [reminderTask, setReminderTask] = useState(null)
 
   const todayKey = toDateKey(new Date())
 
@@ -274,6 +277,15 @@ export default function CalendarView() {
                       {task.recurrence && (
                         <Repeat size={13} className="shrink-0 text-slate-500" />
                       )}
+                      {pushEnabled && !task.recurrence && (
+                        <button
+                          type="button"
+                          onClick={() => setReminderTask(task)}
+                          className="text-slate-500 hover:text-amber-400 transition-colors"
+                        >
+                          <Bell size={16} />
+                        </button>
+                      )}
                       <button
                         type="button"
                         onClick={() => setTimerTask(task)}
@@ -298,6 +310,7 @@ export default function CalendarView() {
       </div>
 
       {timerTask && <PomodoroTimer task={timerTask} onClose={() => setTimerTask(null)} />}
+      {reminderTask && <ReminderPicker task={reminderTask} onClose={() => setReminderTask(null)} />}
     </div>
   )
 }
