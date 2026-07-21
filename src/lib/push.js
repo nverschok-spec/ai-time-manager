@@ -59,8 +59,8 @@ export async function unsubscribeFromPush(deviceId) {
 
 // sendAt is computed client-side (browser's own timezone) so the server never
 // has to reinterpret a local date/time string in its own (UTC) timezone.
-export async function scheduleReminder({ deviceId, taskId, title, date, startTime }) {
-  const sendAt = new Date(`${date}T${startTime}:00`).getTime()
+export async function scheduleReminder({ deviceId, taskId, title, date, startTime, offsetMinutes = 0 }) {
+  const sendAt = new Date(`${date}T${startTime}:00`).getTime() - offsetMinutes * 60000
   if (Number.isNaN(sendAt) || sendAt <= Date.now()) return
 
   try {

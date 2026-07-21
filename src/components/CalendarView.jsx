@@ -7,6 +7,7 @@ import { expandOccurrences } from '../lib/occurrences'
 import PomodoroTimer from './PomodoroTimer'
 
 const RECURRENCE_OPTIONS = ['none', 'daily', 'weekdays', 'weekly']
+const REMINDER_OFFSET_OPTIONS = [0, 5, 15, 30, 60]
 
 function toDateKey(date) {
   return date.toISOString().slice(0, 10)
@@ -20,12 +21,14 @@ function formatDayLabel(dateKey, locale) {
 function AddTaskForm({ defaultDate, onCancel }) {
   const { t } = useTranslation()
   const addTask = useAppStore((s) => s.addTask)
+  const pushEnabled = useAppStore((s) => s.pushEnabled)
   const [title, setTitle] = useState('')
   const [date, setDate] = useState(defaultDate)
   const [startTime, setStartTime] = useState('09:00')
   const [durationMinutes, setDurationMinutes] = useState(30)
   const [priority, setPriority] = useState('medium')
   const [recurrence, setRecurrence] = useState('none')
+  const [reminderOffsetMinutes, setReminderOffsetMinutes] = useState(15)
 
   function handleSubmit(e) {
     e.preventDefault()
@@ -36,7 +39,8 @@ function AddTaskForm({ defaultDate, onCancel }) {
       startTime,
       durationMinutes: Number(durationMinutes) || 30,
       priority,
-      recurrence: recurrence === 'none' ? undefined : recurrence
+      recurrence: recurrence === 'none' ? undefined : recurrence,
+      reminderOffsetMinutes
     })
     onCancel()
   }
@@ -114,6 +118,27 @@ function AddTaskForm({ defaultDate, onCancel }) {
           ))}
         </div>
       </div>
+      {pushEnabled && recurrence === 'none' && (
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-slate-400">{t('calendar.remind')}</span>
+          <div className="inline-flex rounded-lg bg-slate-900 p-1 gap-1 flex-wrap">
+            {REMINDER_OFFSET_OPTIONS.map((minutes) => (
+              <button
+                key={minutes}
+                type="button"
+                onClick={() => setReminderOffsetMinutes(minutes)}
+                className={`rounded-md px-2 py-1 text-xs transition-colors ${
+                  reminderOffsetMinutes === minutes
+                    ? 'bg-slate-700 text-slate-100'
+                    : 'text-slate-500 hover:text-slate-300'
+                }`}
+              >
+                {t(`calendar.remind_${minutes}`)}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       <div className="flex gap-2 pt-1">
         <button
           type="submit"

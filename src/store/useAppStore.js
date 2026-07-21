@@ -26,7 +26,14 @@ export const useAppStore = create(
 
         const { pushEnabled, deviceId } = get()
         if (pushEnabled && !task.recurrence && task.date && task.startTime) {
-          scheduleReminder({ deviceId, taskId: id, title: task.title, date: task.date, startTime: task.startTime })
+          scheduleReminder({
+            deviceId,
+            taskId: id,
+            title: task.title,
+            date: task.date,
+            startTime: task.startTime,
+            offsetMinutes: task.reminderOffsetMinutes || 0
+          })
         }
       },
 
@@ -75,7 +82,8 @@ export const useAppStore = create(
           date: suggestion.date,
           startTime: suggestion.start_time,
           durationMinutes: suggestion.duration_minutes,
-          priority: suggestion.priority
+          priority: suggestion.priority,
+          reminderOffsetMinutes: 15
         })
         set((state) => ({ suggestions: state.suggestions.filter((_, i) => i !== index) }))
       },
