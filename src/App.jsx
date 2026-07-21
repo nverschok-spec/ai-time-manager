@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CalendarPlus, Download, Settings as SettingsIcon, Upload } from 'lucide-react'
 import LanguageSwitcher from './components/LanguageSwitcher'
+import Logo from './components/Logo'
 import StatsOverview from './components/StatsOverview'
 import OverdueBanner from './components/OverdueBanner'
 import MorningReview from './components/MorningReview'
@@ -79,7 +80,10 @@ export default function App() {
 
       <div className="mx-auto max-w-md p-4 space-y-5">
         <header className="flex items-center justify-between">
-          <h1 className="text-lg font-semibold">{t('app.title')}</h1>
+          <div className="flex items-center gap-2">
+            <Logo />
+            <h1 className="text-lg font-semibold">{t('app.title')}</h1>
+          </div>
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
             <button
