@@ -102,9 +102,6 @@ export default async function handler(req, res) {
       ]
     })
 
-    console.log('DEBUG stop_reason:', response.stop_reason)
-    console.log('DEBUG content:', JSON.stringify(response.content))
-
     if (response.stop_reason === 'refusal') {
       return res.status(200).json({ suggestions: [] })
     }
@@ -114,7 +111,6 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ suggestions: parsed.suggestions || [] })
   } catch (err) {
-    console.log('DEBUG error:', err)
     return res.status(502).json({ error: 'AI parsing failed' })
   }
 }
