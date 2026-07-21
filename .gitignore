@@ -9,3 +9,5 @@ dev-dist
 
 .vercel
 .env*
+
+.env*

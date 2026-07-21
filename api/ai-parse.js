@@ -52,7 +52,7 @@ Do not worry about detecting conflicts yourself — that is handled separately d
 For each distinct task/appointment/reminder implied by the user's text, produce one suggestion with:
 - title: short, in the same language the user wrote in
 - date: resolved absolute date in YYYY-MM-DD, based on today's date and relative terms like "tomorrow"/"Thursday"
-- start_time: HH:MM 24-hour. If the user gave no explicit time for a "find me time for X" style request, pick a reasonable free slot outside the provided busy times.
+- start_time: HH:MM 24-hour. If the user gave no explicit time for a "find me time for X" style request, pick a reasonable free slot outside the provided busy times AND outside the times of the other suggestions you are generating in this same response — never let two of your own suggestions overlap each other.
 - duration_minutes: your best estimate if not stated explicitly
 - priority: "low" | "medium" | "high"
 - confidence: 0.0-1.0, how confident you are in this interpretation. Use a lower value when the request is ambiguous (missing date, vague duration, unclear intent).
@@ -102,6 +102,9 @@ export default async function handler(req, res) {
       ]
     })
 
+    console.log('DEBUG stop_reason:', response.stop_reason)
+    console.log('DEBUG content:', JSON.stringify(response.content))
+
     if (response.stop_reason === 'refusal') {
       return res.status(200).json({ suggestions: [] })
     }
@@ -111,6 +114,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ suggestions: parsed.suggestions || [] })
   } catch (err) {
+    console.log('DEBUG error:', err)
     return res.status(502).json({ error: 'AI parsing failed' })
   }
 }
