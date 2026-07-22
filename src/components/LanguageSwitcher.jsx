@@ -10,7 +10,7 @@ export default function LanguageSwitcher() {
   const { i18n } = useTranslation()
 
   return (
-    <div className="inline-flex rounded-lg bg-slate-800 p-1 gap-1">
+    <div className="inline-flex rounded-lg bg-app-card p-1 gap-1">
       {LANGUAGES.map(({ code, label }) => (
         <button
           key={code}

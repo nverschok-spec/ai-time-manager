@@ -33,8 +33,8 @@ export default defineConfig({
         name: 'AI Time Manager',
         short_name: 'AI Planner',
         description: 'Персональный ИИ-тайм-менеджер и голосовой ассистент',
-        theme_color: '#0f172a',
-        background_color: '#0f172a',
+        theme_color: '#12141C',
+        background_color: '#12141C',
         display: 'standalone',
         start_url: '/',
         icons: [

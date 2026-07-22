@@ -41,11 +41,11 @@ export default function SwipeableRow({ children, onSwipeLeft, onSwipeRight }) {
 
   return (
     <div className="relative overflow-hidden rounded-lg">
-      <div className="absolute inset-0 flex items-center justify-between bg-slate-800/60 px-4">
-        <span className="flex items-center gap-1.5 text-sm text-emerald-400">
+      <div className="absolute inset-0 flex items-center justify-between bg-app-card/60 px-4">
+        <span className="flex items-center gap-1.5 text-sm text-brand-cta">
           <Check size={16} />
         </span>
-        <span className="flex items-center gap-1.5 text-sm text-rose-400">
+        <span className="flex items-center gap-1.5 text-sm text-priority-high">
           <Trash2 size={16} />
         </span>
       </div>

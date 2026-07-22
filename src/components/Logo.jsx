@@ -9,22 +9,28 @@ export default function Logo({ size = 28 }) {
       className="shrink-0"
     >
       <defs>
-        <linearGradient id="logo-gradient" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#10b981" />
-          <stop offset="1" stopColor="#0d9488" />
+        <linearGradient id="logo-gradient" x1="16" y1="0" x2="16" y2="32" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#00C2A8" />
+          <stop offset="1" stopColor="#3DDC97" />
         </linearGradient>
       </defs>
-      <rect width="32" height="32" rx="8" fill="url(#logo-gradient)" />
-      <circle cx="15.5" cy="16.5" r="9" fill="#f8fafc" />
+      <rect width="32" height="32" rx="9" fill="url(#logo-gradient)" />
       <path
-        d="M11.5 17 L14.5 20 L20.5 13.5"
-        stroke="#0f172a"
+        d="M24.21 15.3 A8.5 8.5 0 1 1 15.26 9.03"
+        stroke="#ffffff"
+        strokeWidth="2.6"
+        strokeLinecap="round"
+        fill="none"
+      />
+      <path
+        d="M12 18 L15 21 L21 12"
+        stroke="#ffffff"
         strokeWidth="2.6"
         strokeLinecap="round"
         strokeLinejoin="round"
         fill="none"
       />
-      <path d="M24 4.5 L25 7.5 L28 8.5 L25 9.5 L24 12.5 L23 9.5 L20 8.5 L23 7.5 Z" fill="#ffffff" />
+      <path d="M25 4 L26.2 7.8 L30 9 L26.2 10.2 L25 14 L23.8 10.2 L20 9 L23.8 7.8 Z" fill="#ffffff" />
     </svg>
   )
 }

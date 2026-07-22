@@ -33,9 +33,9 @@ export default function MorningReview() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/85 backdrop-blur-sm p-4">
-      <div className="w-full max-w-sm rounded-xl bg-slate-800 p-5 space-y-4">
+      <div className="w-full max-w-sm rounded-3xl border border-white/5 bg-app-card p-5 space-y-4">
         <div className="flex items-center gap-2">
-          <Sun size={20} className="text-amber-400" />
+          <Sun size={20} className="text-priority-medium" />
           <h2 className="text-base font-semibold text-slate-100">{t('morning.title')}</h2>
         </div>
 
@@ -49,7 +49,7 @@ export default function MorningReview() {
               return (
                 <li
                   key={task.id}
-                  className="flex items-center gap-2 rounded-md bg-slate-900/60 px-2.5 py-1.5"
+                  className="flex items-center gap-2 rounded-md bg-app-bg/60 px-2.5 py-1.5"
                 >
                   <Icon size={13} color={meta.color} className="shrink-0" />
                   <span className="text-sm text-slate-400 tabular-nums">{task.startTime}</span>
@@ -58,7 +58,7 @@ export default function MorningReview() {
                     <button
                       type="button"
                       onClick={() => handlePostpone(task)}
-                      className="text-xs text-slate-500 hover:text-amber-300 transition-colors"
+                      className="text-xs text-slate-500 hover:text-priority-medium transition-colors"
                     >
                       {t('morning.postpone')}
                     </button>
@@ -72,7 +72,7 @@ export default function MorningReview() {
         <button
           type="button"
           onClick={() => setLastReviewDate(todayKey)}
-          className="w-full rounded-md bg-emerald-500 py-2 text-sm font-medium text-slate-950 hover:bg-emerald-400 transition-colors"
+          className="w-full rounded-full bg-brand-cta py-2 text-sm font-medium text-app-bg hover:brightness-110 transition-all"
         >
           {t('morning.start')}
         </button>

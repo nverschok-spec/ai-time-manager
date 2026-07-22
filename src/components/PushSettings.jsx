@@ -40,8 +40,8 @@ export default function PushSettings() {
             onClick={pushEnabled ? handleDisable : handleEnable}
             className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
               pushEnabled
-                ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                : 'bg-emerald-500 text-slate-950 hover:bg-emerald-400'
+                ? 'bg-app-cardMuted text-slate-300 hover:bg-white/10'
+                : 'bg-brand-cta text-app-bg hover:brightness-110'
             }`}
           >
             {pushEnabled ? <BellOff size={13} /> : <Bell size={13} />}
@@ -55,7 +55,7 @@ export default function PushSettings() {
           {t('push.ios_instructions')}
         </p>
       )}
-      {error && <p className="text-xs text-rose-400">{t('push.error')}</p>}
+      {error && <p className="text-xs text-priority-high">{t('push.error')}</p>}
     </div>
   )
 }

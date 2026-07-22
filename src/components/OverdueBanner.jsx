@@ -30,22 +30,22 @@ export default function OverdueBanner() {
   }
 
   return (
-    <div className="flex items-center gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2.5">
-      <CalendarClock size={18} className="shrink-0 text-amber-400" />
-      <p className="flex-1 text-sm text-amber-200">
+    <div className="flex items-center gap-3 rounded-2xl border border-priority-medium/30 bg-priority-medium/10 px-3 py-2.5">
+      <CalendarClock size={18} className="shrink-0 text-priority-medium" />
+      <p className="flex-1 text-sm text-priority-medium">
         {t('calendar.overdue_message', { count: overdueTasks.length })}
       </p>
       <button
         type="button"
         onClick={handleMoveAll}
-        className="rounded-md bg-amber-500 px-2.5 py-1 text-xs font-medium text-slate-950 hover:bg-amber-400 transition-colors"
+        className="rounded-full bg-priority-medium px-2.5 py-1 text-xs font-medium text-app-bg hover:brightness-110 transition-all"
       >
         {t('calendar.overdue_move')}
       </button>
       <button
         type="button"
         onClick={() => setDismissed(true)}
-        className="text-amber-400/70 hover:text-amber-200 transition-colors"
+        className="text-priority-medium/70 hover:text-priority-medium transition-colors"
       >
         <X size={16} />
       </button>

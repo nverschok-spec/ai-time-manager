@@ -94,7 +94,7 @@ export default function MonthView() {
           return (
             <div
               key={key}
-              className={`flex flex-col items-center gap-0.5 rounded-md py-1.5 ${isToday ? 'bg-emerald-500/20' : ''} ${
+              className={`flex flex-col items-center gap-0.5 rounded-md py-1.5 ${isToday ? 'bg-brand-cta/20' : ''} ${
                 isCurrentMonth ? '' : 'opacity-30'
               }`}
             >

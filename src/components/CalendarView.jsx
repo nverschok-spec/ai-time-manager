@@ -9,6 +9,7 @@ import ReminderPicker from './ReminderPicker'
 import UndoSnackbar from './UndoSnackbar'
 import SwipeableRow from './SwipeableRow'
 import MonthView from './MonthView'
+import EmptyStateIllustration from './EmptyStateIllustration'
 
 const RECURRENCE_OPTIONS = ['none', 'daily', 'weekdays', 'weekly']
 const REMINDER_OFFSET_OPTIONS = [0, 5, 15, 30, 60]
@@ -59,34 +60,34 @@ function TaskForm({ task, defaultDate, onCancel }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-lg border border-slate-700 bg-slate-800/60 p-3 space-y-2">
+    <form onSubmit={handleSubmit} className="rounded-2xl border border-white/5 bg-app-card p-3 space-y-2">
       <input
         type="text"
         autoFocus
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder={t('calendar.title_placeholder')}
-        className="w-full rounded-md bg-slate-900 px-2 py-1.5 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:ring-1 focus:ring-emerald-400"
+        className="w-full rounded-md bg-app-bg px-2 py-1.5 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:ring-1 focus:ring-brand-cta"
       />
       <textarea
         rows={2}
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
         placeholder={t('calendar.notes_placeholder')}
-        className="w-full resize-none rounded-md bg-slate-900 px-2 py-1.5 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:ring-1 focus:ring-emerald-400"
+        className="w-full resize-none rounded-md bg-app-bg px-2 py-1.5 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:ring-1 focus:ring-brand-cta"
       />
       <div className="grid grid-cols-3 gap-2">
         <input
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="rounded-md bg-slate-900 px-2 py-1.5 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-emerald-400"
+          className="rounded-md bg-app-bg px-2 py-1.5 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-brand-cta"
         />
         <input
           type="time"
           value={startTime}
           onChange={(e) => setStartTime(e.target.value)}
-          className="rounded-md bg-slate-900 px-2 py-1.5 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-emerald-400"
+          className="rounded-md bg-app-bg px-2 py-1.5 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-brand-cta"
         />
         <input
           type="number"
@@ -95,12 +96,12 @@ function TaskForm({ task, defaultDate, onCancel }) {
           value={durationMinutes}
           onChange={(e) => setDurationMinutes(e.target.value)}
           title={t('calendar.duration')}
-          className="rounded-md bg-slate-900 px-2 py-1.5 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-emerald-400"
+          className="rounded-md bg-app-bg px-2 py-1.5 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-brand-cta"
         />
       </div>
       <div className="flex items-center gap-2">
         <span className="text-xs text-slate-400">{t('calendar.priority')}</span>
-        <div className="inline-flex rounded-lg bg-slate-900 p-1 gap-1">
+        <div className="inline-flex rounded-lg bg-app-bg p-1 gap-1">
           {PRIORITY_ORDER.map((p) => {
             const meta = priorityMeta(p)
             const Icon = meta.icon
@@ -111,7 +112,7 @@ function TaskForm({ task, defaultDate, onCancel }) {
                 type="button"
                 onClick={() => setPriority(p)}
                 className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors ${
-                  active ? 'bg-slate-700 text-slate-100' : 'text-slate-500 hover:text-slate-300'
+                  active ? 'bg-app-cardMuted text-slate-100' : 'text-slate-500 hover:text-slate-300'
                 }`}
               >
                 <Icon size={12} color={meta.color} />
@@ -123,14 +124,14 @@ function TaskForm({ task, defaultDate, onCancel }) {
       </div>
       <div className="flex items-center gap-2">
         <span className="text-xs text-slate-400">{t('calendar.repeat')}</span>
-        <div className="inline-flex rounded-lg bg-slate-900 p-1 gap-1">
+        <div className="inline-flex rounded-lg bg-app-bg p-1 gap-1">
           {RECURRENCE_OPTIONS.map((r) => (
             <button
               key={r}
               type="button"
               onClick={() => setRecurrence(r)}
               className={`rounded-md px-2 py-1 text-xs transition-colors ${
-                recurrence === r ? 'bg-slate-700 text-slate-100' : 'text-slate-500 hover:text-slate-300'
+                recurrence === r ? 'bg-app-cardMuted text-slate-100' : 'text-slate-500 hover:text-slate-300'
               }`}
             >
               {t(`calendar.repeat_${r}`)}
@@ -141,7 +142,7 @@ function TaskForm({ task, defaultDate, onCancel }) {
       {pushEnabled && recurrence === 'none' && (
         <div className="flex items-center gap-2">
           <span className="text-xs text-slate-400">{t('calendar.remind')}</span>
-          <div className="inline-flex rounded-lg bg-slate-900 p-1 gap-1 flex-wrap">
+          <div className="inline-flex rounded-lg bg-app-bg p-1 gap-1 flex-wrap">
             {REMINDER_OFFSET_OPTIONS.map((minutes) => (
               <button
                 key={minutes}
@@ -149,7 +150,7 @@ function TaskForm({ task, defaultDate, onCancel }) {
                 onClick={() => setReminderOffsetMinutes(minutes)}
                 className={`rounded-md px-2 py-1 text-xs transition-colors ${
                   reminderOffsetMinutes === minutes
-                    ? 'bg-slate-700 text-slate-100'
+                    ? 'bg-app-cardMuted text-slate-100'
                     : 'text-slate-500 hover:text-slate-300'
                 }`}
               >
@@ -162,14 +163,14 @@ function TaskForm({ task, defaultDate, onCancel }) {
       <div className="flex gap-2 pt-1">
         <button
           type="submit"
-          className="flex-1 rounded-md bg-emerald-500 py-1.5 text-sm font-medium text-slate-950 hover:bg-emerald-400 transition-colors"
+          className="flex-1 rounded-md bg-brand-cta py-1.5 text-sm font-medium text-app-bg hover:brightness-110 transition-colors"
         >
           {t('calendar.save')}
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-md bg-slate-700 px-3 py-1.5 text-sm text-slate-300 hover:bg-slate-600 transition-colors"
+          className="rounded-md bg-app-cardMuted px-3 py-1.5 text-sm text-slate-300 hover:bg-white/10 transition-colors"
         >
           {t('calendar.cancel')}
         </button>
@@ -243,7 +244,7 @@ export default function CalendarView() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div className="inline-flex rounded-lg bg-slate-800 p-1 gap-1">
+        <div className="inline-flex rounded-lg bg-app-card p-1 gap-1">
           <button
             type="button"
             onClick={() => setView('day')}
@@ -275,7 +276,7 @@ export default function CalendarView() {
         <button
           type="button"
           onClick={openAddForm}
-          className="flex items-center gap-1 rounded-lg bg-emerald-500 px-2.5 py-1.5 text-sm font-medium text-slate-950 hover:bg-emerald-400 transition-colors"
+          className="flex items-center gap-1 rounded-full bg-brand-cta px-2.5 py-1.5 text-sm font-medium text-app-bg hover:brightness-110 transition-all"
         >
           {showAddForm ? <X size={16} /> : <Plus size={16} />}
           {t('calendar.add_task')}
@@ -308,21 +309,24 @@ export default function CalendarView() {
                   )}
                 </div>
               )}
+              {dayTasks.length === 0 && view === 'day' && <EmptyStateIllustration />}
               <ul className="space-y-2">
-                {dayTasks.length === 0 && <li className="text-sm text-slate-600 italic">—</li>}
+                {dayTasks.length === 0 && view === 'week' && (
+                  <li className="text-sm text-slate-600 italic">—</li>
+                )}
                 {dayTasks.map((task) => {
                   const meta = priorityMeta(task.priority)
                   const Icon = meta.icon
                   return (
                     <li key={`${task.id}_${task.occurrenceDate}`}>
                       <SwipeableRow onSwipeLeft={() => handleRemove(task)} onSwipeRight={() => handleToggle(task)}>
-                        <div className="flex flex-col gap-1 bg-slate-800/60 px-3 py-2">
+                        <div className="flex flex-col gap-1 rounded-xl bg-app-card px-3 py-2">
                           <div className="flex items-center gap-3">
                             <input
                               type="checkbox"
                               checked={task.done}
                               onChange={() => handleToggle(task)}
-                              className="h-4 w-4 accent-emerald-400"
+                              className="h-4 w-4 accent-brand-cta"
                             />
                             <Icon size={14} color={meta.color} className="shrink-0" />
                             <span className="text-sm text-slate-400 tabular-nums">{task.startTime}</span>
@@ -336,7 +340,7 @@ export default function CalendarView() {
                               <button
                                 type="button"
                                 onClick={() => setReminderTask(task)}
-                                className="text-slate-500 hover:text-amber-400 transition-colors"
+                                className="text-slate-500 hover:text-priority-medium transition-colors"
                               >
                                 <Bell size={16} />
                               </button>
@@ -344,7 +348,7 @@ export default function CalendarView() {
                             <button
                               type="button"
                               onClick={() => setTimerTask(task)}
-                              className="text-slate-500 hover:text-emerald-400 transition-colors"
+                              className="text-slate-500 hover:text-brand-cta transition-colors"
                             >
                               <Timer size={16} />
                             </button>
@@ -358,7 +362,7 @@ export default function CalendarView() {
                             <button
                               type="button"
                               onClick={() => handleRemove(task)}
-                              className="text-slate-500 hover:text-rose-400 transition-colors"
+                              className="text-slate-500 hover:text-priority-high transition-colors"
                             >
                               <Trash2 size={16} />
                             </button>

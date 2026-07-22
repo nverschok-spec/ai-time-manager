@@ -65,7 +65,7 @@ export default function PomodoroTimer({ task, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
-      <div className="w-full max-w-xs rounded-xl bg-slate-800 p-5 space-y-4 text-center">
+      <div className="w-full max-w-xs rounded-xl bg-app-card p-5 space-y-4 text-center">
         <div className="flex items-center justify-between">
           <span className="text-xs font-medium uppercase tracking-wide text-slate-400">
             {phase === 'focus' ? t('pomodoro.focus') : t('pomodoro.break')}
@@ -89,7 +89,7 @@ export default function PomodoroTimer({ task, onClose }) {
           <button
             type="button"
             onClick={() => setIsRunning((v) => !v)}
-            className="flex items-center gap-1.5 rounded-md bg-emerald-500 px-4 py-1.5 text-sm font-medium text-slate-950 hover:bg-emerald-400 transition-colors"
+            className="flex items-center gap-1.5 rounded-md bg-brand-cta px-4 py-1.5 text-sm font-medium text-app-bg hover:brightness-110 transition-colors"
           >
             {isRunning ? <Pause size={14} /> : <Play size={14} />}
             {isRunning ? t('pomodoro.pause') : t('pomodoro.start')}
@@ -97,7 +97,7 @@ export default function PomodoroTimer({ task, onClose }) {
           <button
             type="button"
             onClick={handleReset}
-            className="flex items-center gap-1.5 rounded-md bg-slate-700 px-3 py-1.5 text-sm text-slate-200 hover:bg-slate-600 transition-colors"
+            className="flex items-center gap-1.5 rounded-md bg-app-cardMuted px-3 py-1.5 text-sm text-slate-200 hover:bg-white/10 transition-colors"
           >
             <RotateCcw size={14} />
           </button>

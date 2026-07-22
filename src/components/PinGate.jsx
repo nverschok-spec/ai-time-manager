@@ -1,7 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Delete } from 'lucide-react'
+import Logo from './Logo'
 
 const STORAGE_KEY = 'ai-time-manager-auth'
+const PIN_LENGTH = 6
+const KEYPAD = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'del']
 
 export function getStoredToken() {
   try {
@@ -29,57 +33,109 @@ export default function PinGate({ children }) {
   const [error, setError] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  async function handleSubmit(e) {
-    e.preventDefault()
+  useEffect(() => {
+    if (pin.length !== PIN_LENGTH || isSubmitting) return
+
+    let cancelled = false
     setIsSubmitting(true)
     setError(false)
-    try {
-      const res = await fetch('/api/verify-pin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pin })
+
+    fetch('/api/verify-pin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pin })
+    })
+      .then(async (res) => {
+        if (cancelled) return
+        if (!res.ok) {
+          setError(true)
+          setPin('')
+          return
+        }
+        const { token, expiresAt } = await res.json()
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ token, expiresAt }))
+        setUnlocked(true)
       })
-      if (!res.ok) {
-        setError(true)
-        return
-      }
-      const { token, expiresAt } = await res.json()
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ token, expiresAt }))
-      setUnlocked(true)
-    } catch {
-      setError(true)
-    } finally {
-      setIsSubmitting(false)
+      .catch(() => {
+        if (!cancelled) {
+          setError(true)
+          setPin('')
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setIsSubmitting(false)
+      })
+
+    return () => {
+      cancelled = true
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pin])
+
+  function handleKeyPress(key) {
+    if (isSubmitting) return
+    if (key === 'del') {
+      setPin((p) => p.slice(0, -1))
+      return
+    }
+    if (key === '') return
+    setError(false)
+    setPin((p) => (p.length < PIN_LENGTH ? p + key : p))
   }
 
   if (unlocked) return children
 
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-slate-900 p-4">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-xs space-y-4 rounded-lg bg-slate-800 p-6 text-center"
-      >
-        <h1 className="text-lg font-semibold text-slate-100">{t('pin.title')}</h1>
-        <input
-          type="password"
-          inputMode="numeric"
-          autoFocus
-          value={pin}
-          onChange={(e) => setPin(e.target.value)}
-          placeholder={t('pin.placeholder')}
-          className="w-full rounded-md border border-slate-600 bg-slate-900 p-2 text-center text-slate-100 tracking-widest"
-        />
-        {error && <p className="text-sm text-red-400">{t('pin.error')}</p>}
-        <button
-          type="submit"
-          disabled={isSubmitting || pin.length === 0}
-          className="w-full rounded-md bg-sky-600 py-2 text-sm font-medium text-white hover:bg-sky-500 disabled:opacity-50"
-        >
-          {t('pin.submit')}
-        </button>
-      </form>
+    <div className="flex min-h-dvh flex-col items-center justify-center gap-10 bg-app-bg px-6 py-10 text-white">
+      <div className="flex flex-col items-center gap-4">
+        <Logo size={56} />
+        <div className="text-center">
+          <h1 className="text-lg font-semibold">{t('pin.title')}</h1>
+          <p className="mt-1 h-4 text-sm text-priority-high">{error ? t('pin.error') : ''}</p>
+        </div>
+      </div>
+
+      <div className={`flex gap-4 ${error ? 'animate-shake' : ''}`}>
+        {Array.from({ length: PIN_LENGTH }).map((_, i) => (
+          <span
+            key={i}
+            className={`h-3.5 w-3.5 rounded-full border transition-colors ${
+              i < pin.length
+                ? error
+                  ? 'border-priority-high bg-priority-high'
+                  : 'border-brand-cta bg-brand-cta'
+                : 'border-white/25 bg-transparent'
+            }`}
+          />
+        ))}
+      </div>
+
+      <div className="grid grid-cols-3 gap-x-6 gap-y-4">
+        {KEYPAD.map((key, i) =>
+          key === '' ? (
+            <div key={i} className="h-16 w-16" />
+          ) : key === 'del' ? (
+            <button
+              key={i}
+              type="button"
+              onClick={() => handleKeyPress(key)}
+              aria-label={t('pin.delete')}
+              className="flex h-16 w-16 items-center justify-center rounded-full text-white/70 transition-colors active:bg-white/10"
+            >
+              <Delete size={22} />
+            </button>
+          ) : (
+            <button
+              key={i}
+              type="button"
+              onClick={() => handleKeyPress(key)}
+              className="flex h-16 w-16 items-center justify-center rounded-full bg-app-card text-2xl font-medium text-white transition-colors active:bg-app-cardMuted"
+            >
+              {key}
+            </button>
+          )
+        )}
+      </div>
     </div>
   )
 }

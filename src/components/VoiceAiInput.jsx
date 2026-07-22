@@ -85,13 +85,13 @@ export default function VoiceAiInput({ onSubmit, isLoading }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-2">
       {image && (
-        <div className="flex items-center gap-2 rounded-lg bg-slate-800 p-2">
-          <img src={image.previewUrl} alt="" className="h-12 w-12 rounded-md object-cover" />
-          <span className="flex-1 text-xs text-slate-400">{t('input.photo_attached')}</span>
+        <div className="flex items-center gap-2 rounded-xl bg-app-card p-2">
+          <img src={image.previewUrl} alt="" className="h-12 w-12 rounded-lg object-cover" />
+          <span className="flex-1 text-xs text-muted">{t('input.photo_attached')}</span>
           <button
             type="button"
             onClick={() => setImage(null)}
-            className="text-slate-500 hover:text-rose-400 transition-colors"
+            className="text-slate-500 hover:text-priority-high transition-colors"
           >
             <X size={16} />
           </button>
@@ -105,7 +105,7 @@ export default function VoiceAiInput({ onSubmit, isLoading }) {
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           placeholder={t('input.placeholder')}
-          className="flex-1 max-h-36 resize-none overflow-y-auto rounded-lg bg-slate-800 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-emerald-400"
+          className="flex-1 max-h-36 resize-none overflow-y-auto rounded-full bg-app-card px-4 py-2.5 text-sm text-slate-100 placeholder:text-muted outline-none focus:ring-2 focus:ring-brand-cta"
         />
         <input
           ref={fileInputRef}
@@ -119,7 +119,7 @@ export default function VoiceAiInput({ onSubmit, isLoading }) {
           type="button"
           onClick={() => fileInputRef.current?.click()}
           title={t('input.photo_start')}
-          className="rounded-lg bg-slate-800 p-2.5 text-slate-300 hover:text-slate-100 transition-colors"
+          className="rounded-full bg-app-card p-2.5 text-slate-300 hover:text-slate-100 transition-colors"
         >
           <Camera size={18} />
         </button>
@@ -128,12 +128,12 @@ export default function VoiceAiInput({ onSubmit, isLoading }) {
           onClick={toggleListening}
           disabled={!voiceAvailable}
           title={voiceAvailable ? t('input.mic_start') : t('input.mic_unavailable')}
-          className={`rounded-lg p-2.5 transition-colors ${
+          className={`rounded-full p-2.5 transition-colors ${
             !voiceAvailable
               ? 'text-slate-700 cursor-not-allowed'
               : isListening
-                ? 'bg-rose-500 text-white'
-                : 'bg-slate-800 text-slate-300 hover:text-slate-100'
+                ? 'bg-priority-high text-white'
+                : 'bg-brand-cta text-app-bg hover:brightness-110'
           }`}
         >
           {voiceAvailable ? <Mic size={18} /> : <MicOff size={18} />}
@@ -142,7 +142,7 @@ export default function VoiceAiInput({ onSubmit, isLoading }) {
           type="submit"
           disabled={isLoading || (!text.trim() && !image)}
           title={t('input.send')}
-          className="rounded-lg bg-emerald-500 p-2.5 text-slate-950 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-emerald-400 transition-colors"
+          className="rounded-full bg-brand-cta p-2.5 text-app-bg disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all"
         >
           <Send size={18} />
         </button>

@@ -34,6 +34,7 @@
   },
   "calendar": {
     "add_task": "Aufgabe",
+    "empty_state": "Für heute alles erledigt. Zeit zum Entspannen oder den nächsten Schritt zu planen.",
     "title_placeholder": "Titel der Aufgabe",
     "notes_placeholder": "Notiz (optional) — Adresse, Telefon, Details",
     "duration": "Dauer, Min.",
@@ -85,9 +86,8 @@
     "error": "Benachrichtigungen konnten nicht aktiviert werden"
   },
   "pin": {
-    "title": "PIN eingeben",
-    "placeholder": "PIN",
-    "submit": "Entsperren",
-    "error": "Falscher PIN"
+    "title": "Code eingeben",
+    "delete": "Ziffer löschen",
+    "error": "Falscher Code"
   }
 }

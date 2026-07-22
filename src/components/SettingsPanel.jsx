@@ -52,20 +52,20 @@ export default function SettingsPanel({ onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-app-bg">
       <div className="mx-auto max-w-md space-y-5 p-4">
         <header className="flex items-center gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg bg-slate-800 p-2 text-slate-300 hover:text-slate-100"
+            className="rounded-lg bg-app-card p-2 text-slate-300 hover:text-slate-100"
           >
             <ArrowLeft size={18} />
           </button>
           <h1 className="text-lg font-semibold">{t('settings.title')}</h1>
         </header>
 
-        <div className="space-y-3 rounded-lg bg-slate-800/60 p-3">
+        <div className="space-y-3 rounded-3xl border border-white/5 bg-app-card p-3">
           <div className="flex items-center justify-between text-sm">
             <span className="text-slate-300">{t('settings.language')}</span>
             <LanguageSwitcher />
@@ -75,14 +75,14 @@ export default function SettingsPanel({ onClose }) {
             <button
               type="button"
               onClick={handleExport}
-              className="flex flex-1 items-center justify-center gap-1.5 rounded-md bg-slate-700 py-1.5 text-sm text-slate-200 hover:bg-slate-600"
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-md bg-app-cardMuted py-1.5 text-sm text-slate-200 hover:bg-white/10"
             >
               <Download size={14} /> {t('settings.export')}
             </button>
             <button
               type="button"
               onClick={handleImportClick}
-              className="flex flex-1 items-center justify-center gap-1.5 rounded-md bg-slate-700 py-1.5 text-sm text-slate-200 hover:bg-slate-600"
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-md bg-app-cardMuted py-1.5 text-sm text-slate-200 hover:bg-white/10"
             >
               <Upload size={14} /> {t('settings.import')}
             </button>
@@ -96,7 +96,7 @@ export default function SettingsPanel({ onClose }) {
           </div>
           <a
             href={icsHref}
-            className="flex items-center justify-center gap-1.5 rounded-md bg-slate-700 py-1.5 text-sm text-slate-200 hover:bg-slate-600"
+            className="flex items-center justify-center gap-1.5 rounded-md bg-app-cardMuted py-1.5 text-sm text-slate-200 hover:bg-white/10"
           >
             <CalendarPlus size={14} /> {t('settings.export_calendar')}
           </a>

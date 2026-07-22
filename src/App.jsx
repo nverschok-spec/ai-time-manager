@@ -33,7 +33,7 @@ export default function App() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col bg-slate-900 text-slate-100">
+    <div className="flex min-h-dvh flex-col bg-app-bg text-slate-100">
       <MorningReview />
       {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
 
@@ -49,7 +49,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setShowSettings(true)}
-                className="rounded-lg bg-slate-800 p-2 text-slate-300 hover:text-slate-100"
+                className="rounded-lg bg-app-card p-2 text-slate-300 hover:text-slate-100"
               >
                 <SettingsIcon size={18} />
               </button>
@@ -66,7 +66,7 @@ export default function App() {
         </div>
       </div>
 
-      <div className="shrink-0 border-t border-slate-800 bg-slate-900/95 p-4 backdrop-blur">
+      <div className="shrink-0 border-t border-white/5 bg-app-bg/95 p-4 backdrop-blur">
         <div className="mx-auto max-w-md">
           <VoiceAiInput onSubmit={handleSubmit} isLoading={isLoading} />
         </div>

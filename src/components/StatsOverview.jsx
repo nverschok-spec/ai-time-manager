@@ -40,7 +40,7 @@ export default function StatsOverview() {
   const priorityTotal = byPriority.high + byPriority.medium + byPriority.low
 
   return (
-    <div className="rounded-lg bg-slate-800/40 p-4 space-y-4">
+    <div className="rounded-3xl border border-white/5 bg-app-card p-4 space-y-4">
       <div className="flex items-center gap-4">
         <ProgressCircle done={today.done} total={today.total} />
         <div className="flex-1 space-y-2">
@@ -50,7 +50,7 @@ export default function StatsOverview() {
               {today.done}/{today.total}
             </p>
           </div>
-          <div className="border-t border-slate-700/60 pt-2">
+          <div className="border-t border-white/5 pt-2">
             <p className="text-xs text-slate-500">{t('stats.week')}</p>
             <p className="text-lg font-semibold text-slate-100 tabular-nums">
               {week.done}/{week.total}

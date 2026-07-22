@@ -29,7 +29,7 @@ export default function ProgressCircle({ done, total, children }) {
           strokeDasharray={CIRCUMFERENCE}
           strokeDashoffset={offset}
           strokeLinecap="round"
-          className="text-emerald-400 transition-[stroke-dashoffset] duration-300"
+          className="text-brand-cta transition-[stroke-dashoffset] duration-300"
         />
       </svg>
       <div className="absolute flex flex-col items-center">

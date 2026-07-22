@@ -34,6 +34,7 @@
   },
   "calendar": {
     "add_task": "Task",
+    "empty_state": "All done for today. Time to relax or plan your next move.",
     "title_placeholder": "Task title",
     "notes_placeholder": "Notes (optional) — address, phone, details",
     "duration": "Duration, min",
@@ -85,9 +86,8 @@
     "error": "Couldn't enable notifications"
   },
   "pin": {
-    "title": "Enter PIN",
-    "placeholder": "PIN",
-    "submit": "Unlock",
-    "error": "Wrong PIN"
+    "title": "Enter Passcode",
+    "delete": "Delete digit",
+    "error": "Wrong passcode"
   }
 }

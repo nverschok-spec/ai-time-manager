@@ -20,16 +20,16 @@ export default function AiSuggestionCard() {
       {suggestions.map((s, index) => {
         const isEditing = editingIndex === index
         return (
-          <div key={`${s.title}-${index}`} className="rounded-lg border border-slate-700 bg-slate-800/60 p-3 space-y-2">
+          <div key={`${s.title}-${index}`} className="rounded-2xl border border-white/5 bg-app-card p-3 space-y-2">
             {(s.conflict || s.lowConfidence) && (
               <div className="flex gap-2">
                 {s.conflict && (
-                  <span className="text-xs rounded-full bg-rose-500/20 text-rose-300 px-2 py-0.5">
+                  <span className="text-xs rounded-full bg-priority-high/20 text-priority-high px-2 py-0.5">
                     {t('suggestion.conflict')}
                   </span>
                 )}
                 {s.lowConfidence && (
-                  <span className="text-xs rounded-full bg-amber-500/20 text-amber-300 px-2 py-0.5">
+                  <span className="text-xs rounded-full bg-priority-medium/20 text-priority-medium px-2 py-0.5">
                     {t('suggestion.low_confidence')}
                   </span>
                 )}
@@ -42,19 +42,19 @@ export default function AiSuggestionCard() {
                   type="text"
                   value={s.title}
                   onChange={(e) => updateSuggestion(index, { title: e.target.value })}
-                  className="col-span-2 rounded-md bg-slate-900 px-2 py-1 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-emerald-400"
+                  className="col-span-2 rounded-md bg-app-bg px-2 py-1 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-brand-cta"
                 />
                 <input
                   type="date"
                   value={s.date}
                   onChange={(e) => updateSuggestion(index, { date: e.target.value })}
-                  className="rounded-md bg-slate-900 px-2 py-1 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-emerald-400"
+                  className="rounded-md bg-app-bg px-2 py-1 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-brand-cta"
                 />
                 <input
                   type="time"
                   value={s.start_time}
                   onChange={(e) => updateSuggestion(index, { start_time: e.target.value })}
-                  className="rounded-md bg-slate-900 px-2 py-1 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-emerald-400"
+                  className="rounded-md bg-app-bg px-2 py-1 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-brand-cta"
                 />
               </div>
             ) : (
@@ -75,21 +75,21 @@ export default function AiSuggestionCard() {
               <button
                 type="button"
                 onClick={() => acceptSuggestion(index)}
-                className="flex items-center gap-1 rounded-md bg-emerald-500 px-2.5 py-1 text-xs font-medium text-slate-950 hover:bg-emerald-400 transition-colors"
+                className="flex items-center gap-1 rounded-md bg-brand-cta px-2.5 py-1 text-xs font-medium text-app-bg hover:brightness-110 transition-colors"
               >
                 <Check size={14} /> {t('suggestion.accept')}
               </button>
               <button
                 type="button"
                 onClick={() => setEditingIndex(isEditing ? null : index)}
-                className="flex items-center gap-1 rounded-md bg-slate-700 px-2.5 py-1 text-xs font-medium text-slate-200 hover:bg-slate-600 transition-colors"
+                className="flex items-center gap-1 rounded-md bg-app-cardMuted px-2.5 py-1 text-xs font-medium text-slate-200 hover:bg-white/10 transition-colors"
               >
                 <Pencil size={14} /> {t('suggestion.edit')}
               </button>
               <button
                 type="button"
                 onClick={() => dismissSuggestion(index)}
-                className="flex items-center gap-1 rounded-md bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-400 hover:text-rose-300 transition-colors"
+                className="flex items-center gap-1 rounded-md bg-app-card px-2.5 py-1 text-xs font-medium text-slate-400 hover:text-priority-high transition-colors"
               >
                 <X size={14} /> {t('suggestion.dismiss')}
               </button>
