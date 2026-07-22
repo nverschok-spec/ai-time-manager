@@ -1,20 +1,23 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Sun } from 'lucide-react'
 import { useAppStore } from '../store/useAppStore'
 import { expandOccurrences } from '../lib/occurrences'
 import { priorityMeta } from '../lib/priority'
+import { fetchDailyDigest } from '../services/ai'
 
 function toDateKey(date) {
   return date.toISOString().slice(0, 10)
 }
 
 export default function MorningReview() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const tasks = useAppStore((s) => s.tasks)
   const lastReviewDate = useAppStore((s) => s.lastReviewDate)
   const setLastReviewDate = useAppStore((s) => s.setLastReviewDate)
   const updateTask = useAppStore((s) => s.updateTask)
+  const [digest, setDigest] = useState('')
+  const [digestLoading, setDigestLoading] = useState(false)
 
   const todayKey = toDateKey(new Date())
 
@@ -22,6 +25,22 @@ export default function MorningReview() {
     const map = expandOccurrences(tasks, [todayKey])
     return map[todayKey].sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''))
   }, [tasks, todayKey])
+
+  useEffect(() => {
+    if (lastReviewDate === todayKey) return
+    let cancelled = false
+    setDigestLoading(true)
+    fetchDailyDigest(todayTasks, i18n.resolvedLanguage).then((text) => {
+      if (!cancelled) {
+        setDigest(text)
+        setDigestLoading(false)
+      }
+    })
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [todayKey])
 
   if (lastReviewDate === todayKey) return null
 
@@ -38,6 +57,12 @@ export default function MorningReview() {
           <Sun size={20} className="text-priority-medium" />
           <h2 className="text-base font-semibold text-slate-100">{t('morning.title')}</h2>
         </div>
+
+        {digestLoading ? (
+          <p className="text-sm italic text-muted">{t('morning.digest_loading')}</p>
+        ) : (
+          digest && <p className="text-sm text-slate-200">{digest}</p>
+        )}
 
         {todayTasks.length === 0 ? (
           <p className="text-sm text-slate-400">{t('morning.empty')}</p>

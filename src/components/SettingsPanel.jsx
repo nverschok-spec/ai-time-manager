@@ -5,6 +5,7 @@ import { useAppStore } from '../store/useAppStore'
 import { buildIcs } from '../lib/ics'
 import LanguageSwitcher from './LanguageSwitcher'
 import PushSettings from './PushSettings'
+import PeopleSettings from './PeopleSettings'
 
 function todayKey() {
   return new Date().toISOString().slice(0, 10)
@@ -71,6 +72,9 @@ export default function SettingsPanel({ onClose }) {
             <LanguageSwitcher />
           </div>
           <PushSettings />
+          <div className="border-t border-white/5 pt-3">
+            <PeopleSettings />
+          </div>
           <div className="flex gap-2">
             <button
               type="button"

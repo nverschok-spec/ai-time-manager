@@ -1,14 +1,9 @@
-// Проверка общего PIN-кода и выдача токена доступа к /api/ai-parse.
+// Проверка общего PIN-кода и выдача токена доступа к остальным эндпоинтам.
 // Токен — HMAC от срока действия, подписанный APP_PIN как секретом:
 // без знания PIN его не подделать, и не нужна база данных для хранения сессий.
 
 import crypto from 'node:crypto'
-
-const TOKEN_TTL_MS = 30 * 24 * 60 * 60 * 1000 // 30 дней
-
-function sign(expiresAt, secret) {
-  return crypto.createHmac('sha256', secret).update(String(expiresAt)).digest('hex')
-}
+import { issueToken } from './_lib/auth.js'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -34,8 +29,5 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Invalid PIN' })
   }
 
-  const expiresAt = Date.now() + TOKEN_TTL_MS
-  const token = `${expiresAt}.${sign(expiresAt, appPin)}`
-
-  return res.status(200).json({ token, expiresAt })
+  return res.status(200).json(issueToken(appPin))
 }

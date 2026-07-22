@@ -6,6 +6,7 @@
     "today": "Heute",
     "week": "Woche",
     "month": "Monat",
+    "shopping": "Einkauf",
     "settings": "Einstellungen"
   },
   "input": {
@@ -30,7 +31,9 @@
     "export": "Daten exportieren",
     "import": "Daten importieren",
     "export_calendar": "Zu Apple Calendar hinzufügen",
-    "privacy_note": "Der Aufgabentext (und ein angehängtes Foto) wird zur Analyse kurzzeitig an die KI gesendet und nicht gespeichert."
+    "privacy_note": "Der Aufgabentext (und ein angehängtes Foto) wird zur Analyse kurzzeitig an die KI gesendet und nicht gespeichert.",
+    "people": "Wer nutzt das hier",
+    "add_person": "Name der Person"
   },
   "calendar": {
     "add_task": "Aufgabe",
@@ -54,7 +57,10 @@
     "cancel": "Abbrechen",
     "undo": "Rückgängig",
     "overdue_message": "{{count}} unerledigte Aufgaben aus vergangenen Tagen",
-    "overdue_move": "Auf heute verschieben"
+    "overdue_move": "Auf heute verschieben",
+    "assignee": "Für",
+    "assignee_none": "Keine Markierung",
+    "assignee_all": "Alle"
   },
   "priority": {
     "high": "Hoch",
@@ -76,7 +82,13 @@
     "title": "Guten Morgen!",
     "empty": "Heute keine Aufgaben.",
     "postpone": "Morgen",
-    "start": "Tag beginnen"
+    "start": "Tag beginnen",
+    "digest_loading": "Die KI schaut sich deinen Tag an…"
+  },
+  "shopping": {
+    "placeholder": "Was einkaufen?",
+    "empty": "Liste ist leer.",
+    "clear_completed": "Gekauftes entfernen ({{count}})"
   },
   "push": {
     "title": "Push-Benachrichtigungen",

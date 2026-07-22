@@ -84,3 +84,32 @@ export async function parseUserInput(text, tasks, image) {
     return { ...s, conflict, lowConfidence }
   })
 }
+
+// Best-effort — returns '' on any failure so the caller can silently fall
+// back to the plain task list instead of blocking the morning review.
+export async function fetchDailyDigest(todayTasks, locale) {
+  try {
+    const token = getStoredToken()
+    const res = await fetch('/api/ai-digest', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      },
+      body: JSON.stringify({
+        locale,
+        tasks: todayTasks.map((t) => ({
+          title: t.title,
+          start_time: t.startTime,
+          duration_minutes: t.durationMinutes,
+          priority: t.priority
+        }))
+      })
+    })
+    if (!res.ok) return ''
+    const data = await res.json()
+    return data.digest || ''
+  } catch {
+    return ''
+  }
+}

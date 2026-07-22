@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { scheduleReminder } from '../lib/push'
+import { nextAvailableColor } from '../lib/people'
 
 function makeId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
@@ -14,9 +15,50 @@ export const useAppStore = create(
       lastReviewDate: null,
       deviceId: makeId(),
       pushEnabled: false,
+      people: [],
+      shoppingItems: [],
 
       setLastReviewDate: (dateKey) => set({ lastReviewDate: dateKey }),
       setPushEnabled: (pushEnabled) => set({ pushEnabled }),
+
+      addPerson: (name) => {
+        const trimmed = name.trim()
+        if (!trimmed) return
+        set((state) => ({
+          people: [
+            ...state.people,
+            { id: makeId(), name: trimmed, color: nextAvailableColor(state.people) }
+          ]
+        }))
+      },
+
+      removePerson: (id) =>
+        set((state) => ({
+          people: state.people.filter((p) => p.id !== id),
+          tasks: state.tasks.map((t) => (t.assigneeId === id ? { ...t, assigneeId: undefined } : t))
+        })),
+
+      addShoppingItem: (text) => {
+        const trimmed = text.trim()
+        if (!trimmed) return
+        set((state) => ({
+          shoppingItems: [...state.shoppingItems, { id: makeId(), text: trimmed, done: false }]
+        }))
+      },
+
+      toggleShoppingItem: (id) =>
+        set((state) => ({
+          shoppingItems: state.shoppingItems.map((i) => (i.id === id ? { ...i, done: !i.done } : i))
+        })),
+
+      removeShoppingItem: (id) =>
+        set((state) => ({ shoppingItems: state.shoppingItems.filter((i) => i.id !== id) })),
+
+      restoreShoppingItem: (item) =>
+        set((state) => ({ shoppingItems: [...state.shoppingItems, item] })),
+
+      clearCompletedShopping: () =>
+        set((state) => ({ shoppingItems: state.shoppingItems.filter((i) => !i.done) })),
 
       addTask: (task) => {
         const id = makeId()
@@ -155,7 +197,9 @@ export const useAppStore = create(
         tasks: state.tasks,
         lastReviewDate: state.lastReviewDate,
         deviceId: state.deviceId,
-        pushEnabled: state.pushEnabled
+        pushEnabled: state.pushEnabled,
+        people: state.people,
+        shoppingItems: state.shoppingItems
       })
     }
   )

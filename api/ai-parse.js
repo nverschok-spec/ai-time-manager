@@ -5,20 +5,8 @@
 // - НЕ сохранять историю обращений в файл/БД
 // - ключ читается только из process.env, никогда не возвращается клиенту
 
-import crypto from 'node:crypto'
 import Anthropic from '@anthropic-ai/sdk'
-
-function isValidToken(token, secret) {
-  if (typeof token !== 'string') return false
-  const [expiresAtStr, signature] = token.split('.')
-  const expiresAt = Number(expiresAtStr)
-  if (!expiresAt || !signature || expiresAt < Date.now()) return false
-
-  const expectedSig = crypto.createHmac('sha256', secret).update(expiresAtStr).digest('hex')
-  const provided = Buffer.from(signature)
-  const expected = Buffer.from(expectedSig)
-  return provided.length === expected.length && crypto.timingSafeEqual(provided, expected)
-}
+import { requireAuth } from './_lib/auth.js'
 
 const SUGGESTION_SCHEMA = {
   type: 'object',
@@ -73,14 +61,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'ANTHROPIC_API_KEY is not configured' })
   }
 
-  const appPin = process.env.APP_PIN
-  if (appPin) {
-    const authHeader = req.headers.authorization || ''
-    const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null
-    if (!isValidToken(token, appPin)) {
-      return res.status(401).json({ error: 'Unauthorized' })
-    }
-  }
+  if (!requireAuth(req, res, process.env.APP_PIN)) return
 
   const { text, scheduleContext, today, image } = req.body || {}
   if (!text && !image?.base64) {

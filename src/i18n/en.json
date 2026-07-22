@@ -6,6 +6,7 @@
     "today": "Today",
     "week": "Week",
     "month": "Month",
+    "shopping": "Shopping",
     "settings": "Settings"
   },
   "input": {
@@ -30,7 +31,9 @@
     "export": "Export data",
     "import": "Import data",
     "export_calendar": "Add to Apple Calendar",
-    "privacy_note": "Task text (and any attached photo) is briefly sent to the AI for analysis and not stored."
+    "privacy_note": "Task text (and any attached photo) is briefly sent to the AI for analysis and not stored.",
+    "people": "Who's using this",
+    "add_person": "Person's name"
   },
   "calendar": {
     "add_task": "Task",
@@ -54,7 +57,10 @@
     "cancel": "Cancel",
     "undo": "Undo",
     "overdue_message": "{{count}} unfinished tasks from previous days",
-    "overdue_move": "Move to today"
+    "overdue_move": "Move to today",
+    "assignee": "For",
+    "assignee_none": "No tag",
+    "assignee_all": "All"
   },
   "priority": {
     "high": "High",
@@ -76,7 +82,13 @@
     "title": "Good morning!",
     "empty": "No tasks for today.",
     "postpone": "Tomorrow",
-    "start": "Start the day"
+    "start": "Start the day",
+    "digest_loading": "AI is looking at your day…"
+  },
+  "shopping": {
+    "placeholder": "What to buy?",
+    "empty": "List is empty.",
+    "clear_completed": "Clear bought ({{count}})"
   },
   "push": {
     "title": "Push notifications",
