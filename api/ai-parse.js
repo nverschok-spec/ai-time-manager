@@ -49,7 +49,11 @@ function buildSystemPrompt(today) {
 Today's date is ${today} (YYYY-MM-DD). The user may write in Russian, German, or English.
 You will also receive a compact list of already-scheduled slots (the user's busy times, ±7 days).
 Do not worry about detecting conflicts yourself — that is handled separately downstream.
-For each distinct task/appointment/reminder implied by the user's text, produce one suggestion with:
+The user may attach a photo instead of (or in addition to) typing — an invitation, an
+appointment card, a screenshot, a document with a date/time on it. Read any relevant text
+in the image and extract the same fields from it as you would from typed text. If the image
+contains no date/time/scheduling information at all, return an empty suggestions array.
+For each distinct task/appointment/reminder implied by the user's text or photo, produce one suggestion with:
 - title: short, in the same language the user wrote in
 - date: resolved absolute date in YYYY-MM-DD, based on today's date and relative terms like "tomorrow"/"Thursday"
 - start_time: HH:MM 24-hour. If the user gave no explicit time for a "find me time for X" style request, pick a reasonable free slot outside the provided busy times AND outside the times of the other suggestions you are generating in this same response — never let two of your own suggestions overlap each other.
@@ -78,13 +82,25 @@ export default async function handler(req, res) {
     }
   }
 
-  const { text, scheduleContext, today } = req.body || {}
-  if (!text) {
-    return res.status(400).json({ error: 'Missing "text" in request body' })
+  const { text, scheduleContext, today, image } = req.body || {}
+  if (!text && !image?.base64) {
+    return res.status(400).json({ error: 'Missing "text" or "image" in request body' })
   }
 
   const resolvedToday = today || new Date().toISOString().slice(0, 10)
   const client = new Anthropic({ apiKey })
+
+  const userContent = []
+  if (image?.base64 && image?.mediaType) {
+    userContent.push({
+      type: 'image',
+      source: { type: 'base64', media_type: image.mediaType, data: image.base64 }
+    })
+  }
+  userContent.push({
+    type: 'text',
+    text: `User request: ${text || '(see attached photo)'}\n\nExisting busy slots (JSON): ${JSON.stringify(scheduleContext || [])}`
+  })
 
   try {
     const response = await client.messages.create({
@@ -94,12 +110,7 @@ export default async function handler(req, res) {
       output_config: {
         format: { type: 'json_schema', schema: SUGGESTION_SCHEMA }
       },
-      messages: [
-        {
-          role: 'user',
-          content: `User request: ${text}\n\nExisting busy slots (JSON): ${JSON.stringify(scheduleContext || [])}`
-        }
-      ]
+      messages: [{ role: 'user', content: userContent }]
     })
 
     if (response.stop_reason === 'refusal') {

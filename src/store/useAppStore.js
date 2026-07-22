@@ -82,8 +82,37 @@ export const useAppStore = create(
         }
       },
 
+      // Full edit (title/date/time/etc via the edit form) — re-schedules the
+      // reminder too, since the title/date/time it was based on may have changed.
+      editTask: (id, patch) => {
+        get().updateTask(id, patch)
+        const task = get().tasks.find((t) => t.id === id)
+        const { pushEnabled, deviceId } = get()
+        if (
+          task &&
+          pushEnabled &&
+          !task.recurrence &&
+          task.date &&
+          task.startTime &&
+          task.reminderOffsetMinutes != null
+        ) {
+          scheduleReminder({
+            deviceId,
+            taskId: id,
+            title: task.title,
+            date: task.date,
+            startTime: task.startTime,
+            offsetMinutes: task.reminderOffsetMinutes
+          })
+        }
+      },
+
       removeTask: (id) =>
         set((state) => ({ tasks: state.tasks.filter((t) => t.id !== id) })),
+
+      // Puts a just-deleted task back exactly as it was (same id/done/etc) —
+      // pairs with the undo snackbar in CalendarView.
+      restoreTask: (task) => set((state) => ({ tasks: [...state.tasks, task] })),
 
       setSuggestions: (suggestions) => set({ suggestions }),
 

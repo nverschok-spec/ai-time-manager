@@ -1,11 +1,14 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Bell, Plus, Repeat, Timer, Trash2, X } from 'lucide-react'
+import { Bell, Pencil, Plus, Repeat, Timer, Trash2, X } from 'lucide-react'
 import { useAppStore } from '../store/useAppStore'
 import { PRIORITY_ORDER, priorityMeta } from '../lib/priority'
 import { expandOccurrences } from '../lib/occurrences'
 import PomodoroTimer from './PomodoroTimer'
 import ReminderPicker from './ReminderPicker'
+import UndoSnackbar from './UndoSnackbar'
+import SwipeableRow from './SwipeableRow'
+import MonthView from './MonthView'
 
 const RECURRENCE_OPTIONS = ['none', 'daily', 'weekdays', 'weekly']
 const REMINDER_OFFSET_OPTIONS = [0, 5, 15, 30, 60]
@@ -19,30 +22,39 @@ function formatDayLabel(dateKey, locale) {
   return d.toLocaleDateString(locale, { weekday: 'short', day: 'numeric', month: 'short' })
 }
 
-function AddTaskForm({ defaultDate, onCancel }) {
+// task === null → create mode (addTask); task !== null → edit mode (editTask), pre-filled.
+function TaskForm({ task, defaultDate, onCancel }) {
   const { t } = useTranslation()
   const addTask = useAppStore((s) => s.addTask)
+  const editTask = useAppStore((s) => s.editTask)
   const pushEnabled = useAppStore((s) => s.pushEnabled)
-  const [title, setTitle] = useState('')
-  const [date, setDate] = useState(defaultDate)
-  const [startTime, setStartTime] = useState('09:00')
-  const [durationMinutes, setDurationMinutes] = useState(30)
-  const [priority, setPriority] = useState('medium')
-  const [recurrence, setRecurrence] = useState('none')
-  const [reminderOffsetMinutes, setReminderOffsetMinutes] = useState(15)
+  const [title, setTitle] = useState(task?.title ?? '')
+  const [notes, setNotes] = useState(task?.notes ?? '')
+  const [date, setDate] = useState(task?.date ?? defaultDate)
+  const [startTime, setStartTime] = useState(task?.startTime ?? '09:00')
+  const [durationMinutes, setDurationMinutes] = useState(task?.durationMinutes ?? 30)
+  const [priority, setPriority] = useState(task?.priority ?? 'medium')
+  const [recurrence, setRecurrence] = useState(task?.recurrence ?? 'none')
+  const [reminderOffsetMinutes, setReminderOffsetMinutes] = useState(task?.reminderOffsetMinutes ?? 15)
 
   function handleSubmit(e) {
     e.preventDefault()
     if (!title.trim()) return
-    addTask({
+    const payload = {
       title: title.trim(),
+      notes: notes.trim(),
       date,
       startTime,
       durationMinutes: Number(durationMinutes) || 30,
       priority,
       recurrence: recurrence === 'none' ? undefined : recurrence,
       reminderOffsetMinutes
-    })
+    }
+    if (task) {
+      editTask(task.id, payload)
+    } else {
+      addTask(payload)
+    }
     onCancel()
   }
 
@@ -55,6 +67,13 @@ function AddTaskForm({ defaultDate, onCancel }) {
         onChange={(e) => setTitle(e.target.value)}
         placeholder={t('calendar.title_placeholder')}
         className="w-full rounded-md bg-slate-900 px-2 py-1.5 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:ring-1 focus:ring-emerald-400"
+      />
+      <textarea
+        rows={2}
+        value={notes}
+        onChange={(e) => setNotes(e.target.value)}
+        placeholder={t('calendar.notes_placeholder')}
+        className="w-full resize-none rounded-md bg-slate-900 px-2 py-1.5 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:ring-1 focus:ring-emerald-400"
       />
       <div className="grid grid-cols-3 gap-2">
         <input
@@ -165,11 +184,14 @@ export default function CalendarView() {
   const toggleTask = useAppStore((s) => s.toggleTask)
   const toggleTaskOccurrence = useAppStore((s) => s.toggleTaskOccurrence)
   const removeTask = useAppStore((s) => s.removeTask)
+  const restoreTask = useAppStore((s) => s.restoreTask)
   const pushEnabled = useAppStore((s) => s.pushEnabled)
   const [view, setView] = useState('day')
   const [showAddForm, setShowAddForm] = useState(false)
+  const [editingTask, setEditingTask] = useState(null)
   const [timerTask, setTimerTask] = useState(null)
   const [reminderTask, setReminderTask] = useState(null)
+  const [pendingDelete, setPendingDelete] = useState(null)
 
   const todayKey = toDateKey(new Date())
 
@@ -198,6 +220,26 @@ export default function CalendarView() {
     }
   }
 
+  function openAddForm() {
+    setEditingTask(null)
+    setShowAddForm((v) => !v)
+  }
+
+  function openEditForm(task) {
+    setShowAddForm(false)
+    setEditingTask(task)
+  }
+
+  function handleRemove(task) {
+    removeTask(task.id)
+    setPendingDelete(task)
+  }
+
+  function handleUndoRemove() {
+    if (pendingDelete) restoreTask(pendingDelete)
+    setPendingDelete(null)
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -220,10 +262,19 @@ export default function CalendarView() {
           >
             {t('nav.week')}
           </button>
+          <button
+            type="button"
+            onClick={() => setView('month')}
+            className={`px-3 py-1 text-sm rounded-md transition-colors ${
+              view === 'month' ? 'bg-slate-100 text-slate-900' : 'text-slate-400 hover:text-slate-100'
+            }`}
+          >
+            {t('nav.month')}
+          </button>
         </div>
         <button
           type="button"
-          onClick={() => setShowAddForm((v) => !v)}
+          onClick={openAddForm}
           className="flex items-center gap-1 rounded-lg bg-emerald-500 px-2.5 py-1.5 text-sm font-medium text-slate-950 hover:bg-emerald-400 transition-colors"
         >
           {showAddForm ? <X size={16} /> : <Plus size={16} />}
@@ -231,10 +282,14 @@ export default function CalendarView() {
         </button>
       </div>
 
-      {showAddForm && (
-        <AddTaskForm defaultDate={todayKey} onCancel={() => setShowAddForm(false)} />
+      {showAddForm && <TaskForm defaultDate={todayKey} onCancel={() => setShowAddForm(false)} />}
+      {editingTask && (
+        <TaskForm task={editingTask} defaultDate={todayKey} onCancel={() => setEditingTask(null)} />
       )}
 
+      {view === 'month' && <MonthView />}
+
+      {view !== 'month' && (
       <div className="space-y-5">
         {visibleDateKeys.map((dateKey) => {
           const dayTasks = tasksByDate[dateKey]
@@ -259,47 +314,58 @@ export default function CalendarView() {
                   const meta = priorityMeta(task.priority)
                   const Icon = meta.icon
                   return (
-                    <li
-                      key={`${task.id}_${task.occurrenceDate}`}
-                      className="flex items-center gap-3 rounded-lg bg-slate-800/60 px-3 py-2"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={task.done}
-                        onChange={() => handleToggle(task)}
-                        className="h-4 w-4 accent-emerald-400"
-                      />
-                      <Icon size={14} color={meta.color} className="shrink-0" />
-                      <span className="text-sm text-slate-400 tabular-nums">{task.startTime}</span>
-                      <span className={`flex-1 text-sm ${task.done ? 'line-through text-slate-500' : 'text-slate-100'}`}>
-                        {task.title}
-                      </span>
-                      {task.recurrence && (
-                        <Repeat size={13} className="shrink-0 text-slate-500" />
-                      )}
-                      {pushEnabled && !task.recurrence && (
-                        <button
-                          type="button"
-                          onClick={() => setReminderTask(task)}
-                          className="text-slate-500 hover:text-amber-400 transition-colors"
-                        >
-                          <Bell size={16} />
-                        </button>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => setTimerTask(task)}
-                        className="text-slate-500 hover:text-emerald-400 transition-colors"
-                      >
-                        <Timer size={16} />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => removeTask(task.id)}
-                        className="text-slate-500 hover:text-rose-400 transition-colors"
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                    <li key={`${task.id}_${task.occurrenceDate}`}>
+                      <SwipeableRow onSwipeLeft={() => handleRemove(task)} onSwipeRight={() => handleToggle(task)}>
+                        <div className="flex flex-col gap-1 bg-slate-800/60 px-3 py-2">
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="checkbox"
+                              checked={task.done}
+                              onChange={() => handleToggle(task)}
+                              className="h-4 w-4 accent-emerald-400"
+                            />
+                            <Icon size={14} color={meta.color} className="shrink-0" />
+                            <span className="text-sm text-slate-400 tabular-nums">{task.startTime}</span>
+                            <span
+                              className={`flex-1 text-sm ${task.done ? 'line-through text-slate-500' : 'text-slate-100'}`}
+                            >
+                              {task.title}
+                            </span>
+                            {task.recurrence && <Repeat size={13} className="shrink-0 text-slate-500" />}
+                            {pushEnabled && !task.recurrence && (
+                              <button
+                                type="button"
+                                onClick={() => setReminderTask(task)}
+                                className="text-slate-500 hover:text-amber-400 transition-colors"
+                              >
+                                <Bell size={16} />
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => setTimerTask(task)}
+                              className="text-slate-500 hover:text-emerald-400 transition-colors"
+                            >
+                              <Timer size={16} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => openEditForm(task)}
+                              className="text-slate-500 hover:text-sky-400 transition-colors"
+                            >
+                              <Pencil size={16} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleRemove(task)}
+                              className="text-slate-500 hover:text-rose-400 transition-colors"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                          {task.notes && <p className="truncate pl-7 text-xs text-slate-500">{task.notes}</p>}
+                        </div>
+                      </SwipeableRow>
                     </li>
                   )
                 })}
@@ -308,9 +374,18 @@ export default function CalendarView() {
           )
         })}
       </div>
+      )}
 
       {timerTask && <PomodoroTimer task={timerTask} onClose={() => setTimerTask(null)} />}
       {reminderTask && <ReminderPicker task={reminderTask} onClose={() => setReminderTask(null)} />}
+      {pendingDelete && (
+        <UndoSnackbar
+          key={pendingDelete.id}
+          label={pendingDelete.title}
+          onUndo={handleUndoRemove}
+          onDismiss={() => setPendingDelete(null)}
+        />
+      )}
     </div>
   )
 }

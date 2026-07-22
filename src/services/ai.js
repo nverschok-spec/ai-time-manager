@@ -37,7 +37,7 @@ function rangesOverlap(aStart, aDuration, bStart, bDuration) {
   return aStart < bEnd && bStart < aEnd
 }
 
-export async function parseUserInput(text, tasks) {
+export async function parseUserInput(text, tasks, image) {
   const scheduleContext = buildScheduleContext(tasks)
 
   const token = getStoredToken()
@@ -47,7 +47,12 @@ export async function parseUserInput(text, tasks) {
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {})
     },
-    body: JSON.stringify({ text, scheduleContext, today: toDateKey(new Date()) })
+    body: JSON.stringify({
+      text,
+      scheduleContext,
+      today: toDateKey(new Date()),
+      image: image ? { base64: image.base64, mediaType: image.mediaType } : undefined
+    })
   })
 
   if (res.status === 401) {

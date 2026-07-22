@@ -5,12 +5,15 @@
   "nav": {
     "today": "Heute",
     "week": "Woche",
+    "month": "Monat",
     "settings": "Einstellungen"
   },
   "input": {
     "placeholder": "Was möchtest du planen?",
     "mic_start": "Spracheingabe starten",
     "mic_unavailable": "Spracheingabe auf diesem Gerät nicht verfügbar",
+    "photo_start": "Foto anhängen (Einladung, Dokument)",
+    "photo_attached": "Foto angehängt — wird von der KI gelesen",
     "send": "Senden"
   },
   "suggestion": {
@@ -22,15 +25,17 @@
     "low_confidence": "Bitte bestätigen"
   },
   "settings": {
+    "title": "Einstellungen",
     "language": "Sprache",
     "export": "Daten exportieren",
     "import": "Daten importieren",
     "export_calendar": "Zu Apple Calendar hinzufügen",
-    "privacy_note": "Der Aufgabentext wird zur Analyse kurzzeitig an die KI gesendet."
+    "privacy_note": "Der Aufgabentext (und ein angehängtes Foto) wird zur Analyse kurzzeitig an die KI gesendet und nicht gespeichert."
   },
   "calendar": {
     "add_task": "Aufgabe",
     "title_placeholder": "Titel der Aufgabe",
+    "notes_placeholder": "Notiz (optional) — Adresse, Telefon, Details",
     "duration": "Dauer, Min.",
     "priority": "Priorität",
     "repeat": "Wiederholung",
@@ -46,6 +51,7 @@
     "remind_60": "1 Std. vorher",
     "save": "Speichern",
     "cancel": "Abbrechen",
+    "undo": "Rückgängig",
     "overdue_message": "{{count}} unerledigte Aufgaben aus vergangenen Tagen",
     "overdue_move": "Auf heute verschieben"
   },
