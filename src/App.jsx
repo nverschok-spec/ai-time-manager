@@ -33,44 +33,44 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100">
+    <div className="flex min-h-dvh flex-col bg-slate-900 text-slate-100">
       <MorningReview />
       {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
 
-      <div className="mx-auto max-w-md p-4 space-y-5">
-        <header className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Logo />
-            <h1 className="text-lg font-semibold">{t('app.title')}</h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <LanguageSwitcher />
-            <button
-              type="button"
-              onClick={() => setShowSettings(true)}
-              className="rounded-lg bg-slate-800 p-2 text-slate-300 hover:text-slate-100"
-            >
-              <SettingsIcon size={18} />
-            </button>
-          </div>
-        </header>
+      <div className="flex-1 overflow-y-auto">
+        <div className="mx-auto max-w-md p-4 space-y-5">
+          <header className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Logo />
+              <h1 className="text-lg font-semibold">{t('app.title')}</h1>
+            </div>
+            <div className="flex items-center gap-2">
+              <LanguageSwitcher />
+              <button
+                type="button"
+                onClick={() => setShowSettings(true)}
+                className="rounded-lg bg-slate-800 p-2 text-slate-300 hover:text-slate-100"
+              >
+                <SettingsIcon size={18} />
+              </button>
+            </div>
+          </header>
 
-        <StatsOverview />
+          <StatsOverview />
 
-        <OverdueBanner />
+          <OverdueBanner />
 
-        <AiSuggestionCard />
+          <AiSuggestionCard />
 
-        <CalendarView />
+          <CalendarView />
+        </div>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 bg-slate-900/95 backdrop-blur border-t border-slate-800 p-4">
+      <div className="shrink-0 border-t border-slate-800 bg-slate-900/95 p-4 backdrop-blur">
         <div className="mx-auto max-w-md">
           <VoiceAiInput onSubmit={handleSubmit} isLoading={isLoading} />
         </div>
       </div>
-
-      <div className="h-20" />
     </div>
   )
 }

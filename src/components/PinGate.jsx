@@ -56,7 +56,7 @@ export default function PinGate({ children }) {
   if (unlocked) return children
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-900 p-4">
+    <div className="flex min-h-dvh items-center justify-center bg-slate-900 p-4">
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-xs space-y-4 rounded-lg bg-slate-800 p-6 text-center"
