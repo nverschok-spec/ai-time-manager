@@ -81,27 +81,29 @@ function TaskForm({ task, defaultDate, onCancel }) {
         placeholder={t('calendar.notes_placeholder')}
         className="w-full resize-none rounded-md bg-app-bg px-2 py-1.5 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:ring-1 focus:ring-brand-cta"
       />
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 gap-2">
         <input
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="rounded-md bg-app-bg px-2 py-1.5 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-brand-cta"
+          className="min-w-0 rounded-md bg-app-bg px-2 py-1.5 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-brand-cta"
         />
         <input
           type="time"
           value={startTime}
           onChange={(e) => setStartTime(e.target.value)}
-          className="rounded-md bg-app-bg px-2 py-1.5 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-brand-cta"
+          className="min-w-0 rounded-md bg-app-bg px-2 py-1.5 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-brand-cta"
         />
+      </div>
+      <div className="flex items-center gap-2">
+        <span className="shrink-0 text-xs text-slate-400">{t('calendar.duration')}</span>
         <input
           type="number"
           min="5"
           step="5"
           value={durationMinutes}
           onChange={(e) => setDurationMinutes(e.target.value)}
-          title={t('calendar.duration')}
-          className="rounded-md bg-app-bg px-2 py-1.5 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-brand-cta"
+          className="min-w-0 flex-1 rounded-md bg-app-bg px-2 py-1.5 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-brand-cta"
         />
       </div>
       <div className="flex items-center gap-2">
@@ -402,21 +404,23 @@ export default function CalendarView() {
                   return (
                     <li key={`${task.id}_${task.occurrenceDate}`}>
                       <SwipeableRow onSwipeLeft={() => handleRemove(task)} onSwipeRight={() => handleToggle(task)}>
-                        <div className="flex flex-col gap-1 rounded-xl bg-app-card px-3 py-2">
-                          <div className="flex items-center gap-3">
+                        <div className="flex flex-col gap-1.5 rounded-xl bg-app-card px-3 py-2">
+                          <div className="flex items-center gap-2.5">
                             <input
                               type="checkbox"
                               checked={task.done}
                               onChange={() => handleToggle(task)}
-                              className="h-4 w-4 accent-brand-cta"
+                              className="h-4 w-4 shrink-0 accent-brand-cta"
                             />
                             <Icon size={14} color={meta.color} className="shrink-0" />
-                            <span className="text-sm text-slate-400 tabular-nums">{task.startTime}</span>
+                            <span className="shrink-0 text-sm text-slate-400 tabular-nums">{task.startTime}</span>
                             <span
-                              className={`flex-1 text-sm ${task.done ? 'line-through text-slate-500' : 'text-slate-100'}`}
+                              className={`min-w-0 flex-1 truncate text-sm ${task.done ? 'line-through text-slate-500' : 'text-slate-100'}`}
                             >
                               {task.title}
                             </span>
+                          </div>
+                          <div className="flex items-center gap-2 pl-7">
                             {assignee && (
                               <span
                                 className="h-2 w-2 shrink-0 rounded-full"
@@ -430,36 +434,38 @@ export default function CalendarView() {
                                 <Flame size={12} /> {streak}
                               </span>
                             )}
-                            {pushEnabled && !task.recurrence && (
+                            <div className="ml-auto flex items-center gap-3">
+                              {pushEnabled && !task.recurrence && (
+                                <button
+                                  type="button"
+                                  onClick={() => setReminderTask(task)}
+                                  className="text-slate-500 hover:text-priority-medium transition-colors"
+                                >
+                                  <Bell size={16} />
+                                </button>
+                              )}
                               <button
                                 type="button"
-                                onClick={() => setReminderTask(task)}
-                                className="text-slate-500 hover:text-priority-medium transition-colors"
+                                onClick={() => setTimerTask(task)}
+                                className="text-slate-500 hover:text-brand-cta transition-colors"
                               >
-                                <Bell size={16} />
+                                <Timer size={16} />
                               </button>
-                            )}
-                            <button
-                              type="button"
-                              onClick={() => setTimerTask(task)}
-                              className="text-slate-500 hover:text-brand-cta transition-colors"
-                            >
-                              <Timer size={16} />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => openEditForm(task)}
-                              className="text-slate-500 hover:text-sky-400 transition-colors"
-                            >
-                              <Pencil size={16} />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleRemove(task)}
-                              className="text-slate-500 hover:text-priority-high transition-colors"
-                            >
-                              <Trash2 size={16} />
-                            </button>
+                              <button
+                                type="button"
+                                onClick={() => openEditForm(task)}
+                                className="text-slate-500 hover:text-sky-400 transition-colors"
+                              >
+                                <Pencil size={16} />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleRemove(task)}
+                                className="text-slate-500 hover:text-priority-high transition-colors"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
                           </div>
                           {task.notes && <p className="truncate pl-7 text-xs text-slate-500">{task.notes}</p>}
                         </div>

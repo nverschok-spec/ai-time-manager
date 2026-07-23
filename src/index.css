@@ -8,4 +8,7 @@ html, body, #root {
 
 body {
   -webkit-tap-highlight-color: transparent;
+  /* Safety net: a flex/grid child forgetting min-w-0 shouldn't be able to
+     push the whole page sideways on narrow phones. */
+  overflow-x: hidden;
 }

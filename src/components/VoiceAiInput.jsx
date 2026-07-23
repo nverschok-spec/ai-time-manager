@@ -105,7 +105,7 @@ export default function VoiceAiInput({ onSubmit, isLoading }) {
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           placeholder={t('input.placeholder')}
-          className="flex-1 max-h-36 resize-none overflow-y-auto rounded-full bg-app-card px-4 py-2.5 text-sm text-slate-100 placeholder:text-muted outline-none focus:ring-2 focus:ring-brand-cta"
+          className="min-w-0 flex-1 max-h-36 resize-none overflow-y-auto rounded-full bg-app-card px-4 py-2.5 text-sm text-slate-100 placeholder:text-muted outline-none focus:ring-2 focus:ring-brand-cta"
         />
         <input
           ref={fileInputRef}

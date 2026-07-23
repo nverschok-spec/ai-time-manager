@@ -66,27 +66,32 @@ export default function SettingsPanel({ onClose }) {
           <h1 className="text-lg font-semibold">{t('settings.title')}</h1>
         </header>
 
-        <div className="space-y-3 rounded-3xl border border-white/5 bg-app-card p-3">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-slate-300">{t('settings.language')}</span>
-            <LanguageSwitcher />
-          </div>
+        <div className="flex items-center justify-between rounded-3xl border border-white/5 bg-app-card p-4 text-sm">
+          <span className="text-slate-300">{t('settings.language')}</span>
+          <LanguageSwitcher />
+        </div>
+
+        <div className="rounded-3xl border border-white/5 bg-app-card p-4">
           <PushSettings />
-          <div className="border-t border-white/5 pt-3">
-            <PeopleSettings />
-          </div>
-          <div className="flex gap-2">
+        </div>
+
+        <div className="rounded-3xl border border-white/5 bg-app-card p-4">
+          <PeopleSettings />
+        </div>
+
+        <div className="space-y-3 rounded-3xl border border-white/5 bg-app-card p-4">
+          <div className="flex flex-col gap-2">
             <button
               type="button"
               onClick={handleExport}
-              className="flex flex-1 items-center justify-center gap-1.5 rounded-md bg-app-cardMuted py-1.5 text-sm text-slate-200 hover:bg-white/10"
+              className="flex items-center justify-center gap-1.5 rounded-full bg-app-cardMuted py-2 text-sm text-slate-200 hover:bg-white/10"
             >
               <Download size={14} /> {t('settings.export')}
             </button>
             <button
               type="button"
               onClick={handleImportClick}
-              className="flex flex-1 items-center justify-center gap-1.5 rounded-md bg-app-cardMuted py-1.5 text-sm text-slate-200 hover:bg-white/10"
+              className="flex items-center justify-center gap-1.5 rounded-full bg-app-cardMuted py-2 text-sm text-slate-200 hover:bg-white/10"
             >
               <Upload size={14} /> {t('settings.import')}
             </button>
@@ -97,13 +102,13 @@ export default function SettingsPanel({ onClose }) {
               onChange={handleImportFile}
               className="hidden"
             />
+            <a
+              href={icsHref}
+              className="flex items-center justify-center gap-1.5 rounded-full bg-app-cardMuted py-2 text-sm text-slate-200 hover:bg-white/10"
+            >
+              <CalendarPlus size={14} /> {t('settings.export_calendar')}
+            </a>
           </div>
-          <a
-            href={icsHref}
-            className="flex items-center justify-center gap-1.5 rounded-md bg-app-cardMuted py-1.5 text-sm text-slate-200 hover:bg-white/10"
-          >
-            <CalendarPlus size={14} /> {t('settings.export_calendar')}
-          </a>
           <p className="text-xs text-slate-500">{t('settings.privacy_note')}</p>
         </div>
       </div>
