@@ -37,7 +37,7 @@ export default function App() {
       <MorningReview />
       {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden">
         <div className="mx-auto max-w-md p-4 space-y-5">
           <header className="flex items-center justify-between">
             <div className="flex items-center gap-2">

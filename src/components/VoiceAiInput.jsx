@@ -87,7 +87,7 @@ export default function VoiceAiInput({ onSubmit, isLoading }) {
       {image && (
         <div className="flex items-center gap-2 rounded-xl bg-app-card p-2">
           <img src={image.previewUrl} alt="" className="h-12 w-12 rounded-lg object-cover" />
-          <span className="flex-1 text-xs text-muted">{t('input.photo_attached')}</span>
+          <span className="min-w-0 flex-1 truncate text-xs text-muted">{t('input.photo_attached')}</span>
           <button
             type="button"
             onClick={() => setImage(null)}

@@ -108,7 +108,7 @@ function TaskForm({ task, defaultDate, onCancel }) {
       </div>
       <div className="flex items-center gap-2">
         <span className="text-xs text-slate-400">{t('calendar.priority')}</span>
-        <div className="inline-flex rounded-lg bg-app-bg p-1 gap-1">
+        <div className="inline-flex flex-wrap rounded-lg bg-app-bg p-1 gap-1">
           {PRIORITY_ORDER.map((p) => {
             const meta = priorityMeta(p)
             const Icon = meta.icon
@@ -160,7 +160,7 @@ function TaskForm({ task, defaultDate, onCancel }) {
       )}
       <div className="flex items-center gap-2">
         <span className="text-xs text-slate-400">{t('calendar.repeat')}</span>
-        <div className="inline-flex rounded-lg bg-app-bg p-1 gap-1">
+        <div className="inline-flex flex-wrap rounded-lg bg-app-bg p-1 gap-1">
           {RECURRENCE_OPTIONS.map((r) => (
             <button
               key={r}
@@ -282,9 +282,9 @@ export default function CalendarView() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="inline-flex rounded-lg bg-app-card p-1 gap-1">
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="inline-flex flex-wrap rounded-lg bg-app-card p-1 gap-1">
           <button
             type="button"
             onClick={() => setView('day')}

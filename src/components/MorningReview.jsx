@@ -67,7 +67,7 @@ export default function MorningReview() {
         {todayTasks.length === 0 ? (
           <p className="text-sm text-slate-400">{t('morning.empty')}</p>
         ) : (
-          <ul className="space-y-1.5 max-h-64 overflow-y-auto">
+          <ul className="space-y-1.5 max-h-64 overflow-y-auto overflow-x-hidden">
             {todayTasks.map((task) => {
               const meta = priorityMeta(task.priority)
               const Icon = meta.icon
