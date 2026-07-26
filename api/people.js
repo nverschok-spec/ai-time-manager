@@ -8,15 +8,18 @@ export default async function handler(req, res) {
   const personId = requirePersonAuth(req, res, appPin)
   if (!personId) return
 
-  if (req.method === 'POST') {
-    const { subscription } = req.body || {}
-    if (!subscription) return res.status(400).json({ error: 'Missing subscription' })
-    await redis.set(`sub:${personId}`, subscription)
-    return res.status(200).json({ ok: true })
+  if (req.method === 'GET') {
+    const people = (await redis.get('people')) || []
+    return res.status(200).json({ people })
   }
 
   if (req.method === 'DELETE') {
-    await redis.del(`sub:${personId}`)
+    const { id } = req.body || {}
+    if (!id) return res.status(400).json({ error: 'Missing id' })
+    const people = (await redis.get('people')) || []
+    await redis.set('people', people.filter((p) => p.id !== id))
+    await redis.del(`tasks:${id}`)
+    await redis.del(`sub:${id}`)
     return res.status(200).json({ ok: true })
   }
 

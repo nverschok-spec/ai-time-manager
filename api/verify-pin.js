@@ -1,9 +1,11 @@
-// Проверка общего PIN-кода и выдача токена доступа к остальным эндпоинтам.
-// Токен — HMAC от срока действия, подписанный APP_PIN как секретом:
-// без знания PIN его не подделать, и не нужна база данных для хранения сессий.
+// Шаг 1 входа: проверка общего PIN-кода семьи -> короткоживущий preToken +
+// список уже зарегистрированных людей, чтобы клиент показал экран "кто ты".
 
 import crypto from 'node:crypto'
-import { issueToken } from './_lib/auth.js'
+import { Redis } from '@upstash/redis'
+import { issuePreToken } from './_lib/auth.js'
+
+const redis = new Redis({ url: process.env.KV_REST_API_URL, token: process.env.KV_REST_API_TOKEN })
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -29,5 +31,8 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Invalid PIN' })
   }
 
-  return res.status(200).json(issueToken(appPin))
+  const people = (await redis.get('people')) || []
+  const { preToken, expiresAt } = issuePreToken(appPin)
+
+  return res.status(200).json({ preToken, expiresAt, people })
 }

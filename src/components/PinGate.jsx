@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Delete } from 'lucide-react'
+import { Delete, Plus } from 'lucide-react'
 import Logo from './Logo'
 
 const STORAGE_KEY = 'ai-time-manager-auth'
@@ -22,6 +22,16 @@ export function getStoredToken() {
   }
 }
 
+export function getStoredPerson() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return null
+    return JSON.parse(raw).person || null
+  } catch {
+    return null
+  }
+}
+
 export function clearStoredToken() {
   localStorage.removeItem(STORAGE_KEY)
 }
@@ -29,12 +39,16 @@ export function clearStoredToken() {
 export default function PinGate({ children }) {
   const { t } = useTranslation()
   const [unlocked, setUnlocked] = useState(() => Boolean(getStoredToken()))
+  const [step, setStep] = useState('pin') // 'pin' | 'person'
   const [pin, setPin] = useState('')
   const [error, setError] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [preToken, setPreToken] = useState(null)
+  const [people, setPeople] = useState([])
+  const [newName, setNewName] = useState('')
 
   useEffect(() => {
-    if (pin.length !== PIN_LENGTH || isSubmitting) return
+    if (step !== 'pin' || pin.length !== PIN_LENGTH || isSubmitting) return
 
     let cancelled = false
     setIsSubmitting(true)
@@ -52,9 +66,10 @@ export default function PinGate({ children }) {
           setPin('')
           return
         }
-        const { token, expiresAt } = await res.json()
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ token, expiresAt }))
-        setUnlocked(true)
+        const data = await res.json()
+        setPreToken(data.preToken)
+        setPeople(data.people || [])
+        setStep('person')
       })
       .catch(() => {
         if (!cancelled) {
@@ -70,7 +85,7 @@ export default function PinGate({ children }) {
       cancelled = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pin])
+  }, [pin, step])
 
   function handleKeyPress(key) {
     if (isSubmitting) return
@@ -83,7 +98,82 @@ export default function PinGate({ children }) {
     setPin((p) => (p.length < PIN_LENGTH ? p + key : p))
   }
 
+  async function selectPerson(personId, name) {
+    if (isSubmitting) return
+    setIsSubmitting(true)
+    setError(false)
+    try {
+      const res = await fetch('/api/select-person', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${preToken}` },
+        body: JSON.stringify(personId ? { personId } : { name })
+      })
+      if (!res.ok) {
+        setError(true)
+        return
+      }
+      const { token, expiresAt, person } = await res.json()
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ token, expiresAt, person }))
+      setUnlocked(true)
+    } catch {
+      setError(true)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  function handleAddNew(e) {
+    e.preventDefault()
+    const trimmed = newName.trim()
+    if (!trimmed) return
+    selectPerson(null, trimmed)
+  }
+
   if (unlocked) return children
+
+  if (step === 'person') {
+    return (
+      <div className="flex min-h-dvh flex-col items-center justify-center gap-8 bg-app-bg px-6 py-10 text-white">
+        <div className="flex flex-col items-center gap-4">
+          <Logo size={56} />
+          <h1 className="text-lg font-semibold">{t('pin.who_are_you')}</h1>
+        </div>
+
+        <div className="w-full max-w-xs space-y-2">
+          {people.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => selectPerson(p.id)}
+              disabled={isSubmitting}
+              className="flex w-full items-center gap-3 rounded-xl bg-app-card px-4 py-3 text-left transition-colors hover:bg-app-cardMuted disabled:opacity-50"
+            >
+              <span className="h-3 w-3 shrink-0 rounded-full" style={{ backgroundColor: p.color }} />
+              <span className="text-sm font-medium">{p.name}</span>
+            </button>
+          ))}
+
+          <form onSubmit={handleAddNew} className="flex gap-2 pt-2">
+            <input
+              type="text"
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              placeholder={t('pin.new_person')}
+              className="min-w-0 flex-1 rounded-xl bg-app-card px-3 py-2.5 text-sm text-white placeholder:text-muted outline-none focus:ring-2 focus:ring-brand-cta"
+            />
+            <button
+              type="submit"
+              disabled={isSubmitting || !newName.trim()}
+              className="flex shrink-0 items-center justify-center rounded-xl bg-brand-cta px-3 text-app-bg disabled:opacity-40"
+            >
+              <Plus size={18} />
+            </button>
+          </form>
+          {error && <p className="text-center text-sm text-priority-high">{t('pin.error')}</p>}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center gap-10 bg-app-bg px-6 py-10 text-white">

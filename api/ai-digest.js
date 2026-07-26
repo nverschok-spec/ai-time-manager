@@ -2,7 +2,7 @@
 // Тот же ключ и авторизация, что и /api/ai-parse; не логировать тело запроса.
 
 import Anthropic from '@anthropic-ai/sdk'
-import { requireAuth } from './_lib/auth.js'
+import { requirePersonAuth } from './_lib/auth.js'
 
 function buildSystemPrompt() {
   return `You write a very short daily briefing for a personal scheduling app.
@@ -22,7 +22,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'ANTHROPIC_API_KEY is not configured' })
   }
 
-  if (!requireAuth(req, res, process.env.APP_PIN)) return
+  if (!requirePersonAuth(req, res, process.env.APP_PIN)) return
 
   const { tasks, locale } = req.body || {}
   if (!Array.isArray(tasks)) {

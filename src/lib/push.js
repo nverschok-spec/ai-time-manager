@@ -1,3 +1,5 @@
+import { getStoredToken } from '../components/PinGate'
+
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY
 
 function urlBase64ToUint8Array(base64String) {
@@ -5,6 +7,11 @@ function urlBase64ToUint8Array(base64String) {
   const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/')
   const rawData = atob(base64)
   return Uint8Array.from([...rawData].map((c) => c.charCodeAt(0)))
+}
+
+function authHeaders() {
+  const token = getStoredToken()
+  return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
 export function isPushSupported() {
@@ -25,7 +32,7 @@ export function isStandalone() {
   return window.matchMedia?.('(display-mode: standalone)').matches || window.navigator.standalone === true
 }
 
-export async function subscribeToPush(deviceId) {
+export async function subscribeToPush() {
   const permission = await Notification.requestPermission()
   if (permission !== 'granted') throw new Error('permission_denied')
 
@@ -37,37 +44,36 @@ export async function subscribeToPush(deviceId) {
 
   const res = await fetch('/api/push-subscribe', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ deviceId, subscription })
+    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    body: JSON.stringify({ subscription })
   })
   if (!res.ok) throw new Error('subscribe_failed')
 
   return subscription
 }
 
-export async function unsubscribeFromPush(deviceId) {
+export async function unsubscribeFromPush() {
   const registration = await navigator.serviceWorker.ready
   const subscription = await registration.pushManager.getSubscription()
   if (subscription) await subscription.unsubscribe()
 
   await fetch('/api/push-subscribe', {
     method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ deviceId })
+    headers: { 'Content-Type': 'application/json', ...authHeaders() }
   })
 }
 
 // sendAt is computed client-side (browser's own timezone) so the server never
 // has to reinterpret a local date/time string in its own (UTC) timezone.
-export async function scheduleReminder({ deviceId, taskId, title, date, startTime, offsetMinutes = 0 }) {
+export async function scheduleReminder({ taskId, title, date, startTime, offsetMinutes = 0 }) {
   const sendAt = new Date(`${date}T${startTime}:00`).getTime() - offsetMinutes * 60000
   if (Number.isNaN(sendAt) || sendAt <= Date.now()) return
 
   try {
     await fetch('/api/push-schedule', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ deviceId, taskId, title, sendAt })
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+      body: JSON.stringify({ taskId, title, sendAt })
     })
   } catch {
     // best-effort — a missed reminder schedule shouldn't block task creation

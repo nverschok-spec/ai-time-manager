@@ -1,75 +1,117 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { scheduleReminder } from '../lib/push'
-import { nextAvailableColor } from '../lib/people'
+import { getStoredToken } from '../components/PinGate'
 
 function makeId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 }
 
+function authHeaders() {
+  const token = getStoredToken()
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
+
+// Fire-and-forget by design: the local state is already updated optimistically
+// before this is called, so a network hiccup just means the next loadAll()
+// (on focus/interval) reconciles from the server rather than blocking the UI.
+function apiFetch(url, options = {}) {
+  return fetch(url, {
+    ...options,
+    headers: { 'Content-Type': 'application/json', ...authHeaders(), ...options.headers }
+  })
+}
+
 export const useAppStore = create(
   persist(
     (set, get) => ({
+      person: null,
       tasks: [],
-      suggestions: [],
-      lastReviewDate: null,
-      deviceId: makeId(),
-      pushEnabled: false,
       people: [],
       shoppingItems: [],
+      suggestions: [],
+      lastReviewDate: null,
+      pushEnabled: false,
+      dataLoaded: false,
 
+      setPerson: (person) => set({ person }),
       setLastReviewDate: (dateKey) => set({ lastReviewDate: dateKey }),
       setPushEnabled: (pushEnabled) => set({ pushEnabled }),
 
-      addPerson: (name) => {
-        const trimmed = name.trim()
-        if (!trimmed) return
-        set((state) => ({
-          people: [
-            ...state.people,
-            { id: makeId(), name: trimmed, color: nextAvailableColor(state.people) }
-          ]
-        }))
+      // Pulls this person's tasks, the household roster, and the shared
+      // shopping list from the server. Called on login, on tab focus, and
+      // on an interval — safe to call as often as needed.
+      loadAll: async () => {
+        try {
+          const [tasksRes, peopleRes, shoppingRes] = await Promise.all([
+            apiFetch('/api/tasks').then((r) => r.json()),
+            apiFetch('/api/people').then((r) => r.json()),
+            apiFetch('/api/shopping').then((r) => r.json())
+          ])
+          set({
+            tasks: tasksRes.tasks || [],
+            people: peopleRes.people || [],
+            shoppingItems: shoppingRes.items || [],
+            dataLoaded: true
+          })
+        } catch {
+          // offline / transient error — keep whatever's already in memory
+        }
       },
 
-      removePerson: (id) =>
-        set((state) => ({
-          people: state.people.filter((p) => p.id !== id),
-          tasks: state.tasks.map((t) => (t.assigneeId === id ? { ...t, assigneeId: undefined } : t))
-        })),
+      removePerson: (id) => {
+        set((state) => ({ people: state.people.filter((p) => p.id !== id) }))
+        apiFetch('/api/people', { method: 'DELETE', body: JSON.stringify({ id }) }).catch(() => {})
+      },
 
       addShoppingItem: (text) => {
         const trimmed = text.trim()
         if (!trimmed) return
-        set((state) => ({
-          shoppingItems: [...state.shoppingItems, { id: makeId(), text: trimmed, done: false }]
-        }))
+        const newItem = { id: makeId(), text: trimmed, done: false }
+        set((state) => ({ shoppingItems: [...state.shoppingItems, newItem] }))
+        apiFetch('/api/shopping', { method: 'POST', body: JSON.stringify({ item: newItem }) }).catch(() => {})
       },
 
-      toggleShoppingItem: (id) =>
+      toggleShoppingItem: (id) => {
         set((state) => ({
           shoppingItems: state.shoppingItems.map((i) => (i.id === id ? { ...i, done: !i.done } : i))
-        })),
+        }))
+        const item = get().shoppingItems.find((i) => i.id === id)
+        if (item) {
+          apiFetch('/api/shopping', {
+            method: 'PUT',
+            body: JSON.stringify({ id, patch: { done: item.done } })
+          }).catch(() => {})
+        }
+      },
 
-      removeShoppingItem: (id) =>
-        set((state) => ({ shoppingItems: state.shoppingItems.filter((i) => i.id !== id) })),
+      removeShoppingItem: (id) => {
+        set((state) => ({ shoppingItems: state.shoppingItems.filter((i) => i.id !== id) }))
+        apiFetch('/api/shopping', { method: 'DELETE', body: JSON.stringify({ id }) }).catch(() => {})
+      },
 
-      restoreShoppingItem: (item) =>
-        set((state) => ({ shoppingItems: [...state.shoppingItems, item] })),
+      restoreShoppingItem: (item) => {
+        set((state) => ({ shoppingItems: [...state.shoppingItems, item] }))
+        apiFetch('/api/shopping', { method: 'POST', body: JSON.stringify({ item }) }).catch(() => {})
+      },
 
-      clearCompletedShopping: () =>
-        set((state) => ({ shoppingItems: state.shoppingItems.filter((i) => !i.done) })),
+      clearCompletedShopping: () => {
+        const done = get().shoppingItems.filter((i) => i.done)
+        set((state) => ({ shoppingItems: state.shoppingItems.filter((i) => !i.done) }))
+        for (const item of done) {
+          apiFetch('/api/shopping', { method: 'DELETE', body: JSON.stringify({ id: item.id }) }).catch(() => {})
+        }
+      },
 
       addTask: (task) => {
         const id = makeId()
-        set((state) => ({
-          tasks: [...state.tasks, { id, done: false, ...task }]
-        }))
+        const newTask = { id, done: false, ...task }
+        set((state) => ({ tasks: [...state.tasks, newTask] }))
+        apiFetch('/api/tasks', { method: 'POST', body: JSON.stringify({ task: newTask }) }).catch(() => {})
 
-        const { pushEnabled, deviceId } = get()
+        const { pushEnabled } = get()
         if (pushEnabled && !task.recurrence && task.date && task.startTime) {
           scheduleReminder({
-            deviceId,
             taskId: id,
             title: task.title,
             date: task.date,
@@ -79,14 +121,21 @@ export const useAppStore = create(
         }
       },
 
-      toggleTask: (id) =>
+      toggleTask: (id) => {
         set((state) => ({
           tasks: state.tasks.map((t) => (t.id === id ? { ...t, done: !t.done } : t))
-        })),
+        }))
+        const task = get().tasks.find((t) => t.id === id)
+        if (task) {
+          apiFetch('/api/tasks', { method: 'PUT', body: JSON.stringify({ id, patch: { done: task.done } }) }).catch(
+            () => {}
+          )
+        }
+      },
 
       // For recurring tasks: completion is tracked per occurrence date, not on
       // the template itself, so one series can be done on Monday and not Tuesday.
-      toggleTaskOccurrence: (id, dateKey) =>
+      toggleTaskOccurrence: (id, dateKey) => {
         set((state) => ({
           tasks: state.tasks.map((t) => {
             if (t.id !== id) return t
@@ -99,22 +148,31 @@ export const useAppStore = create(
                 : [...completedDates, dateKey]
             }
           })
-        })),
+        }))
+        const task = get().tasks.find((t) => t.id === id)
+        if (task) {
+          apiFetch('/api/tasks', {
+            method: 'PUT',
+            body: JSON.stringify({ id, patch: { completedDates: task.completedDates } })
+          }).catch(() => {})
+        }
+      },
 
-      updateTask: (id, patch) =>
+      updateTask: (id, patch) => {
         set((state) => ({
           tasks: state.tasks.map((t) => (t.id === id ? { ...t, ...patch } : t))
-        })),
+        }))
+        apiFetch('/api/tasks', { method: 'PUT', body: JSON.stringify({ id, patch }) }).catch(() => {})
+      },
 
       // Lets an already-created task opt into (or change) its reminder —
       // addTask only schedules once, at creation time.
       setTaskReminder: (id, offsetMinutes) => {
         get().updateTask(id, { reminderOffsetMinutes: offsetMinutes })
         const task = get().tasks.find((t) => t.id === id)
-        const { pushEnabled, deviceId } = get()
+        const { pushEnabled } = get()
         if (task && pushEnabled && !task.recurrence && task.date && task.startTime) {
           scheduleReminder({
-            deviceId,
             taskId: id,
             title: task.title,
             date: task.date,
@@ -129,7 +187,7 @@ export const useAppStore = create(
       editTask: (id, patch) => {
         get().updateTask(id, patch)
         const task = get().tasks.find((t) => t.id === id)
-        const { pushEnabled, deviceId } = get()
+        const { pushEnabled } = get()
         if (
           task &&
           pushEnabled &&
@@ -139,7 +197,6 @@ export const useAppStore = create(
           task.reminderOffsetMinutes != null
         ) {
           scheduleReminder({
-            deviceId,
             taskId: id,
             title: task.title,
             date: task.date,
@@ -149,12 +206,17 @@ export const useAppStore = create(
         }
       },
 
-      removeTask: (id) =>
-        set((state) => ({ tasks: state.tasks.filter((t) => t.id !== id) })),
+      removeTask: (id) => {
+        set((state) => ({ tasks: state.tasks.filter((t) => t.id !== id) }))
+        apiFetch('/api/tasks', { method: 'DELETE', body: JSON.stringify({ id }) }).catch(() => {})
+      },
 
       // Puts a just-deleted task back exactly as it was (same id/done/etc) —
       // pairs with the undo snackbar in CalendarView.
-      restoreTask: (task) => set((state) => ({ tasks: [...state.tasks, task] })),
+      restoreTask: (task) => {
+        set((state) => ({ tasks: [...state.tasks, task] }))
+        apiFetch('/api/tasks', { method: 'POST', body: JSON.stringify({ task }) }).catch(() => {})
+      },
 
       setSuggestions: (suggestions) => set({ suggestions }),
 
@@ -181,25 +243,46 @@ export const useAppStore = create(
         set((state) => ({ suggestions: state.suggestions.filter((_, i) => i !== index) })),
 
       exportData: () => {
-        const { tasks } = get()
-        return JSON.stringify({ version: 1, exportedAt: new Date().toISOString(), tasks }, null, 2)
+        const { tasks, shoppingItems } = get()
+        return JSON.stringify(
+          { version: 2, exportedAt: new Date().toISOString(), tasks, shoppingItems },
+          null,
+          2
+        )
       },
 
+      // Deliberately not async: JSON.parse must throw synchronously so the
+      // caller's try/catch (SettingsPanel's file-read handler) can catch it.
+      // The server pushes below are fire-and-forget, same as every other
+      // mutation in this store.
       importData: (json) => {
         const parsed = JSON.parse(json)
         if (!Array.isArray(parsed.tasks)) throw new Error('Invalid file: missing tasks array')
-        set({ tasks: parsed.tasks })
+        set({
+          tasks: parsed.tasks,
+          shoppingItems: Array.isArray(parsed.shoppingItems) ? parsed.shoppingItems : get().shoppingItems
+        })
+        for (const task of parsed.tasks) {
+          apiFetch('/api/tasks', { method: 'POST', body: JSON.stringify({ task }) }).catch(() => {})
+        }
+        for (const item of parsed.shoppingItems || []) {
+          apiFetch('/api/shopping', { method: 'POST', body: JSON.stringify({ item }) }).catch(() => {})
+        }
       }
     }),
     {
-      name: 'ai-time-manager-store',
+      // Deliberately a NEW key, distinct from the old 'ai-time-manager-store'
+      // (which held tasks/people/shopping pre-sync) — migrateLegacyData.js
+      // reads that old key raw. If this store reused the same name, the
+      // first `set()` call here would overwrite it with the new (smaller)
+      // shape before migration ever got to read the legacy tasks out of it.
+      name: 'ai-time-manager-prefs',
+      // Only per-device UI state persists locally now — tasks/people/shopping
+      // live on the server (see loadAll) so they can't drift out of sync
+      // with what other household members see.
       partialize: (state) => ({
-        tasks: state.tasks,
         lastReviewDate: state.lastReviewDate,
-        deviceId: state.deviceId,
-        pushEnabled: state.pushEnabled,
-        people: state.people,
-        shoppingItems: state.shoppingItems
+        pushEnabled: state.pushEnabled
       })
     }
   )

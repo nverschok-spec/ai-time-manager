@@ -6,7 +6,7 @@
 // - ключ читается только из process.env, никогда не возвращается клиенту
 
 import Anthropic from '@anthropic-ai/sdk'
-import { requireAuth } from './_lib/auth.js'
+import { requirePersonAuth } from './_lib/auth.js'
 
 const SUGGESTION_SCHEMA = {
   type: 'object',
@@ -61,7 +61,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'ANTHROPIC_API_KEY is not configured' })
   }
 
-  if (!requireAuth(req, res, process.env.APP_PIN)) return
+  if (!requirePersonAuth(req, res, process.env.APP_PIN)) return
 
   const { text, scheduleContext, today, image } = req.body || {}
   if (!text && !image?.base64) {

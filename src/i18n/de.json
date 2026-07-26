@@ -1,6 +1,7 @@
 {
   "app": {
-    "title": "KI-Zeitmanager"
+    "title": "KI-Zeitmanager",
+    "loading": "Wird geladen…"
   },
   "nav": {
     "today": "Heute",
@@ -33,7 +34,8 @@
     "export_calendar": "Zu Apple Calendar hinzufügen",
     "privacy_note": "Der Aufgabentext (und ein angehängtes Foto) wird zur Analyse kurzzeitig an die KI gesendet und nicht gespeichert.",
     "people": "Wer nutzt das hier",
-    "add_person": "Name der Person"
+    "you": "du",
+    "people_hint": "Eine neue Person wird über den PIN-Eingabebildschirm hinzugefügt."
   },
   "calendar": {
     "add_task": "Aufgabe",
@@ -57,10 +59,7 @@
     "cancel": "Abbrechen",
     "undo": "Rückgängig",
     "overdue_message": "{{count}} unerledigte Aufgaben aus vergangenen Tagen",
-    "overdue_move": "Auf heute verschieben",
-    "assignee": "Für",
-    "assignee_none": "Keine Markierung",
-    "assignee_all": "Alle"
+    "overdue_move": "Auf heute verschieben"
   },
   "priority": {
     "high": "Hoch",
@@ -100,6 +99,8 @@
   "pin": {
     "title": "Code eingeben",
     "delete": "Ziffer löschen",
-    "error": "Falscher Code"
+    "error": "Falscher Code",
+    "who_are_you": "Wer bist du?",
+    "new_person": "Neue Person — Name"
   }
 }

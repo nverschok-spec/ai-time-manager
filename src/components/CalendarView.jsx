@@ -31,7 +31,6 @@ function TaskForm({ task, defaultDate, onCancel }) {
   const addTask = useAppStore((s) => s.addTask)
   const editTask = useAppStore((s) => s.editTask)
   const pushEnabled = useAppStore((s) => s.pushEnabled)
-  const people = useAppStore((s) => s.people)
   const [title, setTitle] = useState(task?.title ?? '')
   const [notes, setNotes] = useState(task?.notes ?? '')
   const [date, setDate] = useState(task?.date ?? defaultDate)
@@ -40,7 +39,6 @@ function TaskForm({ task, defaultDate, onCancel }) {
   const [priority, setPriority] = useState(task?.priority ?? 'medium')
   const [recurrence, setRecurrence] = useState(task?.recurrence ?? 'none')
   const [reminderOffsetMinutes, setReminderOffsetMinutes] = useState(task?.reminderOffsetMinutes ?? 15)
-  const [assigneeId, setAssigneeId] = useState(task?.assigneeId ?? '')
 
   function handleSubmit(e) {
     e.preventDefault()
@@ -53,8 +51,7 @@ function TaskForm({ task, defaultDate, onCancel }) {
       durationMinutes: Number(durationMinutes) || 30,
       priority,
       recurrence: recurrence === 'none' ? undefined : recurrence,
-      reminderOffsetMinutes,
-      assigneeId: assigneeId || undefined
+      reminderOffsetMinutes
     }
     if (task) {
       editTask(task.id, payload)
@@ -129,35 +126,6 @@ function TaskForm({ task, defaultDate, onCancel }) {
           })}
         </div>
       </div>
-      {people.length > 0 && (
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs text-slate-400">{t('calendar.assignee')}</span>
-          <div className="inline-flex rounded-lg bg-app-bg p-1 gap-1 flex-wrap">
-            <button
-              type="button"
-              onClick={() => setAssigneeId('')}
-              className={`rounded-md px-2 py-1 text-xs transition-colors ${
-                assigneeId === '' ? 'bg-app-cardMuted text-slate-100' : 'text-slate-500 hover:text-slate-300'
-              }`}
-            >
-              {t('calendar.assignee_none')}
-            </button>
-            {people.map((p) => (
-              <button
-                key={p.id}
-                type="button"
-                onClick={() => setAssigneeId(p.id)}
-                className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors ${
-                  assigneeId === p.id ? 'bg-app-cardMuted text-slate-100' : 'text-slate-500 hover:text-slate-300'
-                }`}
-              >
-                <span className="h-2 w-2 rounded-full" style={{ backgroundColor: p.color }} />
-                {p.name}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
       <div className="flex items-center gap-2">
         <span className="text-xs text-slate-400">{t('calendar.repeat')}</span>
         <div className="inline-flex flex-wrap rounded-lg bg-app-bg p-1 gap-1">
@@ -223,9 +191,7 @@ export default function CalendarView() {
   const removeTask = useAppStore((s) => s.removeTask)
   const restoreTask = useAppStore((s) => s.restoreTask)
   const pushEnabled = useAppStore((s) => s.pushEnabled)
-  const people = useAppStore((s) => s.people)
   const [view, setView] = useState('day')
-  const [personFilter, setPersonFilter] = useState('')
   const [showAddForm, setShowAddForm] = useState(false)
   const [editingTask, setEditingTask] = useState(null)
   const [timerTask, setTimerTask] = useState(null)
@@ -246,12 +212,10 @@ export default function CalendarView() {
   const tasksByDate = useMemo(() => {
     const map = expandOccurrences(tasks, visibleDateKeys)
     for (const key of visibleDateKeys) {
-      map[key] = map[key]
-        .filter((t) => !personFilter || t.assigneeId === personFilter)
-        .sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''))
+      map[key].sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''))
     }
     return map
-  }, [tasks, visibleDateKeys, personFilter])
+  }, [tasks, visibleDateKeys])
 
   function handleToggle(task) {
     if (task.recurrence) {
@@ -334,33 +298,6 @@ export default function CalendarView() {
         )}
       </div>
 
-      {view !== 'shopping' && people.length > 0 && (
-        <div className="flex items-center gap-1 flex-wrap">
-          <button
-            type="button"
-            onClick={() => setPersonFilter('')}
-            className={`rounded-full px-2.5 py-1 text-xs transition-colors ${
-              personFilter === '' ? 'bg-app-cardMuted text-slate-100' : 'text-slate-500 hover:text-slate-300'
-            }`}
-          >
-            {t('calendar.assignee_all')}
-          </button>
-          {people.map((p) => (
-            <button
-              key={p.id}
-              type="button"
-              onClick={() => setPersonFilter(p.id)}
-              className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-xs transition-colors ${
-                personFilter === p.id ? 'bg-app-cardMuted text-slate-100' : 'text-slate-500 hover:text-slate-300'
-              }`}
-            >
-              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: p.color }} />
-              {p.name}
-            </button>
-          ))}
-        </div>
-      )}
-
       {view === 'shopping' && <ShoppingList />}
 
       {showAddForm && view !== 'shopping' && (
@@ -399,7 +336,6 @@ export default function CalendarView() {
                 {dayTasks.map((task) => {
                   const meta = priorityMeta(task.priority)
                   const Icon = meta.icon
-                  const assignee = people.find((p) => p.id === task.assigneeId)
                   const streak = task.recurrence ? computeStreak(task, todayKey) : 0
                   return (
                     <li key={`${task.id}_${task.occurrenceDate}`}>
@@ -421,13 +357,6 @@ export default function CalendarView() {
                             </span>
                           </div>
                           <div className="flex items-center gap-2 pl-7">
-                            {assignee && (
-                              <span
-                                className="h-2 w-2 shrink-0 rounded-full"
-                                title={assignee.name}
-                                style={{ backgroundColor: assignee.color }}
-                              />
-                            )}
                             {task.recurrence && <Repeat size={13} className="shrink-0 text-slate-500" />}
                             {streak > 1 && (
                               <span className="flex shrink-0 items-center gap-0.5 text-xs text-priority-medium">

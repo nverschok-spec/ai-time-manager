@@ -6,7 +6,6 @@ import { isPushSupported, isIos, isStandalone, subscribeToPush, unsubscribeFromP
 
 export default function PushSettings() {
   const { t } = useTranslation()
-  const deviceId = useAppStore((s) => s.deviceId)
   const pushEnabled = useAppStore((s) => s.pushEnabled)
   const setPushEnabled = useAppStore((s) => s.setPushEnabled)
   const [error, setError] = useState(false)
@@ -18,7 +17,7 @@ export default function PushSettings() {
   async function handleEnable() {
     setError(false)
     try {
-      await subscribeToPush(deviceId)
+      await subscribeToPush()
       setPushEnabled(true)
     } catch {
       setError(true)
@@ -26,7 +25,7 @@ export default function PushSettings() {
   }
 
   async function handleDisable() {
-    await unsubscribeFromPush(deviceId)
+    await unsubscribeFromPush()
     setPushEnabled(false)
   }
 

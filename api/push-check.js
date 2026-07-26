@@ -20,7 +20,7 @@ export default async function handler(req, res) {
     const reminder = await redis.get(key)
     if (!reminder || reminder.sendAt > now) continue
 
-    const subscription = await redis.get(`sub:${reminder.deviceId}`)
+    const subscription = await redis.get(`sub:${reminder.personId}`)
     if (subscription) {
       try {
         await webpush.sendNotification(
@@ -30,7 +30,7 @@ export default async function handler(req, res) {
         sent++
       } catch (err) {
         if (err.statusCode === 404 || err.statusCode === 410) {
-          await redis.del(`sub:${reminder.deviceId}`)
+          await redis.del(`sub:${reminder.personId}`)
         }
       }
     }

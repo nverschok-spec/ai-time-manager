@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Settings as SettingsIcon } from 'lucide-react'
 import LanguageSwitcher from './components/LanguageSwitcher'
@@ -10,15 +10,47 @@ import SettingsPanel from './components/SettingsPanel'
 import CalendarView from './components/CalendarView'
 import VoiceAiInput from './components/VoiceAiInput'
 import AiSuggestionCard from './components/AiSuggestionCard'
+import { getStoredPerson } from './components/PinGate'
 import { useAppStore } from './store/useAppStore'
 import { parseUserInput } from './services/ai'
+import { migrateLegacyDataIfNeeded } from './lib/migrateLegacyData'
+
+const REFRESH_INTERVAL_MS = 30000
 
 export default function App() {
   const { t } = useTranslation()
   const tasks = useAppStore((s) => s.tasks)
+  const person = useAppStore((s) => s.person)
+  const dataLoaded = useAppStore((s) => s.dataLoaded)
+  const setPerson = useAppStore((s) => s.setPerson)
+  const loadAll = useAppStore((s) => s.loadAll)
   const setSuggestions = useAppStore((s) => s.setSuggestions)
   const [isLoading, setIsLoading] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+
+  useEffect(() => {
+    setPerson(getStoredPerson())
+    ;(async () => {
+      await migrateLegacyDataIfNeeded()
+      await loadAll()
+    })()
+  }, [loadAll, setPerson])
+
+  // Keeps the shared shopping list (and the other person's edits generally)
+  // in sync without needing a websocket — cheap enough at this scale.
+  useEffect(() => {
+    function handleVisibility() {
+      if (document.visibilityState === 'visible') loadAll()
+    }
+    document.addEventListener('visibilitychange', handleVisibility)
+    const interval = setInterval(() => {
+      if (document.visibilityState === 'visible') loadAll()
+    }, REFRESH_INTERVAL_MS)
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibility)
+      clearInterval(interval)
+    }
+  }, [loadAll])
 
   async function handleSubmit({ text, image }) {
     setIsLoading(true)
@@ -32,6 +64,14 @@ export default function App() {
     }
   }
 
+  if (!dataLoaded) {
+    return (
+      <div className="flex min-h-dvh items-center justify-center bg-app-bg text-sm text-muted">
+        {t('app.loading')}
+      </div>
+    )
+  }
+
   return (
     <div className="flex min-h-dvh flex-col bg-app-bg text-slate-100">
       <MorningReview />
@@ -42,7 +82,10 @@ export default function App() {
           <header className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Logo />
-              <h1 className="text-lg font-semibold">{t('app.title')}</h1>
+              <div>
+                <h1 className="text-lg font-semibold leading-tight">{t('app.title')}</h1>
+                {person && <p className="text-xs leading-tight text-muted">{person.name}</p>}
+              </div>
             </div>
             <div className="flex items-center gap-2">
               <LanguageSwitcher />
