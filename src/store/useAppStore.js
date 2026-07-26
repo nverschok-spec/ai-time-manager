@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { scheduleReminder } from '../lib/push'
-import { getStoredToken } from '../components/PinGate'
+import { getStoredToken, clearStoredToken } from '../components/PinGate'
 
 function makeId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
@@ -15,10 +15,21 @@ function authHeaders() {
 // Fire-and-forget by design: the local state is already updated optimistically
 // before this is called, so a network hiccup just means the next loadAll()
 // (on focus/interval) reconciles from the server rather than blocking the UI.
+//
+// A 401 means the stored token is stale (old token format from before this
+// sync rewrite, expired, or the person was removed) — there's no local state
+// worth keeping in that case, so drop straight back to the PIN screen instead
+// of silently showing an empty, non-functional app.
 function apiFetch(url, options = {}) {
   return fetch(url, {
     ...options,
     headers: { 'Content-Type': 'application/json', ...authHeaders(), ...options.headers }
+  }).then((res) => {
+    if (res.status === 401) {
+      clearStoredToken()
+      window.location.reload()
+    }
+    return res
   })
 }
 
