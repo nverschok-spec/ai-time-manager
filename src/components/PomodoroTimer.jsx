@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Pause, Play, RotateCcw, X } from 'lucide-react'
 import { vibrate, HAPTIC } from '../lib/haptics'
+import { makeFocusSession } from '../lib/focusStats'
+import { useAppStore } from '../store/useAppStore'
 import ProgressCircle from './ProgressCircle'
 
 const FOCUS_SECONDS = 25 * 60
@@ -32,6 +34,7 @@ function formatTime(totalSeconds) {
 
 export default function PomodoroTimer({ task, onClose }) {
   const { t } = useTranslation()
+  const addFocusSession = useAppStore((s) => s.addFocusSession)
   const [phase, setPhase] = useState('focus')
   const [remaining, setRemaining] = useState(FOCUS_SECONDS)
   const [isRunning, setIsRunning] = useState(false)
@@ -47,14 +50,17 @@ export default function PomodoroTimer({ task, onClose }) {
           playBeep()
           vibrate(HAPTIC.success)
           setIsRunning(false)
-          setPhase((prevPhase) => (prevPhase === 'focus' ? 'break' : 'focus'))
+          setPhase((prevPhase) => {
+            if (prevPhase === 'focus') addFocusSession(makeFocusSession(task))
+            return prevPhase === 'focus' ? 'break' : 'focus'
+          })
           return prev
         }
         return prev - 1
       })
     }, 1000)
     return () => clearInterval(intervalRef.current)
-  }, [isRunning])
+  }, [isRunning, addFocusSession, task])
 
   useEffect(() => {
     setRemaining(phase === 'focus' ? FOCUS_SECONDS : BREAK_SECONDS)

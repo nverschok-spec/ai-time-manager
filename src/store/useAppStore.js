@@ -44,12 +44,19 @@ export const useAppStore = create(
       lastReviewDate: null,
       lastWeeklyReviewWeek: null,
       pushEnabled: false,
+      focusSessions: [],
       dataLoaded: false,
 
       setPerson: (person) => set({ person }),
       setLastReviewDate: (dateKey) => set({ lastReviewDate: dateKey }),
       setLastWeeklyReviewWeek: (weekKey) => set({ lastWeeklyReviewWeek: weekKey }),
       setPushEnabled: (pushEnabled) => set({ pushEnabled }),
+
+      // Local-only, capped at the most recent 200 runs — a Pomodoro session
+      // belongs to whichever device it ran on, not something that needs to
+      // match across a person's devices the way tasks/shopping do.
+      addFocusSession: (session) =>
+        set((state) => ({ focusSessions: [...state.focusSessions, session].slice(-200) })),
 
       // Pulls this person's tasks, the household roster, and the shared
       // shopping list from the server. Called on login, on tab focus, and
@@ -296,7 +303,8 @@ export const useAppStore = create(
       partialize: (state) => ({
         lastReviewDate: state.lastReviewDate,
         lastWeeklyReviewWeek: state.lastWeeklyReviewWeek,
-        pushEnabled: state.pushEnabled
+        pushEnabled: state.pushEnabled,
+        focusSessions: state.focusSessions
       })
     }
   )

@@ -82,7 +82,8 @@
     "today": "Today",
     "week": "This week",
     "by_priority": "By priority",
-    "activity": "12-week activity"
+    "activity": "12-week activity",
+    "focus": "Focus: {{today}} min today · {{week}} min this week"
   },
   "pomodoro": {
     "focus": "Focus",

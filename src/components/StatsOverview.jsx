@@ -1,14 +1,18 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Timer } from 'lucide-react'
 import { useAppStore } from '../store/useAppStore'
 import { PRIORITY_ORDER, priorityMeta } from '../lib/priority'
 import { expandOccurrences } from '../lib/occurrences'
+import { computeFocusStats } from '../lib/focusStats'
 import ProgressCircle from './ProgressCircle'
 import { toDateKey } from '../lib/date'
 
 export default function StatsOverview() {
   const { t } = useTranslation()
   const tasks = useAppStore((s) => s.tasks)
+  const focusSessions = useAppStore((s) => s.focusSessions)
+  const focusStats = useMemo(() => computeFocusStats(focusSessions), [focusSessions])
 
   const { today, week, byPriority } = useMemo(() => {
     const todayKey = toDateKey(new Date())
@@ -87,6 +91,15 @@ export default function StatsOverview() {
               )
             })}
           </div>
+        </div>
+      )}
+
+      {focusStats.weekMinutes > 0 && (
+        <div className="flex items-center gap-1.5 border-t border-white/5 pt-3 text-xs text-slate-400">
+          <Timer size={13} className="shrink-0 text-brand-cta" />
+          <span>
+            {t('stats.focus', { today: focusStats.todayMinutes, week: focusStats.weekMinutes })}
+          </span>
         </div>
       )}
     </div>
