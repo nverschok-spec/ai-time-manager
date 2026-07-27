@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Pause, Play, RotateCcw, X } from 'lucide-react'
+import { vibrate, HAPTIC } from '../lib/haptics'
 import ProgressCircle from './ProgressCircle'
 
 const FOCUS_SECONDS = 25 * 60
@@ -44,6 +45,7 @@ export default function PomodoroTimer({ task, onClose }) {
       setRemaining((prev) => {
         if (prev <= 1) {
           playBeep()
+          vibrate(HAPTIC.success)
           setIsRunning(false)
           setPhase((prevPhase) => (prevPhase === 'focus' ? 'break' : 'focus'))
           return prev

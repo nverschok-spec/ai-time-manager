@@ -4,6 +4,7 @@ import { Settings as SettingsIcon } from 'lucide-react'
 import LanguageSwitcher from './components/LanguageSwitcher'
 import Logo from './components/Logo'
 import StatsOverview from './components/StatsOverview'
+import ActivityHeatmap from './components/ActivityHeatmap'
 import OverdueBanner from './components/OverdueBanner'
 import MorningReview from './components/MorningReview'
 import SettingsPanel from './components/SettingsPanel'
@@ -100,6 +101,8 @@ export default function App() {
           </header>
 
           <StatsOverview />
+
+          <ActivityHeatmap />
 
           <OverdueBanner />
 

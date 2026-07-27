@@ -1,10 +1,12 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Plus, X } from 'lucide-react'
+import { Plus, Search, X } from 'lucide-react'
 import { useAppStore } from '../store/useAppStore'
 import { PRIORITY_ORDER, priorityMeta } from '../lib/priority'
-import { expandOccurrences } from '../lib/occurrences'
+import { CATEGORY_ORDER, categoryMeta } from '../lib/categories'
+import { expandOccurrences, isOccurrenceDone } from '../lib/occurrences'
 import { toDateKey } from '../lib/date'
+import { vibrate, HAPTIC } from '../lib/haptics'
 import PomodoroTimer from './PomodoroTimer'
 import ReminderPicker from './ReminderPicker'
 import UndoSnackbar from './UndoSnackbar'
@@ -12,6 +14,7 @@ import TaskRow from './TaskRow'
 import MonthView from './MonthView'
 import EmptyStateIllustration from './EmptyStateIllustration'
 import ShoppingList from './ShoppingList'
+import Confetti from './Confetti'
 
 const RECURRENCE_OPTIONS = ['none', 'daily', 'weekdays', 'weekly']
 const REMINDER_OFFSET_OPTIONS = [0, 5, 15, 30, 60]
@@ -33,6 +36,7 @@ function TaskForm({ task, defaultDate, onCancel }) {
   const [startTime, setStartTime] = useState(task?.startTime ?? '09:00')
   const [durationMinutes, setDurationMinutes] = useState(task?.durationMinutes ?? 30)
   const [priority, setPriority] = useState(task?.priority ?? 'medium')
+  const [category, setCategory] = useState(task?.category ?? '')
   const [recurrence, setRecurrence] = useState(task?.recurrence ?? 'none')
   const [reminderOffsetMinutes, setReminderOffsetMinutes] = useState(task?.reminderOffsetMinutes ?? 15)
 
@@ -46,6 +50,7 @@ function TaskForm({ task, defaultDate, onCancel }) {
       startTime,
       durationMinutes: Number(durationMinutes) || 30,
       priority,
+      category: category || undefined,
       recurrence: recurrence === 'none' ? undefined : recurrence,
       reminderOffsetMinutes
     }
@@ -111,6 +116,38 @@ function TaskForm({ task, defaultDate, onCancel }) {
                 key={p}
                 type="button"
                 onClick={() => setPriority(p)}
+                className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors ${
+                  active ? 'bg-app-cardMuted text-slate-100' : 'text-slate-500 hover:text-slate-300'
+                }`}
+              >
+                <Icon size={12} color={meta.color} />
+                {t(meta.labelKey)}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-slate-400">{t('calendar.category')}</span>
+        <div className="inline-flex flex-wrap rounded-lg bg-app-bg p-1 gap-1">
+          <button
+            type="button"
+            onClick={() => setCategory('')}
+            className={`rounded-md px-2 py-1 text-xs transition-colors ${
+              category === '' ? 'bg-app-cardMuted text-slate-100' : 'text-slate-500 hover:text-slate-300'
+            }`}
+          >
+            {t('calendar.category_none')}
+          </button>
+          {CATEGORY_ORDER.map((c) => {
+            const meta = categoryMeta(c)
+            const Icon = meta.icon
+            const active = category === c
+            return (
+              <button
+                key={c}
+                type="button"
+                onClick={() => setCategory(c)}
                 className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors ${
                   active ? 'bg-app-cardMuted text-slate-100' : 'text-slate-500 hover:text-slate-300'
                 }`}
@@ -194,8 +231,33 @@ export default function CalendarView() {
   const [timerTask, setTimerTask] = useState(null)
   const [reminderTask, setReminderTask] = useState(null)
   const [pendingDelete, setPendingDelete] = useState(null)
+  const [showConfetti, setShowConfetti] = useState(false)
+  const [showSearch, setShowSearch] = useState(false)
+  const [query, setQuery] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState('')
 
   const todayKey = toDateKey(new Date())
+
+  // Flat, date-agnostic results — searching by title/notes/category doesn't
+  // fit the day/week/month tabs (a match could be on any date), so when a
+  // search is active it fully replaces the tab content below instead of
+  // filtering within it.
+  const searchResults = useMemo(() => {
+    if (!query.trim() && !categoryFilter) return null
+    const q = query.trim().toLowerCase()
+    return tasks
+      .filter((task) => {
+        if (categoryFilter && task.category !== categoryFilter) return false
+        if (!q) return true
+        return task.title.toLowerCase().includes(q) || (task.notes || '').toLowerCase().includes(q)
+      })
+      .map((task) => ({
+        ...task,
+        occurrenceDate: task.recurrence ? todayKey : task.date,
+        done: task.recurrence ? isOccurrenceDone(task, todayKey) : task.done
+      }))
+      .sort((a, b) => (a.date + a.startTime).localeCompare(b.date + b.startTime))
+  }, [tasks, query, categoryFilter, todayKey])
 
   const visibleDateKeys = useMemo(() => {
     if (view === 'day') return [todayKey]
@@ -250,6 +312,19 @@ export default function CalendarView() {
     setPendingDelete(null)
   }
 
+  // Once-per-day celebration: fires the moment today's list transitions to
+  // fully done. Persisted in localStorage (not the store) since it's a pure
+  // UI moment, not data worth syncing across devices/people.
+  useEffect(() => {
+    const todayTasks = tasksByDate[todayKey] || []
+    if (todayTasks.length === 0 || !todayTasks.every((t) => t.done)) return
+    const celebratedKey = `ai-time-manager-celebrated-${todayKey}`
+    if (localStorage.getItem(celebratedKey) === '1') return
+    localStorage.setItem(celebratedKey, '1')
+    vibrate(HAPTIC.success)
+    setShowConfetti(true)
+  }, [tasksByDate, todayKey])
+
   const addFormDefaultDate = view === 'month' && selectedMonthDate ? selectedMonthDate : todayKey
 
   return (
@@ -294,16 +369,75 @@ export default function CalendarView() {
           </button>
         </div>
         {view !== 'shopping' && (
-          <button
-            type="button"
-            onClick={openAddForm}
-            className="flex items-center gap-1 rounded-full bg-brand-cta px-2.5 py-1.5 text-sm font-medium text-app-bg hover:brightness-110 transition-all"
-          >
-            {showAddForm ? <X size={16} /> : <Plus size={16} />}
-            {t('calendar.add_task')}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setShowSearch((v) => !v)
+                if (showSearch) {
+                  setQuery('')
+                  setCategoryFilter('')
+                }
+              }}
+              className={`rounded-full p-2 transition-colors ${
+                showSearch ? 'bg-brand-cta text-app-bg' : 'bg-app-card text-slate-300 hover:text-slate-100'
+              }`}
+            >
+              {showSearch ? <X size={16} /> : <Search size={16} />}
+            </button>
+            <button
+              type="button"
+              onClick={openAddForm}
+              className="flex items-center gap-1 rounded-full bg-brand-cta px-2.5 py-1.5 text-sm font-medium text-app-bg hover:brightness-110 transition-all"
+            >
+              {showAddForm ? <X size={16} /> : <Plus size={16} />}
+              {t('calendar.add_task')}
+            </button>
+          </div>
         )}
       </div>
+
+      {showSearch && view !== 'shopping' && (
+        <div className="space-y-2 rounded-2xl border border-white/5 bg-app-card p-3">
+          <input
+            type="text"
+            autoFocus
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t('calendar.search_placeholder')}
+            className="w-full rounded-md bg-app-bg px-2 py-1.5 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:ring-1 focus:ring-brand-cta"
+          />
+          <div className="inline-flex flex-wrap rounded-lg bg-app-bg p-1 gap-1">
+            <button
+              type="button"
+              onClick={() => setCategoryFilter('')}
+              className={`rounded-md px-2 py-1 text-xs transition-colors ${
+                categoryFilter === '' ? 'bg-app-cardMuted text-slate-100' : 'text-slate-500 hover:text-slate-300'
+              }`}
+            >
+              {t('calendar.category_all')}
+            </button>
+            {CATEGORY_ORDER.map((c) => {
+              const meta = categoryMeta(c)
+              const Icon = meta.icon
+              const active = categoryFilter === c
+              return (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setCategoryFilter(c)}
+                  className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors ${
+                    active ? 'bg-app-cardMuted text-slate-100' : 'text-slate-500 hover:text-slate-300'
+                  }`}
+                >
+                  <Icon size={12} color={meta.color} />
+                  {t(meta.labelKey)}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {view === 'shopping' && <ShoppingList />}
 
@@ -314,7 +448,30 @@ export default function CalendarView() {
         <TaskForm task={editingTask} defaultDate={todayKey} onCancel={() => setEditingTask(null)} />
       )}
 
-      {view === 'month' && (
+      {searchResults && view !== 'shopping' && (
+        <ul className="space-y-2">
+          {searchResults.length === 0 ? (
+            <li className="text-sm italic text-slate-600">{t('calendar.search_empty')}</li>
+          ) : (
+            searchResults.map((task) => (
+              <li key={`${task.id}_${task.occurrenceDate}`}>
+                <TaskRow
+                  task={task}
+                  todayKey={todayKey}
+                  pushEnabled={pushEnabled}
+                  onToggle={handleToggle}
+                  onEdit={openEditForm}
+                  onRemove={handleRemove}
+                  onOpenTimer={setTimerTask}
+                  onOpenReminder={setReminderTask}
+                />
+              </li>
+            ))
+          )}
+        </ul>
+      )}
+
+      {!searchResults && view === 'month' && (
         <>
           <MonthView selectedDate={selectedMonthDate} onSelectDate={setSelectedMonthDate} />
 
@@ -358,7 +515,7 @@ export default function CalendarView() {
         </>
       )}
 
-      {view !== 'month' && view !== 'shopping' && (
+      {!searchResults && view !== 'month' && view !== 'shopping' && (
       <div className="space-y-5">
         {visibleDateKeys.map((dateKey) => {
           const dayTasks = tasksByDate[dateKey]
@@ -403,6 +560,7 @@ export default function CalendarView() {
       </div>
       )}
 
+      {showConfetti && <Confetti onDone={() => setShowConfetti(false)} />}
       {timerTask && <PomodoroTimer task={timerTask} onClose={() => setTimerTask(null)} />}
       {reminderTask && <ReminderPicker task={reminderTask} onClose={() => setReminderTask(null)} />}
       {pendingDelete && (

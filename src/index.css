@@ -12,3 +12,14 @@ body {
      push the whole page sideways on narrow phones. */
   overflow-x: hidden;
 }
+
+@keyframes confetti-fall {
+  from {
+    top: -5%;
+    opacity: 1;
+  }
+  to {
+    top: 105%;
+    opacity: 0.7;
+  }
+}

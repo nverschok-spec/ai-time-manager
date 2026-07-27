@@ -59,17 +59,30 @@
     "cancel": "Отмена",
     "undo": "Отменить",
     "overdue_message": "Незавершённых задач с прошлых дней: {{count}}",
-    "overdue_move": "Перенести на сегодня"
+    "overdue_move": "Перенести на сегодня",
+    "category": "Категория",
+    "category_none": "Без категории",
+    "category_all": "Все категории",
+    "search_placeholder": "Поиск по названию или заметке",
+    "search_empty": "Ничего не найдено"
   },
   "priority": {
     "high": "Важно",
     "medium": "Средне",
     "low": "Неважно"
   },
+  "category": {
+    "work": "Работа",
+    "health": "Здоровье",
+    "family": "Семья",
+    "home": "Дом",
+    "other": "Другое"
+  },
   "stats": {
     "today": "Сегодня",
     "week": "За неделю",
-    "by_priority": "По приоритету"
+    "by_priority": "По приоритету",
+    "activity": "Активность за 12 недель"
   },
   "pomodoro": {
     "focus": "Фокус",

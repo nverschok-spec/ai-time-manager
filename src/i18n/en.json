@@ -59,17 +59,30 @@
     "cancel": "Cancel",
     "undo": "Undo",
     "overdue_message": "{{count}} unfinished tasks from previous days",
-    "overdue_move": "Move to today"
+    "overdue_move": "Move to today",
+    "category": "Category",
+    "category_none": "No category",
+    "category_all": "All categories",
+    "search_placeholder": "Search by title or note",
+    "search_empty": "No matches"
   },
   "priority": {
     "high": "High",
     "medium": "Medium",
     "low": "Low"
   },
+  "category": {
+    "work": "Work",
+    "health": "Health",
+    "family": "Family",
+    "home": "Home",
+    "other": "Other"
+  },
   "stats": {
     "today": "Today",
     "week": "This week",
-    "by_priority": "By priority"
+    "by_priority": "By priority",
+    "activity": "12-week activity"
   },
   "pomodoro": {
     "focus": "Focus",

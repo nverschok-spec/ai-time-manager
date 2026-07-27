@@ -59,17 +59,30 @@
     "cancel": "Abbrechen",
     "undo": "Rückgängig",
     "overdue_message": "{{count}} unerledigte Aufgaben aus vergangenen Tagen",
-    "overdue_move": "Auf heute verschieben"
+    "overdue_move": "Auf heute verschieben",
+    "category": "Kategorie",
+    "category_none": "Keine Kategorie",
+    "category_all": "Alle Kategorien",
+    "search_placeholder": "Suche nach Titel oder Notiz",
+    "search_empty": "Keine Treffer"
   },
   "priority": {
     "high": "Hoch",
     "medium": "Mittel",
     "low": "Niedrig"
   },
+  "category": {
+    "work": "Arbeit",
+    "health": "Gesundheit",
+    "family": "Familie",
+    "home": "Zuhause",
+    "other": "Sonstiges"
+  },
   "stats": {
     "today": "Heute",
     "week": "Diese Woche",
-    "by_priority": "Nach Priorität"
+    "by_priority": "Nach Priorität",
+    "activity": "Aktivität (12 Wochen)"
   },
   "pomodoro": {
     "focus": "Fokus",

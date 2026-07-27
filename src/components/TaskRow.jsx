@@ -1,13 +1,19 @@
-import { Bell, Flame, Pencil, Repeat, Timer, Trash2 } from 'lucide-react'
+import { useState } from 'react'
+import { Bell, Check, Flame, Pencil, Repeat, Share2, Timer, Trash2 } from 'lucide-react'
 import { priorityMeta } from '../lib/priority'
+import { categoryMeta } from '../lib/categories'
 import { computeStreak } from '../lib/streak'
 import { vibrate, HAPTIC } from '../lib/haptics'
+import { shareTask } from '../lib/share'
 import SwipeableRow from './SwipeableRow'
 
 export default function TaskRow({ task, todayKey, pushEnabled, onToggle, onEdit, onRemove, onOpenTimer, onOpenReminder }) {
   const meta = priorityMeta(task.priority)
   const Icon = meta.icon
+  const catMeta = categoryMeta(task.category)
+  const CatIcon = catMeta?.icon
   const streak = task.recurrence ? computeStreak(task, todayKey) : 0
+  const [justCopied, setJustCopied] = useState(false)
 
   function handleToggle() {
     vibrate(task.done ? HAPTIC.tap : HAPTIC.success)
@@ -17,6 +23,14 @@ export default function TaskRow({ task, todayKey, pushEnabled, onToggle, onEdit,
   function handleRemove() {
     vibrate(HAPTIC.delete)
     onRemove(task)
+  }
+
+  async function handleShare() {
+    const result = await shareTask(task)
+    if (result === 'copied') {
+      setJustCopied(true)
+      setTimeout(() => setJustCopied(false), 1500)
+    }
   }
 
   return (
@@ -39,6 +53,7 @@ export default function TaskRow({ task, todayKey, pushEnabled, onToggle, onEdit,
         </div>
         <div className="flex items-center gap-2 pl-7">
           {task.recurrence && <Repeat size={13} className="shrink-0 text-slate-500" />}
+          {catMeta && <CatIcon size={13} color={catMeta.color} className="shrink-0" />}
           {streak > 1 && (
             <span className="flex shrink-0 items-center gap-0.5 text-xs text-priority-medium">
               <Flame size={12} /> {streak}
@@ -60,6 +75,13 @@ export default function TaskRow({ task, todayKey, pushEnabled, onToggle, onEdit,
               className="text-slate-500 hover:text-brand-cta transition-colors"
             >
               <Timer size={16} />
+            </button>
+            <button
+              type="button"
+              onClick={handleShare}
+              className="text-slate-500 hover:text-sky-400 transition-colors"
+            >
+              {justCopied ? <Check size={16} className="text-brand-cta" /> : <Share2 size={16} />}
             </button>
             <button
               type="button"
