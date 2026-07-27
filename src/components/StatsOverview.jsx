@@ -6,6 +6,7 @@ import { PRIORITY_ORDER, priorityMeta } from '../lib/priority'
 import { expandOccurrences } from '../lib/occurrences'
 import { computeFocusStats } from '../lib/focusStats'
 import ProgressCircle from './ProgressCircle'
+import WeatherBadge from './WeatherBadge'
 import { toDateKey } from '../lib/date'
 
 export default function StatsOverview() {
@@ -46,7 +47,10 @@ export default function StatsOverview() {
         <ProgressCircle done={today.done} total={today.total} />
         <div className="flex-1 space-y-2">
           <div>
-            <p className="text-xs text-slate-500">{t('stats.today')}</p>
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-slate-500">{t('stats.today')}</p>
+              <WeatherBadge />
+            </div>
             <p className="text-sm text-slate-300">
               {today.done}/{today.total}
             </p>

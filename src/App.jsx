@@ -13,7 +13,6 @@ import CalendarView from './components/CalendarView'
 import VoiceAiInput from './components/VoiceAiInput'
 import AiSuggestionCard from './components/AiSuggestionCard'
 import AiRescheduleCard from './components/AiRescheduleCard'
-import WeatherBadge from './components/WeatherBadge'
 import FocusMode from './components/FocusMode'
 import { getStoredPerson } from './components/PinGate'
 import { useAppStore } from './store/useAppStore'
@@ -128,7 +127,6 @@ export default function App() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <WeatherBadge />
               <LanguageSwitcher />
               <button
                 type="button"
