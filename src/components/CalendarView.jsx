@@ -1,14 +1,13 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Bell, Flame, Pencil, Plus, Repeat, Timer, Trash2, X } from 'lucide-react'
+import { Plus, X } from 'lucide-react'
 import { useAppStore } from '../store/useAppStore'
 import { PRIORITY_ORDER, priorityMeta } from '../lib/priority'
 import { expandOccurrences } from '../lib/occurrences'
-import { computeStreak } from '../lib/streak'
 import PomodoroTimer from './PomodoroTimer'
 import ReminderPicker from './ReminderPicker'
 import UndoSnackbar from './UndoSnackbar'
-import SwipeableRow from './SwipeableRow'
+import TaskRow from './TaskRow'
 import MonthView from './MonthView'
 import EmptyStateIllustration from './EmptyStateIllustration'
 import ShoppingList from './ShoppingList'
@@ -192,6 +191,7 @@ export default function CalendarView() {
   const restoreTask = useAppStore((s) => s.restoreTask)
   const pushEnabled = useAppStore((s) => s.pushEnabled)
   const [view, setView] = useState('day')
+  const [selectedMonthDate, setSelectedMonthDate] = useState(null)
   const [showAddForm, setShowAddForm] = useState(false)
   const [editingTask, setEditingTask] = useState(null)
   const [timerTask, setTimerTask] = useState(null)
@@ -216,6 +216,14 @@ export default function CalendarView() {
     }
     return map
   }, [tasks, visibleDateKeys])
+
+  // Independent of visibleDateKeys (which only covers today/next 7 days) —
+  // a tap in month view can land on any date, past or future.
+  const selectedDateTasks = useMemo(() => {
+    if (!selectedMonthDate) return []
+    const map = expandOccurrences(tasks, [selectedMonthDate])
+    return map[selectedMonthDate].sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''))
+  }, [tasks, selectedMonthDate])
 
   function handleToggle(task) {
     if (task.recurrence) {
@@ -244,6 +252,8 @@ export default function CalendarView() {
     if (pendingDelete) restoreTask(pendingDelete)
     setPendingDelete(null)
   }
+
+  const addFormDefaultDate = view === 'month' && selectedMonthDate ? selectedMonthDate : todayKey
 
   return (
     <div className="space-y-5">
@@ -301,13 +311,55 @@ export default function CalendarView() {
       {view === 'shopping' && <ShoppingList />}
 
       {showAddForm && view !== 'shopping' && (
-        <TaskForm defaultDate={todayKey} onCancel={() => setShowAddForm(false)} />
+        <TaskForm defaultDate={addFormDefaultDate} onCancel={() => setShowAddForm(false)} />
       )}
       {editingTask && (
         <TaskForm task={editingTask} defaultDate={todayKey} onCancel={() => setEditingTask(null)} />
       )}
 
-      {view === 'month' && <MonthView />}
+      {view === 'month' && (
+        <>
+          <MonthView selectedDate={selectedMonthDate} onSelectDate={setSelectedMonthDate} />
+
+          {selectedMonthDate && (
+            <div className="space-y-2 rounded-2xl border border-white/5 bg-app-card/60 p-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-medium capitalize text-slate-300">
+                  {formatDayLabel(selectedMonthDate, i18n.resolvedLanguage)}
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setSelectedMonthDate(null)}
+                  className="text-slate-500 hover:text-slate-300 transition-colors"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              {selectedDateTasks.length === 0 ? (
+                <p className="text-sm italic text-slate-600">—</p>
+              ) : (
+                <ul className="space-y-2">
+                  {selectedDateTasks.map((task) => (
+                    <li key={`${task.id}_${task.occurrenceDate}`}>
+                      <TaskRow
+                        task={task}
+                        todayKey={todayKey}
+                        pushEnabled={pushEnabled}
+                        onToggle={handleToggle}
+                        onEdit={openEditForm}
+                        onRemove={handleRemove}
+                        onOpenTimer={setTimerTask}
+                        onOpenReminder={setReminderTask}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+        </>
+      )}
 
       {view !== 'month' && view !== 'shopping' && (
       <div className="space-y-5">
@@ -333,75 +385,20 @@ export default function CalendarView() {
                 {dayTasks.length === 0 && view === 'week' && (
                   <li className="text-sm text-slate-600 italic">—</li>
                 )}
-                {dayTasks.map((task) => {
-                  const meta = priorityMeta(task.priority)
-                  const Icon = meta.icon
-                  const streak = task.recurrence ? computeStreak(task, todayKey) : 0
-                  return (
-                    <li key={`${task.id}_${task.occurrenceDate}`}>
-                      <SwipeableRow onSwipeLeft={() => handleRemove(task)} onSwipeRight={() => handleToggle(task)}>
-                        <div className="flex flex-col gap-1.5 rounded-xl bg-app-card px-3 py-2">
-                          <div className="flex items-center gap-2.5">
-                            <input
-                              type="checkbox"
-                              checked={task.done}
-                              onChange={() => handleToggle(task)}
-                              className="h-4 w-4 shrink-0 accent-brand-cta"
-                            />
-                            <Icon size={14} color={meta.color} className="shrink-0" />
-                            <span className="shrink-0 text-sm text-slate-400 tabular-nums">{task.startTime}</span>
-                            <span
-                              className={`min-w-0 flex-1 truncate text-sm ${task.done ? 'line-through text-slate-500' : 'text-slate-100'}`}
-                            >
-                              {task.title}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2 pl-7">
-                            {task.recurrence && <Repeat size={13} className="shrink-0 text-slate-500" />}
-                            {streak > 1 && (
-                              <span className="flex shrink-0 items-center gap-0.5 text-xs text-priority-medium">
-                                <Flame size={12} /> {streak}
-                              </span>
-                            )}
-                            <div className="ml-auto flex items-center gap-3">
-                              {pushEnabled && !task.recurrence && (
-                                <button
-                                  type="button"
-                                  onClick={() => setReminderTask(task)}
-                                  className="text-slate-500 hover:text-priority-medium transition-colors"
-                                >
-                                  <Bell size={16} />
-                                </button>
-                              )}
-                              <button
-                                type="button"
-                                onClick={() => setTimerTask(task)}
-                                className="text-slate-500 hover:text-brand-cta transition-colors"
-                              >
-                                <Timer size={16} />
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => openEditForm(task)}
-                                className="text-slate-500 hover:text-sky-400 transition-colors"
-                              >
-                                <Pencil size={16} />
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => handleRemove(task)}
-                                className="text-slate-500 hover:text-priority-high transition-colors"
-                              >
-                                <Trash2 size={16} />
-                              </button>
-                            </div>
-                          </div>
-                          {task.notes && <p className="truncate pl-7 text-xs text-slate-500">{task.notes}</p>}
-                        </div>
-                      </SwipeableRow>
-                    </li>
-                  )
-                })}
+                {dayTasks.map((task) => (
+                  <li key={`${task.id}_${task.occurrenceDate}`}>
+                    <TaskRow
+                      task={task}
+                      todayKey={todayKey}
+                      pushEnabled={pushEnabled}
+                      onToggle={handleToggle}
+                      onEdit={openEditForm}
+                      onRemove={handleRemove}
+                      onOpenTimer={setTimerTask}
+                      onOpenReminder={setReminderTask}
+                    />
+                  </li>
+                ))}
               </ul>
             </div>
           )

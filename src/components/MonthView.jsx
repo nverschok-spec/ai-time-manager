@@ -28,7 +28,7 @@ function buildMonthGrid(monthCursor) {
   })
 }
 
-export default function MonthView() {
+export default function MonthView({ selectedDate, onSelectDate }) {
   const { i18n } = useTranslation()
   const tasks = useAppStore((s) => s.tasks)
   const [monthCursor, setMonthCursor] = useState(() => new Date())
@@ -89,14 +89,17 @@ export default function MonthView() {
           const dayTasks = occurrencesByDate[key] || []
           const isCurrentMonth = d.getMonth() === currentMonth
           const isToday = key === todayKey
+          const isSelected = key === selectedDate
           const priorities = [...new Set(dayTasks.map((t) => t.priority))]
 
           return (
-            <div
+            <button
+              type="button"
               key={key}
-              className={`flex flex-col items-center gap-0.5 rounded-md py-1.5 ${isToday ? 'bg-brand-cta/20' : ''} ${
-                isCurrentMonth ? '' : 'opacity-30'
-              }`}
+              onClick={() => onSelectDate(key)}
+              className={`flex flex-col items-center gap-0.5 rounded-md py-1.5 transition-colors ${
+                isSelected ? 'bg-brand-cta/40' : isToday ? 'bg-brand-cta/20' : 'hover:bg-white/5'
+              } ${isCurrentMonth ? '' : 'opacity-30'}`}
             >
               <span
                 className={`text-xs tabular-nums ${isToday ? 'font-semibold text-emerald-300' : 'text-slate-300'}`}
@@ -112,7 +115,7 @@ export default function MonthView() {
                   />
                 ))}
               </div>
-            </div>
+            </button>
           )
         })}
       </div>
