@@ -10,3 +10,13 @@ export function toDateKey(date) {
   const d = String(date.getDate()).padStart(2, '0')
   return `${y}-${m}-${d}`
 }
+
+// Adds minutes to a task's date+time, rolling over to the next day (or
+// further) if it crosses midnight — used by the quick "snooze" action.
+export function addMinutes(dateKey, startTime, minutesToAdd) {
+  const [h, m] = (startTime || '00:00').split(':').map(Number)
+  const base = new Date(`${dateKey}T00:00:00`)
+  base.setHours(h, m + minutesToAdd)
+  const newStartTime = `${String(base.getHours()).padStart(2, '0')}:${String(base.getMinutes()).padStart(2, '0')}`
+  return { date: toDateKey(base), startTime: newStartTime }
+}

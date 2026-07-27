@@ -7,11 +7,10 @@ function buildShareText(task) {
   return lines.join('\n')
 }
 
-export async function shareTask(task) {
-  const text = buildShareText(task)
+export async function shareText(text, title) {
   if (navigator.share) {
     try {
-      await navigator.share({ text, title: task.title })
+      await navigator.share({ text, title })
       return 'shared'
     } catch {
       return 'cancelled'
@@ -22,4 +21,8 @@ export async function shareTask(task) {
     return 'copied'
   }
   return 'unsupported'
+}
+
+export function shareTask(task) {
+  return shareText(buildShareText(task), task.title)
 }

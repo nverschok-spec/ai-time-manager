@@ -26,9 +26,16 @@
     "conflict": "Terminkonflikt",
     "low_confidence": "Bitte bestätigen"
   },
+  "quick_templates": {
+    "pharmacy": "Apotheke",
+    "groceries": "Einkaufen",
+    "workout": "Training",
+    "cleaning": "Putzen"
+  },
   "reschedule": {
     "title": "KI schlägt Verschiebung vor",
-    "accept_all": "Alle übernehmen"
+    "accept_all": "Alle übernehmen",
+    "undo_count": "{{count}} verschoben"
   },
   "settings": {
     "title": "Einstellungen",
@@ -46,6 +53,7 @@
     "empty_state": "Für heute alles erledigt. Zeit zum Entspannen oder den nächsten Schritt zu planen.",
     "title_placeholder": "Titel der Aufgabe",
     "notes_placeholder": "Notiz (optional) — Adresse, Telefon, Details",
+    "checklist_placeholder": "Listenpunkt — Enter zum Hinzufügen",
     "duration": "Dauer, Min.",
     "priority": "Priorität",
     "repeat": "Wiederholung",

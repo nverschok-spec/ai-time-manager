@@ -26,9 +26,16 @@
     "conflict": "Time conflict",
     "low_confidence": "Please confirm"
   },
+  "quick_templates": {
+    "pharmacy": "Pharmacy",
+    "groceries": "Groceries",
+    "workout": "Workout",
+    "cleaning": "Cleaning"
+  },
   "reschedule": {
     "title": "AI suggests moving",
-    "accept_all": "Accept all"
+    "accept_all": "Accept all",
+    "undo_count": "{{count}} moved"
   },
   "settings": {
     "title": "Settings",
@@ -46,6 +53,7 @@
     "empty_state": "All done for today. Time to relax or plan your next move.",
     "title_placeholder": "Task title",
     "notes_placeholder": "Notes (optional) — address, phone, details",
+    "checklist_placeholder": "Checklist item — Enter to add",
     "duration": "Duration, min",
     "priority": "Priority",
     "repeat": "Repeat",

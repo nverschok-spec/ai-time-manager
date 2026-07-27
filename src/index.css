@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Default accent (matches the original #2ECC91) — overridden per-person
+     at runtime via App.jsx once someone is logged in. */
+  --accent: 46 204 145;
+}
+
 html, body, #root {
   height: 100%;
 }

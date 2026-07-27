@@ -13,7 +13,11 @@ export default {
         brand: {
           from: '#00C2A8',
           to: '#3DDC97',
-          cta: '#2ECC91'
+          // CSS-variable-backed (not a plain hex) so it can be personalized per
+          // logged-in person at runtime — see lib/color.js + App.jsx. The
+          // "R G B" (space-separated channel) form is required for Tailwind's
+          // bg-brand-cta/NN opacity-modifier syntax to keep working.
+          cta: 'rgb(var(--accent) / <alpha-value>)'
         },
         priority: {
           high: '#FF6B6B',

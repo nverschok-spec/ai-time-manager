@@ -26,9 +26,16 @@
     "conflict": "Конфликт по времени",
     "low_confidence": "Уточните"
   },
+  "quick_templates": {
+    "pharmacy": "Аптека",
+    "groceries": "Продукты",
+    "workout": "Тренировка",
+    "cleaning": "Уборка"
+  },
   "reschedule": {
     "title": "ИИ предлагает перенести",
-    "accept_all": "Принять всё"
+    "accept_all": "Принять всё",
+    "undo_count": "Перенесено: {{count}}"
   },
   "settings": {
     "title": "Настройки",
@@ -46,6 +53,7 @@
     "empty_state": "На сегодня всё сделано. Можно отдохнуть или спланировать следующий шаг.",
     "title_placeholder": "Название задачи",
     "notes_placeholder": "Заметка (необязательно) — адрес, телефон, детали",
+    "checklist_placeholder": "Пункт списка — Enter, чтобы добавить",
     "duration": "Длительность, мин",
     "priority": "Приоритет",
     "repeat": "Повтор",

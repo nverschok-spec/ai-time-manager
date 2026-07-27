@@ -1,7 +1,10 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { scheduleReminder } from '../lib/push'
+import { addMinutes, toDateKey } from '../lib/date'
 import { getStoredToken, clearStoredToken } from '../components/PinGate'
+
+const ARCHIVE_AFTER_DAYS = 60
 
 function makeId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
@@ -186,6 +189,13 @@ export const useAppStore = create(
         apiFetch('/api/tasks', { method: 'PUT', body: JSON.stringify({ id, patch }) }).catch(() => {})
       },
 
+      toggleChecklistItem: (taskId, itemId) => {
+        const task = get().tasks.find((t) => t.id === taskId)
+        if (!task) return
+        const checklist = (task.checklist || []).map((i) => (i.id === itemId ? { ...i, done: !i.done } : i))
+        get().updateTask(taskId, { checklist })
+      },
+
       // Lets an already-created task opt into (or change) its reminder —
       // addTask only schedules once, at creation time.
       setTaskReminder: (id, offsetMinutes) => {
@@ -227,9 +237,27 @@ export const useAppStore = create(
         }
       },
 
+      // One-tap "+1 hour", rolling over to the next day if needed — goes
+      // through editTask so any push reminder follows the task to its new time.
+      snoozeTask: (id, minutes = 60) => {
+        const task = get().tasks.find((t) => t.id === id)
+        if (!task) return
+        const { date, startTime } = addMinutes(task.date, task.startTime, minutes)
+        get().editTask(id, { date, startTime })
+      },
+
       removeTask: (id) => {
         set((state) => ({ tasks: state.tasks.filter((t) => t.id !== id) }))
         apiFetch('/api/tasks', { method: 'DELETE', body: JSON.stringify({ id }) }).catch(() => {})
+      },
+
+      // Quiet hygiene pass, called once per app load — recurring templates
+      // are never touched (their "date" is just the series anchor, not a
+      // one-off that's safe to forget), only long-done one-off tasks.
+      archiveOldCompleted: () => {
+        const cutoff = toDateKey(new Date(Date.now() - ARCHIVE_AFTER_DAYS * 86400000))
+        const stale = get().tasks.filter((t) => t.done && !t.recurrence && t.date < cutoff)
+        for (const t of stale) get().removeTask(t.id)
       },
 
       // Puts a just-deleted task back exactly as it was (same id/done/etc) —

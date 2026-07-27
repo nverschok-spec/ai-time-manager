@@ -1,19 +1,42 @@
 import { useState } from 'react'
-import { Bell, Check, Flame, Pencil, Repeat, Share2, Timer, Trash2 } from 'lucide-react'
+import {
+  AlarmClockPlus,
+  Bell,
+  Check,
+  ChevronDown,
+  ChevronUp,
+  Flame,
+  ListChecks,
+  MapPin,
+  Pencil,
+  Repeat,
+  Share2,
+  Timer,
+  Trash2
+} from 'lucide-react'
 import { priorityMeta } from '../lib/priority'
 import { categoryMeta } from '../lib/categories'
 import { computeStreak } from '../lib/streak'
 import { vibrate, HAPTIC } from '../lib/haptics'
 import { shareTask } from '../lib/share'
+import { useAppStore } from '../store/useAppStore'
 import SwipeableRow from './SwipeableRow'
 
 export default function TaskRow({ task, todayKey, pushEnabled, onToggle, onEdit, onRemove, onOpenTimer, onOpenReminder }) {
+  const snoozeTask = useAppStore((s) => s.snoozeTask)
+  const toggleChecklistItem = useAppStore((s) => s.toggleChecklistItem)
   const meta = priorityMeta(task.priority)
   const Icon = meta.icon
   const catMeta = categoryMeta(task.category)
   const CatIcon = catMeta?.icon
   const streak = task.recurrence ? computeStreak(task, todayKey) : 0
   const [justCopied, setJustCopied] = useState(false)
+  const [checklistOpen, setChecklistOpen] = useState(false)
+
+  function handleChecklistToggle(itemId) {
+    vibrate(HAPTIC.tap)
+    toggleChecklistItem(task.id, itemId)
+  }
 
   function handleToggle() {
     vibrate(task.done ? HAPTIC.tap : HAPTIC.success)
@@ -23,6 +46,11 @@ export default function TaskRow({ task, todayKey, pushEnabled, onToggle, onEdit,
   function handleRemove() {
     vibrate(HAPTIC.delete)
     onRemove(task)
+  }
+
+  function handleSnooze() {
+    vibrate(HAPTIC.tap)
+    snoozeTask(task.id)
   }
 
   async function handleShare() {
@@ -69,6 +97,16 @@ export default function TaskRow({ task, todayKey, pushEnabled, onToggle, onEdit,
                 <Bell size={16} />
               </button>
             )}
+            {!task.recurrence && !task.done && (
+              <button
+                type="button"
+                onClick={handleSnooze}
+                title="+1h"
+                className="text-slate-500 hover:text-priority-medium transition-colors"
+              >
+                <AlarmClockPlus size={16} />
+              </button>
+            )}
             <button
               type="button"
               onClick={() => onOpenTimer(task)}
@@ -99,7 +137,49 @@ export default function TaskRow({ task, todayKey, pushEnabled, onToggle, onEdit,
             </button>
           </div>
         </div>
-        {task.notes && <p className="truncate pl-7 text-xs text-slate-500">{task.notes}</p>}
+        {task.notes && (
+          <div className="flex items-center gap-1.5 pl-7">
+            <p className="min-w-0 flex-1 truncate text-xs text-slate-500">{task.notes}</p>
+            <a
+              href={`https://maps.apple.com/?q=${encodeURIComponent(task.notes)}`}
+              target="_blank"
+              rel="noreferrer"
+              className="shrink-0 text-slate-600 hover:text-brand-cta transition-colors"
+            >
+              <MapPin size={13} />
+            </a>
+          </div>
+        )}
+        {task.checklist?.length > 0 && (
+          <div className="pl-7">
+            <button
+              type="button"
+              onClick={() => setChecklistOpen((v) => !v)}
+              className="flex items-center gap-1 text-xs text-slate-500 hover:text-slate-300 transition-colors"
+            >
+              <ListChecks size={12} />
+              {task.checklist.filter((i) => i.done).length}/{task.checklist.length}
+              {checklistOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+            </button>
+            {checklistOpen && (
+              <ul className="mt-1 space-y-1">
+                {task.checklist.map((item) => (
+                  <li key={item.id} className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={item.done}
+                      onChange={() => handleChecklistToggle(item.id)}
+                      className="h-3.5 w-3.5 shrink-0 accent-brand-cta"
+                    />
+                    <span className={`text-xs ${item.done ? 'line-through text-slate-500' : 'text-slate-300'}`}>
+                      {item.text}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
       </div>
     </SwipeableRow>
   )

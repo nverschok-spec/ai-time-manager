@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CalendarCheck } from 'lucide-react'
+import { CalendarCheck, Share2 } from 'lucide-react'
 import { useAppStore } from '../store/useAppStore'
 import { computeWeeklyStats, toWeekKey } from '../lib/weeklyStats'
 import { categoryMeta } from '../lib/categories'
 import { fetchWeeklyReview } from '../services/ai'
+import { shareText } from '../lib/share'
 
 // Shown once per week, on the first open that lands on Sunday or Monday —
 // broad enough to catch most people without nagging on the other 5 days.
@@ -44,12 +45,27 @@ export default function WeeklyReview() {
   const categories = Object.entries(stats.byCategory)
   const pct = stats.total > 0 ? Math.round((stats.done / stats.total) * 100) : null
 
+  function handleShare() {
+    const lines = [t('weekly.title'), `${stats.done}/${stats.total}${pct !== null ? ` (${pct}%)` : ''}`]
+    if (review) lines.push(review)
+    shareText(lines.join('\n'), t('weekly.title'))
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/85 backdrop-blur-sm p-4">
       <div className="w-full max-w-sm rounded-3xl border border-white/5 bg-app-card p-5 space-y-4">
-        <div className="flex items-center gap-2">
-          <CalendarCheck size={20} className="text-brand-cta" />
-          <h2 className="text-base font-semibold text-slate-100">{t('weekly.title')}</h2>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <CalendarCheck size={20} className="text-brand-cta" />
+            <h2 className="text-base font-semibold text-slate-100">{t('weekly.title')}</h2>
+          </div>
+          <button
+            type="button"
+            onClick={handleShare}
+            className="shrink-0 text-slate-500 hover:text-brand-cta transition-colors"
+          >
+            <Share2 size={16} />
+          </button>
         </div>
 
         {pct !== null && (

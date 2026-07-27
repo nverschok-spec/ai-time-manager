@@ -18,6 +18,7 @@ import { useAppStore } from './store/useAppStore'
 import { parseUserInput, fetchRescheduleOps } from './services/ai'
 import { isRescheduleCommand } from './lib/rescheduleIntent'
 import { migrateLegacyDataIfNeeded } from './lib/migrateLegacyData'
+import { hexToRgbChannels } from './lib/color'
 
 const REFRESH_INTERVAL_MS = 30000
 
@@ -30,6 +31,7 @@ export default function App() {
   const loadAll = useAppStore((s) => s.loadAll)
   const setSuggestions = useAppStore((s) => s.setSuggestions)
   const setRescheduleOps = useAppStore((s) => s.setRescheduleOps)
+  const archiveOldCompleted = useAppStore((s) => s.archiveOldCompleted)
   const [isLoading, setIsLoading] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
 
@@ -38,8 +40,16 @@ export default function App() {
     ;(async () => {
       await migrateLegacyDataIfNeeded()
       await loadAll()
+      archiveOldCompleted()
     })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadAll, setPerson])
+
+  // Personalizes the accent color per logged-in person (see tailwind.config.js
+  // + index.css) — falls back to the default green when no color is set.
+  useEffect(() => {
+    document.documentElement.style.setProperty('--accent', person?.color ? hexToRgbChannels(person.color) : '46 204 145')
+  }, [person])
 
   // Keeps the shared shopping list (and the other person's edits generally)
   // in sync without needing a websocket — cheap enough at this scale.

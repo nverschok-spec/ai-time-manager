@@ -19,26 +19,49 @@ import Confetti from './Confetti'
 const RECURRENCE_OPTIONS = ['none', 'daily', 'weekdays', 'weekly']
 const REMINDER_OFFSET_OPTIONS = [0, 5, 15, 30, 60]
 
+// One-tap starting points for common errands — still opens the form (not an
+// instant silent create) so date/time/etc can be checked before saving.
+const QUICK_TEMPLATES = [
+  { key: 'pharmacy', category: 'health', durationMinutes: 15, priority: 'medium' },
+  { key: 'groceries', category: 'home', durationMinutes: 30, priority: 'medium' },
+  { key: 'workout', category: 'health', durationMinutes: 45, priority: 'medium' },
+  { key: 'cleaning', category: 'home', durationMinutes: 60, priority: 'low' }
+]
+
 function formatDayLabel(dateKey, locale) {
   const d = new Date(`${dateKey}T00:00:00`)
   return d.toLocaleDateString(locale, { weekday: 'short', day: 'numeric', month: 'short' })
 }
 
 // task === null → create mode (addTask); task !== null → edit mode (editTask), pre-filled.
-function TaskForm({ task, defaultDate, onCancel }) {
+// prefill (create mode only) seeds fields from a quick template, still editable before saving.
+function TaskForm({ task, defaultDate, prefill, onCancel }) {
   const { t } = useTranslation()
   const addTask = useAppStore((s) => s.addTask)
   const editTask = useAppStore((s) => s.editTask)
   const pushEnabled = useAppStore((s) => s.pushEnabled)
-  const [title, setTitle] = useState(task?.title ?? '')
+  const [title, setTitle] = useState(task?.title ?? (prefill ? t(`quick_templates.${prefill.key}`) : ''))
   const [notes, setNotes] = useState(task?.notes ?? '')
   const [date, setDate] = useState(task?.date ?? defaultDate)
   const [startTime, setStartTime] = useState(task?.startTime ?? '09:00')
-  const [durationMinutes, setDurationMinutes] = useState(task?.durationMinutes ?? 30)
-  const [priority, setPriority] = useState(task?.priority ?? 'medium')
-  const [category, setCategory] = useState(task?.category ?? '')
+  const [durationMinutes, setDurationMinutes] = useState(task?.durationMinutes ?? prefill?.durationMinutes ?? 30)
+  const [priority, setPriority] = useState(task?.priority ?? prefill?.priority ?? 'medium')
+  const [category, setCategory] = useState(task?.category ?? prefill?.category ?? '')
   const [recurrence, setRecurrence] = useState(task?.recurrence ?? 'none')
   const [reminderOffsetMinutes, setReminderOffsetMinutes] = useState(task?.reminderOffsetMinutes ?? 15)
+  const [checklist, setChecklist] = useState(task?.checklist ?? [])
+  const [checklistDraft, setChecklistDraft] = useState('')
+
+  function addChecklistItem() {
+    const text = checklistDraft.trim()
+    if (!text) return
+    setChecklist((prev) => [...prev, { id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, text, done: false }])
+    setChecklistDraft('')
+  }
+
+  function removeChecklistItem(id) {
+    setChecklist((prev) => prev.filter((i) => i.id !== id))
+  }
 
   function handleSubmit(e) {
     e.preventDefault()
@@ -52,7 +75,8 @@ function TaskForm({ task, defaultDate, onCancel }) {
       priority,
       category: category || undefined,
       recurrence: recurrence === 'none' ? undefined : recurrence,
-      reminderOffsetMinutes
+      reminderOffsetMinutes,
+      checklist: checklist.length > 0 ? checklist : undefined
     }
     if (task) {
       editTask(task.id, payload)
@@ -79,6 +103,47 @@ function TaskForm({ task, defaultDate, onCancel }) {
         placeholder={t('calendar.notes_placeholder')}
         className="w-full resize-none rounded-md bg-app-bg px-2 py-1.5 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:ring-1 focus:ring-brand-cta"
       />
+
+      <div className="space-y-1.5">
+        {checklist.length > 0 && (
+          <ul className="space-y-1">
+            {checklist.map((item) => (
+              <li key={item.id} className="flex items-center gap-2 rounded-md bg-app-bg px-2 py-1 text-sm text-slate-200">
+                <span className="min-w-0 flex-1 truncate">{item.text}</span>
+                <button
+                  type="button"
+                  onClick={() => removeChecklistItem(item.id)}
+                  className="shrink-0 text-slate-500 hover:text-priority-high transition-colors"
+                >
+                  <X size={14} />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={checklistDraft}
+            onChange={(e) => setChecklistDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault()
+                addChecklistItem()
+              }
+            }}
+            placeholder={t('calendar.checklist_placeholder')}
+            className="min-w-0 flex-1 rounded-md bg-app-bg px-2 py-1.5 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:ring-1 focus:ring-brand-cta"
+          />
+          <button
+            type="button"
+            onClick={addChecklistItem}
+            className="shrink-0 rounded-md bg-app-cardMuted px-2.5 py-1.5 text-sm text-slate-200 hover:bg-white/10 transition-colors"
+          >
+            <Plus size={14} />
+          </button>
+        </div>
+      </div>
       <div className="grid grid-cols-2 gap-2">
         <input
           type="date"
@@ -227,6 +292,7 @@ export default function CalendarView() {
   const [view, setView] = useState('day')
   const [selectedMonthDate, setSelectedMonthDate] = useState(null)
   const [showAddForm, setShowAddForm] = useState(false)
+  const [prefillTemplate, setPrefillTemplate] = useState(null)
   const [editingTask, setEditingTask] = useState(null)
   const [timerTask, setTimerTask] = useState(null)
   const [reminderTask, setReminderTask] = useState(null)
@@ -294,7 +360,14 @@ export default function CalendarView() {
 
   function openAddForm() {
     setEditingTask(null)
+    setPrefillTemplate(null)
     setShowAddForm((v) => !v)
+  }
+
+  function openTemplate(tpl) {
+    setEditingTask(null)
+    setPrefillTemplate(tpl)
+    setShowAddForm(true)
   }
 
   function openEditForm(task) {
@@ -441,8 +514,30 @@ export default function CalendarView() {
 
       {view === 'shopping' && <ShoppingList />}
 
+      {!showAddForm && !editingTask && view !== 'shopping' && !searchResults && (
+        <div className="flex flex-wrap gap-1.5">
+          {QUICK_TEMPLATES.map((tpl) => (
+            <button
+              key={tpl.key}
+              type="button"
+              onClick={() => openTemplate(tpl)}
+              className="rounded-full bg-app-card px-2.5 py-1 text-xs text-slate-400 hover:text-slate-100 hover:bg-app-cardMuted transition-colors"
+            >
+              {t(`quick_templates.${tpl.key}`)}
+            </button>
+          ))}
+        </div>
+      )}
+
       {showAddForm && view !== 'shopping' && (
-        <TaskForm defaultDate={addFormDefaultDate} onCancel={() => setShowAddForm(false)} />
+        <TaskForm
+          defaultDate={addFormDefaultDate}
+          prefill={prefillTemplate}
+          onCancel={() => {
+            setShowAddForm(false)
+            setPrefillTemplate(null)
+          }}
+        />
       )}
       {editingTask && (
         <TaskForm task={editingTask} defaultDate={todayKey} onCancel={() => setEditingTask(null)} />
