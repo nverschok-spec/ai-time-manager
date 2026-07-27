@@ -42,11 +42,13 @@ export const useAppStore = create(
       shoppingItems: [],
       suggestions: [],
       lastReviewDate: null,
+      lastWeeklyReviewWeek: null,
       pushEnabled: false,
       dataLoaded: false,
 
       setPerson: (person) => set({ person }),
       setLastReviewDate: (dateKey) => set({ lastReviewDate: dateKey }),
+      setLastWeeklyReviewWeek: (weekKey) => set({ lastWeeklyReviewWeek: weekKey }),
       setPushEnabled: (pushEnabled) => set({ pushEnabled }),
 
       // Pulls this person's tasks, the household roster, and the shared
@@ -293,6 +295,7 @@ export const useAppStore = create(
       // with what other household members see.
       partialize: (state) => ({
         lastReviewDate: state.lastReviewDate,
+        lastWeeklyReviewWeek: state.lastWeeklyReviewWeek,
         pushEnabled: state.pushEnabled
       })
     }

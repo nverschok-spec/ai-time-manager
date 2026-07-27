@@ -7,6 +7,7 @@ import StatsOverview from './components/StatsOverview'
 import ActivityHeatmap from './components/ActivityHeatmap'
 import OverdueBanner from './components/OverdueBanner'
 import MorningReview from './components/MorningReview'
+import WeeklyReview from './components/WeeklyReview'
 import SettingsPanel from './components/SettingsPanel'
 import CalendarView from './components/CalendarView'
 import VoiceAiInput from './components/VoiceAiInput'
@@ -76,6 +77,7 @@ export default function App() {
   return (
     <div className="flex min-h-dvh flex-col bg-app-bg text-slate-100">
       <MorningReview />
+      <WeeklyReview />
       {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
 
       <div className="flex-1 overflow-y-auto overflow-x-hidden">

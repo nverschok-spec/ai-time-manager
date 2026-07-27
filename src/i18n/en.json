@@ -97,6 +97,11 @@
     "start": "Start the day",
     "digest_loading": "AI is looking at your day…"
   },
+  "weekly": {
+    "title": "Weekly review",
+    "loading": "AI is looking at your week…",
+    "close": "Got it, continue"
+  },
   "shopping": {
     "placeholder": "What to buy?",
     "empty": "List is empty.",

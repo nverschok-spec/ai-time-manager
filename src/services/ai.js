@@ -83,6 +83,27 @@ export async function parseUserInput(text, tasks, image) {
 }
 
 // Best-effort — returns '' on any failure so the caller can silently fall
+// back to the plain stats card instead of blocking the weekly review.
+export async function fetchWeeklyReview(stats, locale) {
+  try {
+    const token = getStoredToken()
+    const res = await fetch('/api/ai-weekly-review', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      },
+      body: JSON.stringify({ stats, locale })
+    })
+    if (!res.ok) return ''
+    const data = await res.json()
+    return data.review || ''
+  } catch {
+    return ''
+  }
+}
+
+// Best-effort — returns '' on any failure so the caller can silently fall
 // back to the plain task list instead of blocking the morning review.
 export async function fetchDailyDigest(todayTasks, locale) {
   try {

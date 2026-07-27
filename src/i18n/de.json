@@ -97,6 +97,11 @@
     "start": "Tag beginnen",
     "digest_loading": "Die KI schaut sich deinen Tag an…"
   },
+  "weekly": {
+    "title": "Wochenrückblick",
+    "loading": "Die KI schaut sich deine Woche an…",
+    "close": "Verstanden, weiter"
+  },
   "shopping": {
     "placeholder": "Was einkaufen?",
     "empty": "Liste ist leer.",
