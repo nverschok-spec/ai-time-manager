@@ -5,10 +5,7 @@ import { useAppStore } from '../store/useAppStore'
 import { expandOccurrences } from '../lib/occurrences'
 import { priorityMeta } from '../lib/priority'
 import { fetchDailyDigest } from '../services/ai'
-
-function toDateKey(date) {
-  return date.toISOString().slice(0, 10)
-}
+import { toDateKey } from '../lib/date'
 
 export default function MorningReview() {
   const { t, i18n } = useTranslation()

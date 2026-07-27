@@ -1,11 +1,8 @@
 import { clearStoredToken, getStoredToken } from '../components/PinGate'
+import { toDateKey } from '../lib/date'
 
 const CONTEXT_WINDOW_DAYS = 7
 const LOW_CONFIDENCE_THRESHOLD = 0.6
-
-function toDateKey(date) {
-  return date.toISOString().slice(0, 10)
-}
 
 function buildScheduleContext(tasks, referenceDate = new Date()) {
   const start = new Date(referenceDate)

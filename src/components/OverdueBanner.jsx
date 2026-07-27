@@ -2,10 +2,7 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CalendarClock, X } from 'lucide-react'
 import { useAppStore } from '../store/useAppStore'
-
-function toDateKey(date) {
-  return date.toISOString().slice(0, 10)
-}
+import { toDateKey } from '../lib/date'
 
 export default function OverdueBanner() {
   const { t } = useTranslation()

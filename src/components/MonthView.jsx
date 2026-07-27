@@ -4,10 +4,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useAppStore } from '../store/useAppStore'
 import { expandOccurrences } from '../lib/occurrences'
 import { priorityMeta } from '../lib/priority'
-
-function toDateKey(date) {
-  return date.toISOString().slice(0, 10)
-}
+import { toDateKey } from '../lib/date'
 
 function startOfMonth(date) {
   return new Date(date.getFullYear(), date.getMonth(), 1)

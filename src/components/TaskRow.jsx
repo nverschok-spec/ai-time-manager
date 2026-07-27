@@ -1,6 +1,7 @@
 import { Bell, Flame, Pencil, Repeat, Timer, Trash2 } from 'lucide-react'
 import { priorityMeta } from '../lib/priority'
 import { computeStreak } from '../lib/streak'
+import { vibrate, HAPTIC } from '../lib/haptics'
 import SwipeableRow from './SwipeableRow'
 
 export default function TaskRow({ task, todayKey, pushEnabled, onToggle, onEdit, onRemove, onOpenTimer, onOpenReminder }) {
@@ -8,14 +9,24 @@ export default function TaskRow({ task, todayKey, pushEnabled, onToggle, onEdit,
   const Icon = meta.icon
   const streak = task.recurrence ? computeStreak(task, todayKey) : 0
 
+  function handleToggle() {
+    vibrate(task.done ? HAPTIC.tap : HAPTIC.success)
+    onToggle(task)
+  }
+
+  function handleRemove() {
+    vibrate(HAPTIC.delete)
+    onRemove(task)
+  }
+
   return (
-    <SwipeableRow onSwipeLeft={() => onRemove(task)} onSwipeRight={() => onToggle(task)}>
+    <SwipeableRow onSwipeLeft={handleRemove} onSwipeRight={handleToggle}>
       <div className="flex flex-col gap-1.5 rounded-xl bg-app-card px-3 py-2">
         <div className="flex items-center gap-2.5">
           <input
             type="checkbox"
             checked={task.done}
-            onChange={() => onToggle(task)}
+            onChange={handleToggle}
             className="h-4 w-4 shrink-0 accent-brand-cta"
           />
           <Icon size={14} color={meta.color} className="shrink-0" />
@@ -59,7 +70,7 @@ export default function TaskRow({ task, todayKey, pushEnabled, onToggle, onEdit,
             </button>
             <button
               type="button"
-              onClick={() => onRemove(task)}
+              onClick={handleRemove}
               className="text-slate-500 hover:text-priority-high transition-colors"
             >
               <Trash2 size={16} />

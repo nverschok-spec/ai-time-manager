@@ -6,9 +6,10 @@ import { buildIcs } from '../lib/ics'
 import LanguageSwitcher from './LanguageSwitcher'
 import PushSettings from './PushSettings'
 import PeopleSettings from './PeopleSettings'
+import { toDateKey } from '../lib/date'
 
 function todayKey() {
-  return new Date().toISOString().slice(0, 10)
+  return toDateKey(new Date())
 }
 
 export default function SettingsPanel({ onClose }) {

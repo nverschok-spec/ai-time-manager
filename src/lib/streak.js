@@ -1,8 +1,5 @@
 import { occursOn } from './occurrences'
-
-function toDateKey(date) {
-  return date.toISOString().slice(0, 10)
-}
+import { toDateKey } from './date'
 
 // Counts consecutive completed occurrences ending at "today" (or "yesterday"
 // if today's occurrence hasn't happened yet, so a not-yet-due task doesn't

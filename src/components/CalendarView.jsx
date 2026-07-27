@@ -4,6 +4,7 @@ import { Plus, X } from 'lucide-react'
 import { useAppStore } from '../store/useAppStore'
 import { PRIORITY_ORDER, priorityMeta } from '../lib/priority'
 import { expandOccurrences } from '../lib/occurrences'
+import { toDateKey } from '../lib/date'
 import PomodoroTimer from './PomodoroTimer'
 import ReminderPicker from './ReminderPicker'
 import UndoSnackbar from './UndoSnackbar'
@@ -14,10 +15,6 @@ import ShoppingList from './ShoppingList'
 
 const RECURRENCE_OPTIONS = ['none', 'daily', 'weekdays', 'weekly']
 const REMINDER_OFFSET_OPTIONS = [0, 5, 15, 30, 60]
-
-function toDateKey(date) {
-  return date.toISOString().slice(0, 10)
-}
 
 function formatDayLabel(dateKey, locale) {
   const d = new Date(`${dateKey}T00:00:00`)

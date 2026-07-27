@@ -4,10 +4,7 @@ import { useAppStore } from '../store/useAppStore'
 import { PRIORITY_ORDER, priorityMeta } from '../lib/priority'
 import { expandOccurrences } from '../lib/occurrences'
 import ProgressCircle from './ProgressCircle'
-
-function toDateKey(date) {
-  return date.toISOString().slice(0, 10)
-}
+import { toDateKey } from '../lib/date'
 
 export default function StatsOverview() {
   const { t } = useTranslation()
