@@ -6,6 +6,10 @@ export function occursOn(task, dateKey) {
   if (!task.recurrence) return task.date === dateKey
   if (dateKey < task.date) return false
 
+  if (task.recurrence === 'yearly') {
+    return dateKey.slice(5) === task.date.slice(5) // compare MM-DD, year-independent
+  }
+
   const day = new Date(`${dateKey}T00:00:00`).getDay()
   switch (task.recurrence) {
     case 'daily':

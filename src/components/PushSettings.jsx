@@ -8,6 +8,10 @@ export default function PushSettings() {
   const { t } = useTranslation()
   const pushEnabled = useAppStore((s) => s.pushEnabled)
   const setPushEnabled = useAppStore((s) => s.setPushEnabled)
+  const quietHoursEnabled = useAppStore((s) => s.quietHoursEnabled)
+  const quietHoursStart = useAppStore((s) => s.quietHoursStart)
+  const quietHoursEnd = useAppStore((s) => s.quietHoursEnd)
+  const setQuietHours = useAppStore((s) => s.setQuietHours)
   const [error, setError] = useState(false)
 
   if (!isPushSupported()) return null
@@ -55,6 +59,42 @@ export default function PushSettings() {
         </p>
       )}
       {error && <p className="text-xs text-priority-high">{t('push.error')}</p>}
+
+      {pushEnabled && (
+        <div className="flex items-center justify-between border-t border-white/5 pt-2 text-sm">
+          <span className="text-slate-300">{t('push.quiet_hours')}</span>
+          <div className="flex items-center gap-1.5">
+            {quietHoursEnabled && (
+              <>
+                <input
+                  type="time"
+                  value={quietHoursStart}
+                  onChange={(e) => setQuietHours({ quietHoursStart: e.target.value })}
+                  className="w-20 rounded-md bg-app-bg px-1.5 py-1 text-xs text-slate-100 outline-none focus:ring-1 focus:ring-brand-cta"
+                />
+                <span className="text-slate-500">–</span>
+                <input
+                  type="time"
+                  value={quietHoursEnd}
+                  onChange={(e) => setQuietHours({ quietHoursEnd: e.target.value })}
+                  className="w-20 rounded-md bg-app-bg px-1.5 py-1 text-xs text-slate-100 outline-none focus:ring-1 focus:ring-brand-cta"
+                />
+              </>
+            )}
+            <button
+              type="button"
+              onClick={() => setQuietHours({ quietHoursEnabled: !quietHoursEnabled })}
+              className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                quietHoursEnabled
+                  ? 'bg-brand-cta text-app-bg hover:brightness-110'
+                  : 'bg-app-cardMuted text-slate-300 hover:bg-white/10'
+              }`}
+            >
+              {quietHoursEnabled ? t('push.enable') : t('push.disable')}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import {
   AlarmClockPlus,
   Bell,
+  Cake,
   Check,
   ChevronDown,
   ChevronUp,
@@ -29,7 +30,12 @@ export default function TaskRow({ task, todayKey, pushEnabled, onToggle, onEdit,
   const Icon = meta.icon
   const catMeta = categoryMeta(task.category)
   const CatIcon = catMeta?.icon
-  const streak = task.recurrence ? computeStreak(task, todayKey) : 0
+  // computeStreak walks backward day-by-day from today until it hits
+  // task.date, which would be a years-long loop for a yearly anchor — streaks
+  // only make sense for the daily/weekdays/weekly cadences anyway.
+  const streak = task.recurrence && task.recurrence !== 'yearly' ? computeStreak(task, todayKey) : 0
+  const yearlyAge =
+    task.recurrence === 'yearly' ? new Date(task.occurrenceDate).getFullYear() - new Date(task.date).getFullYear() : null
   const [justCopied, setJustCopied] = useState(false)
   const [checklistOpen, setChecklistOpen] = useState(false)
 
@@ -76,12 +82,18 @@ export default function TaskRow({ task, todayKey, pushEnabled, onToggle, onEdit,
           <span
             className={`min-w-0 flex-1 truncate text-sm ${task.done ? 'line-through text-slate-500' : 'text-slate-100'}`}
           >
+            {task.emoji && <span className="mr-1">{task.emoji}</span>}
             {task.title}
           </span>
         </div>
         <div className="flex items-center gap-2 pl-7">
           {task.recurrence && <Repeat size={13} className="shrink-0 text-slate-500" />}
           {catMeta && <CatIcon size={13} color={catMeta.color} className="shrink-0" />}
+          {yearlyAge !== null && yearlyAge > 0 && (
+            <span className="flex shrink-0 items-center gap-0.5 text-xs text-priority-medium">
+              <Cake size={12} /> {yearlyAge}
+            </span>
+          )}
           {streak > 1 && (
             <span className="flex shrink-0 items-center gap-0.5 text-xs text-priority-medium">
               <Flame size={12} /> {streak}

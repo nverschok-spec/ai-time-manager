@@ -21,9 +21,10 @@ const SUGGESTION_SCHEMA = {
           start_time: { type: 'string', description: 'HH:MM, 24-hour' },
           duration_minutes: { type: 'integer' },
           priority: { type: 'string', enum: ['low', 'medium', 'high'] },
+          emoji: { type: 'string', description: 'A single emoji representing this task' },
           confidence: { type: 'number', description: '0.0 to 1.0' }
         },
-        required: ['title', 'date', 'start_time', 'duration_minutes', 'priority', 'confidence'],
+        required: ['title', 'date', 'start_time', 'duration_minutes', 'priority', 'emoji', 'confidence'],
         additionalProperties: false
       }
     }
@@ -47,6 +48,7 @@ For each distinct task/appointment/reminder implied by the user's text or photo,
 - start_time: HH:MM 24-hour. If the user gave no explicit time for a "find me time for X" style request, pick a reasonable free slot outside the provided busy times AND outside the times of the other suggestions you are generating in this same response — never let two of your own suggestions overlap each other.
 - duration_minutes: your best estimate if not stated explicitly
 - priority: "low" | "medium" | "high"
+- emoji: a single emoji that best fits this specific task (e.g. 💊 for medication, 🏋️ for a workout, 🦷 for a dentist visit) — pick something concrete and fitting, not generic like 📅
 - confidence: 0.0-1.0, how confident you are in this interpretation. Use a lower value when the request is ambiguous (missing date, vague duration, unclear intent).
 If the text contains no actionable scheduling request, return an empty suggestions array.`
 }

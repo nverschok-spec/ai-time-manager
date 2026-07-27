@@ -48,6 +48,9 @@ export const useAppStore = create(
       lastReviewDate: null,
       lastWeeklyReviewWeek: null,
       pushEnabled: false,
+      quietHoursEnabled: false,
+      quietHoursStart: '22:00',
+      quietHoursEnd: '07:00',
       focusSessions: [],
       dataLoaded: false,
 
@@ -55,6 +58,12 @@ export const useAppStore = create(
       setLastReviewDate: (dateKey) => set({ lastReviewDate: dateKey }),
       setLastWeeklyReviewWeek: (weekKey) => set({ lastWeeklyReviewWeek: weekKey }),
       setPushEnabled: (pushEnabled) => set({ pushEnabled }),
+      setQuietHours: (patch) => set(patch),
+
+      quietHoursConfig: () => {
+        const { quietHoursEnabled, quietHoursStart, quietHoursEnd } = get()
+        return { enabled: quietHoursEnabled, start: quietHoursStart, end: quietHoursEnd }
+      },
 
       // Local-only, capped at the most recent 200 runs — a Pomodoro session
       // belongs to whichever device it ran on, not something that needs to
@@ -140,7 +149,8 @@ export const useAppStore = create(
             title: task.title,
             date: task.date,
             startTime: task.startTime,
-            offsetMinutes: task.reminderOffsetMinutes || 0
+            offsetMinutes: task.reminderOffsetMinutes || 0,
+            quietHours: get().quietHoursConfig()
           })
         }
       },
@@ -208,7 +218,8 @@ export const useAppStore = create(
             title: task.title,
             date: task.date,
             startTime: task.startTime,
-            offsetMinutes
+            offsetMinutes,
+            quietHours: get().quietHoursConfig()
           })
         }
       },
@@ -232,7 +243,8 @@ export const useAppStore = create(
             title: task.title,
             date: task.date,
             startTime: task.startTime,
-            offsetMinutes: task.reminderOffsetMinutes
+            offsetMinutes: task.reminderOffsetMinutes,
+            quietHours: get().quietHoursConfig()
           })
         }
       },
@@ -302,6 +314,7 @@ export const useAppStore = create(
           startTime: suggestion.start_time,
           durationMinutes: suggestion.duration_minutes,
           priority: suggestion.priority,
+          emoji: suggestion.emoji || undefined,
           reminderOffsetMinutes: 15
         })
         set((state) => ({ suggestions: state.suggestions.filter((_, i) => i !== index) }))
@@ -352,6 +365,9 @@ export const useAppStore = create(
         lastReviewDate: state.lastReviewDate,
         lastWeeklyReviewWeek: state.lastWeeklyReviewWeek,
         pushEnabled: state.pushEnabled,
+        quietHoursEnabled: state.quietHoursEnabled,
+        quietHoursStart: state.quietHoursStart,
+        quietHoursEnd: state.quietHoursEnd,
         focusSessions: state.focusSessions
       })
     }

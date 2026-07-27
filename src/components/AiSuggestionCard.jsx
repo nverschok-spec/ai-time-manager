@@ -59,7 +59,10 @@ export default function AiSuggestionCard() {
               </div>
             ) : (
               <div>
-                <p className="text-sm text-slate-100">{s.title}</p>
+                <p className="text-sm text-slate-100">
+                  {s.emoji && <span className="mr-1">{s.emoji}</span>}
+                  {s.title}
+                </p>
                 <p className="flex items-center gap-1.5 text-xs text-slate-400 tabular-nums">
                   {(() => {
                     const meta = priorityMeta(s.priority)

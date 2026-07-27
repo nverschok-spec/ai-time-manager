@@ -61,6 +61,7 @@
     "repeat_daily": "Täglich",
     "repeat_weekdays": "Werktags",
     "repeat_weekly": "Wöchentlich",
+    "repeat_yearly": "Jährlich",
     "remind": "Erinnerung",
     "remind_0": "Zum Start",
     "remind_5": "5 Min. vorher",
@@ -110,6 +111,12 @@
     "start": "Tag beginnen",
     "digest_loading": "Die KI schaut sich deinen Tag an…"
   },
+  "focus": {
+    "now": "Gerade am wichtigsten",
+    "mark_done": "Als erledigt markieren",
+    "remaining": "Noch {{count}} heute",
+    "empty": "Für heute alles erledigt."
+  },
   "weekly": {
     "title": "Wochenrückblick",
     "loading": "Die KI schaut sich deine Woche an…",
@@ -125,6 +132,7 @@
     "enable": "Aktivieren",
     "disable": "Deaktivieren",
     "ios_instructions": "Auf dem iPhone: zuerst über Teilen → „Zum Home-Bildschirm“ hinzufügen, dann von dort öffnen und hier aktivieren",
+    "quiet_hours": "Ruhezeiten",
     "error": "Benachrichtigungen konnten nicht aktiviert werden"
   },
   "pin": {

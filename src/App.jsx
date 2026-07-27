@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Settings as SettingsIcon } from 'lucide-react'
+import { Settings as SettingsIcon, Target } from 'lucide-react'
 import LanguageSwitcher from './components/LanguageSwitcher'
 import Logo from './components/Logo'
 import StatsOverview from './components/StatsOverview'
@@ -13,12 +13,17 @@ import CalendarView from './components/CalendarView'
 import VoiceAiInput from './components/VoiceAiInput'
 import AiSuggestionCard from './components/AiSuggestionCard'
 import AiRescheduleCard from './components/AiRescheduleCard'
+import WeatherBadge from './components/WeatherBadge'
+import FocusMode from './components/FocusMode'
 import { getStoredPerson } from './components/PinGate'
 import { useAppStore } from './store/useAppStore'
 import { parseUserInput, fetchRescheduleOps } from './services/ai'
 import { isRescheduleCommand } from './lib/rescheduleIntent'
 import { migrateLegacyDataIfNeeded } from './lib/migrateLegacyData'
 import { hexToRgbChannels } from './lib/color'
+import { updateAppBadge } from './lib/badge'
+import { expandOccurrences } from './lib/occurrences'
+import { toDateKey } from './lib/date'
 
 const REFRESH_INTERVAL_MS = 30000
 
@@ -34,6 +39,7 @@ export default function App() {
   const archiveOldCompleted = useAppStore((s) => s.archiveOldCompleted)
   const [isLoading, setIsLoading] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+  const [focusMode, setFocusMode] = useState(false)
 
   useEffect(() => {
     setPerson(getStoredPerson())
@@ -50,6 +56,16 @@ export default function App() {
   useEffect(() => {
     document.documentElement.style.setProperty('--accent', person?.color ? hexToRgbChannels(person.color) : '46 204 145')
   }, [person])
+
+  // App-icon badge (iOS Safari, home-screen installs) — overdue plus
+  // whatever's still left today, recurring occurrences included.
+  useEffect(() => {
+    const todayKey = toDateKey(new Date())
+    const overdueCount = tasks.filter((t) => !t.recurrence && !t.done && t.date < todayKey).length
+    const todayTasks = expandOccurrences(tasks, [todayKey])[todayKey]
+    const todayRemaining = todayTasks.filter((t) => !t.done).length
+    updateAppBadge(overdueCount + todayRemaining)
+  }, [tasks])
 
   // Keeps the shared shopping list (and the other person's edits generally)
   // in sync without needing a websocket — cheap enough at this scale.
@@ -112,7 +128,17 @@ export default function App() {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <WeatherBadge />
               <LanguageSwitcher />
+              <button
+                type="button"
+                onClick={() => setFocusMode((v) => !v)}
+                className={`rounded-lg p-2 transition-colors ${
+                  focusMode ? 'bg-brand-cta text-app-bg' : 'bg-app-card text-slate-300 hover:text-slate-100'
+                }`}
+              >
+                <Target size={18} />
+              </button>
               <button
                 type="button"
                 onClick={() => setShowSettings(true)}
@@ -123,17 +149,23 @@ export default function App() {
             </div>
           </header>
 
-          <StatsOverview />
+          {focusMode ? (
+            <FocusMode />
+          ) : (
+            <>
+              <StatsOverview />
 
-          <ActivityHeatmap />
+              <ActivityHeatmap />
 
-          <OverdueBanner />
+              <OverdueBanner />
 
-          <AiSuggestionCard />
+              <AiSuggestionCard />
 
-          <AiRescheduleCard />
+              <AiRescheduleCard />
 
-          <CalendarView />
+              <CalendarView />
+            </>
+          )}
         </div>
       </div>
 

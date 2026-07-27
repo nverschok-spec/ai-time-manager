@@ -1,4 +1,5 @@
 import { getStoredToken } from '../components/PinGate'
+import { applyQuietHours } from './quietHours'
 
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY
 
@@ -64,10 +65,14 @@ export async function unsubscribeFromPush() {
 }
 
 // sendAt is computed client-side (browser's own timezone) so the server never
-// has to reinterpret a local date/time string in its own (UTC) timezone.
-export async function scheduleReminder({ taskId, title, date, startTime, offsetMinutes = 0 }) {
-  const sendAt = new Date(`${date}T${startTime}:00`).getTime() - offsetMinutes * 60000
-  if (Number.isNaN(sendAt) || sendAt <= Date.now()) return
+// has to reinterpret a local date/time string in its own (UTC) timezone —
+// quietHours (also wall-clock, also the caller's job to supply) shifts it
+// past the quiet window the same way, before the server ever sees it.
+export async function scheduleReminder({ taskId, title, date, startTime, offsetMinutes = 0, quietHours }) {
+  let sendAt = new Date(`${date}T${startTime}:00`).getTime() - offsetMinutes * 60000
+  if (Number.isNaN(sendAt)) return
+  if (quietHours) sendAt = applyQuietHours(sendAt, quietHours)
+  if (sendAt <= Date.now()) return
 
   try {
     await fetch('/api/push-schedule', {

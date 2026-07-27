@@ -16,7 +16,7 @@ import EmptyStateIllustration from './EmptyStateIllustration'
 import ShoppingList from './ShoppingList'
 import Confetti from './Confetti'
 
-const RECURRENCE_OPTIONS = ['none', 'daily', 'weekdays', 'weekly']
+const RECURRENCE_OPTIONS = ['none', 'daily', 'weekdays', 'weekly', 'yearly']
 const REMINDER_OFFSET_OPTIONS = [0, 5, 15, 30, 60]
 
 // One-tap starting points for common errands — still opens the form (not an
@@ -40,6 +40,7 @@ function TaskForm({ task, defaultDate, prefill, onCancel }) {
   const addTask = useAppStore((s) => s.addTask)
   const editTask = useAppStore((s) => s.editTask)
   const pushEnabled = useAppStore((s) => s.pushEnabled)
+  const allTasks = useAppStore((s) => s.tasks)
   const [title, setTitle] = useState(task?.title ?? (prefill ? t(`quick_templates.${prefill.key}`) : ''))
   const [notes, setNotes] = useState(task?.notes ?? '')
   const [date, setDate] = useState(task?.date ?? defaultDate)
@@ -51,6 +52,23 @@ function TaskForm({ task, defaultDate, prefill, onCancel }) {
   const [reminderOffsetMinutes, setReminderOffsetMinutes] = useState(task?.reminderOffsetMinutes ?? 15)
   const [checklist, setChecklist] = useState(task?.checklist ?? [])
   const [checklistDraft, setChecklistDraft] = useState('')
+  const [timeTouched, setTimeTouched] = useState(false)
+
+  // Create mode only: if a past task with the same title exists, borrow its
+  // time/duration as the default instead of the generic 09:00/30min — but
+  // only while the user hasn't picked a time themselves.
+  function handleTitleBlur() {
+    if (task || timeTouched) return
+    const normalized = title.trim().toLowerCase()
+    if (!normalized) return
+    const match = allTasks
+      .filter((t) => !t.recurrence && t.title.trim().toLowerCase() === normalized)
+      .sort((a, b) => b.date.localeCompare(a.date))[0]
+    if (match) {
+      setStartTime(match.startTime)
+      setDurationMinutes(match.durationMinutes)
+    }
+  }
 
   function addChecklistItem() {
     const text = checklistDraft.trim()
@@ -93,6 +111,7 @@ function TaskForm({ task, defaultDate, prefill, onCancel }) {
         autoFocus
         value={title}
         onChange={(e) => setTitle(e.target.value)}
+        onBlur={handleTitleBlur}
         placeholder={t('calendar.title_placeholder')}
         className="w-full rounded-md bg-app-bg px-2 py-1.5 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:ring-1 focus:ring-brand-cta"
       />
@@ -154,7 +173,10 @@ function TaskForm({ task, defaultDate, prefill, onCancel }) {
         <input
           type="time"
           value={startTime}
-          onChange={(e) => setStartTime(e.target.value)}
+          onChange={(e) => {
+            setTimeTouched(true)
+            setStartTime(e.target.value)
+          }}
           className="min-w-0 rounded-md bg-app-bg px-2 py-1.5 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-brand-cta"
         />
       </div>
