@@ -118,20 +118,20 @@ export default function App() {
 
       <div className="flex-1 overflow-y-auto overflow-x-hidden">
         <div className="mx-auto max-w-md p-4 space-y-5">
-          <header className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+          <header className="flex items-center justify-between gap-2">
+            <div className="flex min-w-0 items-center gap-2">
               <Logo />
-              <div>
-                <h1 className="text-lg font-semibold leading-tight">{t('app.title')}</h1>
-                {person && <p className="text-xs leading-tight text-muted">{person.name}</p>}
+              <div className="min-w-0">
+                <h1 className="truncate text-base font-semibold leading-tight">{t('app.title')}</h1>
+                {person && <p className="truncate text-xs leading-tight text-muted">{person.name}</p>}
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex shrink-0 items-center gap-1.5">
               <LanguageSwitcher />
               <button
                 type="button"
                 onClick={() => setFocusMode((v) => !v)}
-                className={`rounded-lg p-2 transition-colors ${
+                className={`rounded-lg p-1.5 transition-colors ${
                   focusMode ? 'bg-brand-cta text-app-bg' : 'bg-app-card text-slate-300 hover:text-slate-100'
                 }`}
               >
@@ -140,7 +140,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setShowSettings(true)}
-                className="rounded-lg bg-app-card p-2 text-slate-300 hover:text-slate-100"
+                className="rounded-lg bg-app-card p-1.5 text-slate-300 hover:text-slate-100"
               >
                 <SettingsIcon size={18} />
               </button>
