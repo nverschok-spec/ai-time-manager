@@ -26,6 +26,10 @@
     "conflict": "Time conflict",
     "low_confidence": "Please confirm"
   },
+  "reschedule": {
+    "title": "AI suggests moving",
+    "accept_all": "Accept all"
+  },
   "settings": {
     "title": "Settings",
     "language": "Language",

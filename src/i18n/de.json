@@ -26,6 +26,10 @@
     "conflict": "Terminkonflikt",
     "low_confidence": "Bitte bestätigen"
   },
+  "reschedule": {
+    "title": "KI schlägt Verschiebung vor",
+    "accept_all": "Alle übernehmen"
+  },
   "settings": {
     "title": "Einstellungen",
     "language": "Sprache",

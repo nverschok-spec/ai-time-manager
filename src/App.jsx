@@ -12,9 +12,11 @@ import SettingsPanel from './components/SettingsPanel'
 import CalendarView from './components/CalendarView'
 import VoiceAiInput from './components/VoiceAiInput'
 import AiSuggestionCard from './components/AiSuggestionCard'
+import AiRescheduleCard from './components/AiRescheduleCard'
 import { getStoredPerson } from './components/PinGate'
 import { useAppStore } from './store/useAppStore'
-import { parseUserInput } from './services/ai'
+import { parseUserInput, fetchRescheduleOps } from './services/ai'
+import { isRescheduleCommand } from './lib/rescheduleIntent'
 import { migrateLegacyDataIfNeeded } from './lib/migrateLegacyData'
 
 const REFRESH_INTERVAL_MS = 30000
@@ -27,6 +29,7 @@ export default function App() {
   const setPerson = useAppStore((s) => s.setPerson)
   const loadAll = useAppStore((s) => s.loadAll)
   const setSuggestions = useAppStore((s) => s.setSuggestions)
+  const setRescheduleOps = useAppStore((s) => s.setRescheduleOps)
   const [isLoading, setIsLoading] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
 
@@ -57,8 +60,16 @@ export default function App() {
   async function handleSubmit({ text, image }) {
     setIsLoading(true)
     try {
-      const suggestions = await parseUserInput(text, tasks, image)
-      setSuggestions(suggestions)
+      // Bulk-move commands ("move everything today to tomorrow") skip the
+      // create-task flow entirely and go through a narrower endpoint that
+      // can only reschedule tasks it's given, never invent new ones.
+      if (!image && isRescheduleCommand(text)) {
+        const ops = await fetchRescheduleOps(text, tasks)
+        setRescheduleOps(ops)
+      } else {
+        const suggestions = await parseUserInput(text, tasks, image)
+        setSuggestions(suggestions)
+      }
     } catch (err) {
       setSuggestions([])
     } finally {
@@ -109,6 +120,8 @@ export default function App() {
           <OverdueBanner />
 
           <AiSuggestionCard />
+
+          <AiRescheduleCard />
 
           <CalendarView />
         </div>

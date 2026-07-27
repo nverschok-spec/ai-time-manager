@@ -82,6 +82,73 @@ export async function parseUserInput(text, tasks, image) {
   })
 }
 
+// Wider window than buildScheduleContext (which only feeds conflict
+// detection) — a reschedule instruction like "move next week's dentist
+// appointment" needs enough of the task list in view to actually find it.
+const RESCHEDULE_WINDOW_DAYS = 21
+
+export async function fetchRescheduleOps(text, tasks) {
+  const today = new Date()
+  const start = new Date(today)
+  start.setDate(start.getDate() - RESCHEDULE_WINDOW_DAYS)
+  const end = new Date(today)
+  end.setDate(end.getDate() + RESCHEDULE_WINDOW_DAYS)
+  const startKey = toDateKey(start)
+  const endKey = toDateKey(end)
+
+  // Recurring templates are excluded: moving one would shift its recurrence
+  // anchor date (e.g. which weekday a "weekly" series falls on) as a side
+  // effect, which isn't what "reschedule this" means and is hard to undo.
+  const context = tasks
+    .filter((t) => !t.recurrence && t.date >= startKey && t.date <= endKey)
+    .map((t) => ({
+      id: t.id,
+      title: t.title,
+      date: t.date,
+      start_time: t.startTime,
+      category: t.category,
+      priority: t.priority
+    }))
+
+  const token = getStoredToken()
+  const res = await fetch('/api/ai-reschedule', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    },
+    body: JSON.stringify({ text, tasks: context, today: toDateKey(today) })
+  })
+
+  if (res.status === 401) {
+    clearStoredToken()
+    window.location.reload()
+    throw new Error('ai-reschedule request failed: 401')
+  }
+  if (!res.ok) {
+    throw new Error(`ai-reschedule request failed: ${res.status}`)
+  }
+
+  const data = await res.json()
+  const moves = Array.isArray(data.moves) ? data.moves : []
+  const byId = new Map(tasks.map((t) => [t.id, t]))
+
+  return moves
+    .map((m) => {
+      const task = byId.get(m.id)
+      if (!task) return null
+      return {
+        id: m.id,
+        title: task.title,
+        oldDate: task.date,
+        oldStartTime: task.startTime,
+        newDate: m.new_date,
+        newStartTime: m.new_start_time || task.startTime
+      }
+    })
+    .filter(Boolean)
+}
+
 // Best-effort — returns '' on any failure so the caller can silently fall
 // back to the plain stats card instead of blocking the weekly review.
 export async function fetchWeeklyReview(stats, locale) {

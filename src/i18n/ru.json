@@ -26,6 +26,10 @@
     "conflict": "Конфликт по времени",
     "low_confidence": "Уточните"
   },
+  "reschedule": {
+    "title": "ИИ предлагает перенести",
+    "accept_all": "Принять всё"
+  },
   "settings": {
     "title": "Настройки",
     "language": "Язык",

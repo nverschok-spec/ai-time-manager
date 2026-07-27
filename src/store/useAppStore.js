@@ -41,6 +41,7 @@ export const useAppStore = create(
       people: [],
       shoppingItems: [],
       suggestions: [],
+      rescheduleOps: [],
       lastReviewDate: null,
       lastWeeklyReviewWeek: null,
       pushEnabled: false,
@@ -239,6 +240,25 @@ export const useAppStore = create(
       },
 
       setSuggestions: (suggestions) => set({ suggestions }),
+
+      setRescheduleOps: (rescheduleOps) => set({ rescheduleOps }),
+
+      acceptRescheduleOp: (index) => {
+        const op = get().rescheduleOps[index]
+        if (!op) return
+        get().editTask(op.id, { date: op.newDate, startTime: op.newStartTime })
+        set((state) => ({ rescheduleOps: state.rescheduleOps.filter((_, i) => i !== index) }))
+      },
+
+      acceptAllRescheduleOps: () => {
+        for (const op of get().rescheduleOps) {
+          get().editTask(op.id, { date: op.newDate, startTime: op.newStartTime })
+        }
+        set({ rescheduleOps: [] })
+      },
+
+      dismissRescheduleOp: (index) =>
+        set((state) => ({ rescheduleOps: state.rescheduleOps.filter((_, i) => i !== index) })),
 
       updateSuggestion: (index, patch) =>
         set((state) => ({
