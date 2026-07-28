@@ -36,6 +36,22 @@ export function clearStoredToken() {
   localStorage.removeItem(STORAGE_KEY)
 }
 
+// The logged-in person (with their color) lives in this same auth blob, not
+// just in the store — without this, a color change would look right until
+// the next reload, when getStoredPerson() would hand back the stale color.
+export function updateStoredPersonColor(color) {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return
+    const parsed = JSON.parse(raw)
+    if (!parsed.person) return
+    parsed.person = { ...parsed.person, color }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed))
+  } catch {
+    // corrupt/missing blob — nothing to patch
+  }
+}
+
 export default function PinGate({ children }) {
   const { t } = useTranslation()
   const [unlocked, setUnlocked] = useState(() => Boolean(getStoredToken()))

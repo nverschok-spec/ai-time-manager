@@ -49,6 +49,7 @@
     "import": "Daten importieren",
     "export_calendar": "In Apple Calendar abonnieren (aktualisiert sich selbst)",
     "privacy_note": "Der Aufgabentext (und ein angehängtes Foto) wird zur Analyse kurzzeitig an die KI gesendet und nicht gespeichert.",
+    "my_color": "Meine Farbe",
     "people": "Wer nutzt das hier",
     "you": "du",
     "people_hint": "Eine neue Person wird über den PIN-Eingabebildschirm hinzugefügt."

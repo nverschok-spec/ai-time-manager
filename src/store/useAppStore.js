@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { scheduleReminder } from '../lib/push'
 import { addMinutes, toDateKey } from '../lib/date'
-import { getStoredToken, clearStoredToken } from '../components/PinGate'
+import { getStoredToken, clearStoredToken, updateStoredPersonColor } from '../components/PinGate'
 
 const ARCHIVE_AFTER_DAYS = 60
 
@@ -134,6 +134,21 @@ export const useAppStore = create(
       removePerson: (id) => {
         set((state) => ({ people: state.people.filter((p) => p.id !== id) }))
         queuedFetch('/api/people', { method: 'DELETE', body: JSON.stringify({ id }) })
+      },
+
+      // Only ever changes the CURRENT person's own color (server enforces
+      // this too, from the auth token) — updates the people list, the
+      // logged-in person object, and the localStorage auth blob so it
+      // survives a reload without needing a fresh login.
+      updatePersonColor: (color) => {
+        const me = get().person
+        if (!me) return
+        set((state) => ({
+          person: { ...state.person, color },
+          people: state.people.map((p) => (p.id === me.id ? { ...p, color } : p))
+        }))
+        updateStoredPersonColor(color)
+        queuedFetch('/api/people', { method: 'PUT', body: JSON.stringify({ color }) })
       },
 
       addShoppingItem: (text) => {

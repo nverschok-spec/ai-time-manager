@@ -24,6 +24,17 @@ export default async function handler(req, res) {
     return res.status(200).json({ people, feedToken })
   }
 
+  if (req.method === 'PUT') {
+    // Only your own color — personId comes from the auth token, never the
+    // body, so one household member can't repaint another's accent color.
+    const { color } = req.body || {}
+    if (!color) return res.status(400).json({ error: 'Missing color' })
+    const people = (await redis.get('people')) || []
+    const updated = people.map((p) => (p.id === personId ? { ...p, color } : p))
+    await redis.set('people', updated)
+    return res.status(200).json({ ok: true })
+  }
+
   if (req.method === 'DELETE') {
     const { id } = req.body || {}
     if (!id) return res.status(400).json({ error: 'Missing id' })
