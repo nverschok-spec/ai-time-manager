@@ -39,6 +39,7 @@ export default function App() {
   const setRescheduleOps = useAppStore((s) => s.setRescheduleOps)
   const setScheduleAnswer = useAppStore((s) => s.setScheduleAnswer)
   const archiveOldCompleted = useAppStore((s) => s.archiveOldCompleted)
+  const syncRecurringReminders = useAppStore((s) => s.syncRecurringReminders)
   const flushPendingMutations = useAppStore((s) => s.flushPendingMutations)
   const [isLoading, setIsLoading] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
@@ -50,6 +51,7 @@ export default function App() {
       await migrateLegacyDataIfNeeded()
       await loadAll()
       archiveOldCompleted()
+      syncRecurringReminders()
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadAll, setPerson])

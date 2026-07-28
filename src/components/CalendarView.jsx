@@ -264,7 +264,7 @@ function TaskForm({ task, defaultDate, prefill, onCancel }) {
           ))}
         </div>
       </div>
-      {pushEnabled && recurrence === 'none' && (
+      {pushEnabled && (
         <div className="flex items-center gap-2">
           <span className="text-xs text-slate-400">{t('calendar.remind')}</span>
           <div className="inline-flex rounded-lg bg-app-bg p-1 gap-1 flex-wrap">

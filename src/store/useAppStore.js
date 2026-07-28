@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { scheduleReminder } from '../lib/push'
 import { addMinutes, toDateKey } from '../lib/date'
+import { nextOccurrenceOnOrAfter } from '../lib/occurrences'
 import { getStoredToken, clearStoredToken, updateStoredPersonColor } from '../components/PinGate'
 
 const ARCHIVE_AFTER_DAYS = 60
@@ -70,6 +71,7 @@ export const useAppStore = create(
         quietHoursEnd: '07:00',
         focusSessions: [],
         pendingMutations: [],
+        lastRecurringReminderSyncDate: null,
         dataLoaded: false,
 
         // Replays queued mutations in order; stops at the first failure
@@ -87,6 +89,34 @@ export const useAppStore = create(
               break
             }
           }
+        },
+
+        // Recurring tasks can't just reuse their (often long-past, e.g. a
+        // birth year) anchor date for scheduleReminder — it always needs a
+        // real future date, so this recomputes "next time this actually
+        // happens" and reschedules for that. Runs once per day per app load
+        // (force=true bypasses that, for immediate feedback right after
+        // saving a recurring task's reminder setting).
+        syncRecurringReminders: (force = false) => {
+          const { tasks, pushEnabled, lastRecurringReminderSyncDate } = get()
+          if (!pushEnabled) return
+          const todayKey = toDateKey(new Date())
+          if (!force && lastRecurringReminderSyncDate === todayKey) return
+
+          for (const task of tasks) {
+            if (!task.recurrence || task.reminderOffsetMinutes == null) continue
+            const nextDate = nextOccurrenceOnOrAfter(task, todayKey)
+            if (!nextDate) continue
+            scheduleReminder({
+              taskId: task.id,
+              title: task.title,
+              date: nextDate,
+              startTime: task.startTime,
+              offsetMinutes: task.reminderOffsetMinutes,
+              quietHours: get().quietHoursConfig()
+            })
+          }
+          if (!force) set({ lastRecurringReminderSyncDate: todayKey })
         },
 
         setPerson: (person) => set({ person }),
@@ -215,15 +245,19 @@ export const useAppStore = create(
         queuedFetch('/api/tasks', { method: 'POST', body: JSON.stringify({ task: newTask }) })
 
         const { pushEnabled } = get()
-        if (pushEnabled && !task.recurrence && task.date && task.startTime) {
-          scheduleReminder({
-            taskId: id,
-            title: task.title,
-            date: task.date,
-            startTime: task.startTime,
-            offsetMinutes: task.reminderOffsetMinutes || 0,
-            quietHours: get().quietHoursConfig()
-          })
+        if (pushEnabled && task.date && task.startTime && task.reminderOffsetMinutes != null) {
+          if (task.recurrence) {
+            get().syncRecurringReminders(true)
+          } else {
+            scheduleReminder({
+              taskId: id,
+              title: task.title,
+              date: task.date,
+              startTime: task.startTime,
+              offsetMinutes: task.reminderOffsetMinutes,
+              quietHours: get().quietHoursConfig()
+            })
+          }
         }
       },
 
@@ -282,15 +316,19 @@ export const useAppStore = create(
         get().updateTask(id, { reminderOffsetMinutes: offsetMinutes })
         const task = get().tasks.find((t) => t.id === id)
         const { pushEnabled } = get()
-        if (task && pushEnabled && !task.recurrence && task.date && task.startTime) {
-          scheduleReminder({
-            taskId: id,
-            title: task.title,
-            date: task.date,
-            startTime: task.startTime,
-            offsetMinutes,
-            quietHours: get().quietHoursConfig()
-          })
+        if (task && pushEnabled && task.date && task.startTime) {
+          if (task.recurrence) {
+            get().syncRecurringReminders(true)
+          } else {
+            scheduleReminder({
+              taskId: id,
+              title: task.title,
+              date: task.date,
+              startTime: task.startTime,
+              offsetMinutes,
+              quietHours: get().quietHoursConfig()
+            })
+          }
         }
       },
 
@@ -300,22 +338,19 @@ export const useAppStore = create(
         get().updateTask(id, patch)
         const task = get().tasks.find((t) => t.id === id)
         const { pushEnabled } = get()
-        if (
-          task &&
-          pushEnabled &&
-          !task.recurrence &&
-          task.date &&
-          task.startTime &&
-          task.reminderOffsetMinutes != null
-        ) {
-          scheduleReminder({
-            taskId: id,
-            title: task.title,
-            date: task.date,
-            startTime: task.startTime,
-            offsetMinutes: task.reminderOffsetMinutes,
-            quietHours: get().quietHoursConfig()
-          })
+        if (task && pushEnabled && task.date && task.startTime && task.reminderOffsetMinutes != null) {
+          if (task.recurrence) {
+            get().syncRecurringReminders(true)
+          } else {
+            scheduleReminder({
+              taskId: id,
+              title: task.title,
+              date: task.date,
+              startTime: task.startTime,
+              offsetMinutes: task.reminderOffsetMinutes,
+              quietHours: get().quietHoursConfig()
+            })
+          }
         }
       },
 

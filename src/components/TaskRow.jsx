@@ -100,7 +100,7 @@ export default function TaskRow({ task, todayKey, pushEnabled, onToggle, onEdit,
             </span>
           )}
           <div className="ml-auto flex items-center gap-3">
-            {pushEnabled && !task.recurrence && (
+            {pushEnabled && (
               <button
                 type="button"
                 onClick={() => onOpenReminder(task)}
