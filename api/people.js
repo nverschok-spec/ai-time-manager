@@ -1,3 +1,4 @@
+import crypto from 'node:crypto'
 import { Redis } from '@upstash/redis'
 import { requirePersonAuth } from './_lib/auth.js'
 
@@ -10,7 +11,17 @@ export default async function handler(req, res) {
 
   if (req.method === 'GET') {
     const people = (await redis.get('people')) || []
-    return res.status(200).json({ people })
+
+    // Lazily minted, never rotated automatically — this is the unguessable
+    // secret in the ICS subscription URL (api/ics-feed.js); Apple Calendar
+    // can't send an Authorization header, so the URL itself has to prove identity.
+    let feedToken = await redis.get(`feedToken:${personId}`)
+    if (!feedToken) {
+      feedToken = crypto.randomBytes(24).toString('hex')
+      await redis.set(`feedToken:${personId}`, feedToken)
+    }
+
+    return res.status(200).json({ people, feedToken })
   }
 
   if (req.method === 'DELETE') {
@@ -20,6 +31,7 @@ export default async function handler(req, res) {
     await redis.set('people', people.filter((p) => p.id !== id))
     await redis.del(`tasks:${id}`)
     await redis.del(`sub:${id}`)
+    await redis.del(`feedToken:${id}`)
     return res.status(200).json({ ok: true })
   }
 

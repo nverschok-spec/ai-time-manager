@@ -42,6 +42,7 @@ export const useAppStore = create(
       person: null,
       tasks: [],
       people: [],
+      feedToken: null,
       shoppingItems: [],
       suggestions: [],
       rescheduleOps: [],
@@ -86,6 +87,7 @@ export const useAppStore = create(
           set({
             tasks: tasksRes.tasks || [],
             people: peopleRes.people || [],
+            feedToken: peopleRes.feedToken || null,
             shoppingItems: shoppingRes.items || [],
             dataLoaded: true
           })

@@ -1,8 +1,7 @@
-import { useMemo, useRef } from 'react'
+import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, CalendarPlus, Download, Upload } from 'lucide-react'
 import { useAppStore } from '../store/useAppStore'
-import { buildIcs } from '../lib/ics'
 import LanguageSwitcher from './LanguageSwitcher'
 import PushSettings from './PushSettings'
 import PeopleSettings from './PeopleSettings'
@@ -14,15 +13,16 @@ function todayKey() {
 
 export default function SettingsPanel({ onClose }) {
   const { t } = useTranslation()
-  const tasks = useAppStore((s) => s.tasks)
+  const person = useAppStore((s) => s.person)
+  const feedToken = useAppStore((s) => s.feedToken)
   const exportData = useAppStore((s) => s.exportData)
   const importData = useAppStore((s) => s.importData)
   const fileInputRef = useRef(null)
 
-  const icsHref = useMemo(
-    () => `data:text/calendar;charset=utf-8,${encodeURIComponent(buildIcs(tasks))}`,
-    [tasks]
-  )
+  // webcal:// (not https://) so iOS/macOS Calendar treats it as a live
+  // subscription to add, instead of just downloading/opening the file once.
+  const icsFeedUrl =
+    person && feedToken ? `webcal://${window.location.host}/api/ics-feed?person=${person.id}&token=${feedToken}` : null
 
   function handleExport() {
     const blob = new Blob([exportData()], { type: 'application/json' })
@@ -103,12 +103,14 @@ export default function SettingsPanel({ onClose }) {
               onChange={handleImportFile}
               className="hidden"
             />
-            <a
-              href={icsHref}
-              className="flex items-center justify-center gap-1.5 rounded-full bg-app-cardMuted py-2 text-sm text-slate-200 hover:bg-white/10"
-            >
-              <CalendarPlus size={14} /> {t('settings.export_calendar')}
-            </a>
+            {icsFeedUrl && (
+              <a
+                href={icsFeedUrl}
+                className="flex items-center justify-center gap-1.5 rounded-full bg-app-cardMuted py-2 text-sm text-slate-200 hover:bg-white/10"
+              >
+                <CalendarPlus size={14} /> {t('settings.export_calendar')}
+              </a>
+            )}
           </div>
           <p className="text-xs text-slate-500">{t('settings.privacy_note')}</p>
         </div>

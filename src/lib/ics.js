@@ -24,6 +24,8 @@ function recurrenceRule(recurrence) {
       return 'RRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR'
     case 'weekly':
       return 'RRULE:FREQ=WEEKLY'
+    case 'yearly':
+      return 'RRULE:FREQ=YEARLY'
     default:
       return null
   }

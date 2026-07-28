@@ -46,7 +46,7 @@
     "language": "Sprache",
     "export": "Daten exportieren",
     "import": "Daten importieren",
-    "export_calendar": "Zu Apple Calendar hinzufügen",
+    "export_calendar": "In Apple Calendar abonnieren (aktualisiert sich selbst)",
     "privacy_note": "Der Aufgabentext (und ein angehängtes Foto) wird zur Analyse kurzzeitig an die KI gesendet und nicht gespeichert.",
     "people": "Wer nutzt das hier",
     "you": "du",
