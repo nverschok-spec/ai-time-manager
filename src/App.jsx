@@ -1,21 +1,22 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Settings as SettingsIcon, Target } from 'lucide-react'
+import { Target } from 'lucide-react'
 import LanguageSwitcher from './components/LanguageSwitcher'
 import Logo from './components/Logo'
-import StatsOverview from './components/StatsOverview'
-import ActivityHeatmap from './components/ActivityHeatmap'
 import OverdueBanner from './components/OverdueBanner'
-import BackupReminderBanner from './components/BackupReminderBanner'
 import MorningReview from './components/MorningReview'
 import WeeklyReview from './components/WeeklyReview'
 import SettingsPanel from './components/SettingsPanel'
-import CalendarView from './components/CalendarView'
 import VoiceAiInput from './components/VoiceAiInput'
 import AiSuggestionCard from './components/AiSuggestionCard'
 import AiRescheduleCard from './components/AiRescheduleCard'
 import AiAnswerCard from './components/AiAnswerCard'
 import FocusMode from './components/FocusMode'
+import BottomNav from './components/BottomNav'
+import TodayPage from './components/pages/TodayPage'
+import CalendarPage from './components/pages/CalendarPage'
+import SharedPage from './components/pages/SharedPage'
+import StatsPage from './components/pages/StatsPage'
 import { getStoredPerson } from './components/PinGate'
 import { useAppStore } from './store/useAppStore'
 import { parseUserInput, fetchRescheduleOps, fetchScheduleAnswer } from './services/ai'
@@ -28,6 +29,16 @@ import { expandOccurrences } from './lib/occurrences'
 import { toDateKey } from './lib/date'
 
 const REFRESH_INTERVAL_MS = 30000
+
+// One job per page — Home (today), Calendar (week/month + search), Shared
+// (shopping/family), Stats (progress + heatmap). Replaces the old single
+// long-scrolling stack; see BottomNav for the tab bar itself.
+const PAGES = {
+  today: TodayPage,
+  calendar: CalendarPage,
+  shared: SharedPage,
+  stats: StatsPage
+}
 
 export default function App() {
   const { t } = useTranslation()
@@ -45,6 +56,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [focusMode, setFocusMode] = useState(false)
+  const [activeTab, setActiveTab] = useState('today')
 
   useEffect(() => {
     setPerson(getStoredPerson())
@@ -131,6 +143,8 @@ export default function App() {
     )
   }
 
+  const ActivePage = PAGES[activeTab]
+
   return (
     <div className="flex min-h-dvh flex-col bg-app-bg text-slate-100">
       <MorningReview />
@@ -158,13 +172,6 @@ export default function App() {
               >
                 <Target size={18} />
               </button>
-              <button
-                type="button"
-                onClick={() => setShowSettings(true)}
-                className="rounded-lg bg-app-card p-1.5 text-slate-300 hover:text-slate-100"
-              >
-                <SettingsIcon size={18} />
-              </button>
             </div>
           </header>
 
@@ -172,21 +179,14 @@ export default function App() {
             <FocusMode />
           ) : (
             <>
-              <StatsOverview />
-
-              <ActivityHeatmap />
-
+              <AiSuggestionCard />
+              <AiRescheduleCard />
+              <AiAnswerCard />
               <OverdueBanner />
 
-              <BackupReminderBanner />
-
-              <AiSuggestionCard />
-
-              <AiRescheduleCard />
-
-              <AiAnswerCard />
-
-              <CalendarView />
+              <div key={activeTab} className="animate-page-in">
+                <ActivePage />
+              </div>
             </>
           )}
         </div>
@@ -197,6 +197,10 @@ export default function App() {
           <VoiceAiInput onSubmit={handleSubmit} isLoading={isLoading} />
         </div>
       </div>
+
+      {!focusMode && (
+        <BottomNav activeTab={activeTab} onSelectTab={setActiveTab} onOpenSettings={() => setShowSettings(true)} />
+      )}
     </div>
   )
 }

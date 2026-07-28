@@ -5,10 +5,13 @@
   },
   "nav": {
     "today": "Heute",
+    "calendar": "Kalender",
     "week": "Woche",
     "month": "Monat",
     "shopping": "Einkauf",
     "family": "Familie",
+    "shared": "Gemeinsam",
+    "stats": "Statistik",
     "settings": "Einstellungen"
   },
   "input": {

@@ -5,10 +5,13 @@
   },
   "nav": {
     "today": "Сегодня",
+    "calendar": "Календарь",
     "week": "Неделя",
     "month": "Месяц",
     "shopping": "Покупки",
     "family": "Семья",
+    "shared": "Общее",
+    "stats": "Статистика",
     "settings": "Настройки"
   },
   "input": {

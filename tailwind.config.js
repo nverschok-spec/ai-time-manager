@@ -36,10 +36,15 @@ export default {
           '40%': { transform: 'translateX(8px)' },
           '60%': { transform: 'translateX(-6px)' },
           '80%': { transform: 'translateX(4px)' }
+        },
+        'page-in': {
+          from: { opacity: '0', transform: 'translateY(6px)' },
+          to: { opacity: '1', transform: 'translateY(0)' }
         }
       },
       animation: {
-        shake: 'shake 0.4s ease-in-out'
+        shake: 'shake 0.4s ease-in-out',
+        'page-in': 'page-in 0.16s ease-out'
       }
     }
   },
