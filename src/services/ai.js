@@ -5,6 +5,52 @@ import { expandOccurrences } from '../lib/occurrences'
 const CONTEXT_WINDOW_DAYS = 7
 const LOW_CONFIDENCE_THRESHOLD = 0.6
 
+// All AI calls go through one consolidated endpoint (see api/ai.js) — the
+// Hobby plan caps a deployment at 12 serverless functions, and every
+// standalone /api/ai-* file counted against that.
+async function callAi(action, payload) {
+  const token = getStoredToken()
+  const res = await fetch('/api/ai', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    },
+    body: JSON.stringify({ action, ...payload })
+  })
+
+  if (res.status === 401) {
+    clearStoredToken()
+    window.location.reload()
+    throw new Error(`ai ${action} request failed: 401`)
+  }
+  if (!res.ok) {
+    throw new Error(`ai ${action} request failed: ${res.status}`)
+  }
+  return res.json()
+}
+
+// Same as callAi but never throws or forces a re-login — used by the
+// best-effort digest/weekly-review calls that shouldn't block their UI over
+// a background AI hiccup.
+async function callAiSoft(action, payload) {
+  try {
+    const token = getStoredToken()
+    const res = await fetch('/api/ai', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      },
+      body: JSON.stringify({ action, ...payload })
+    })
+    if (!res.ok) return null
+    return await res.json()
+  } catch {
+    return null
+  }
+}
+
 function buildScheduleContext(tasks, referenceDate = new Date()) {
   const start = new Date(referenceDate)
   start.setDate(start.getDate() - CONTEXT_WINDOW_DAYS)
@@ -38,32 +84,12 @@ function rangesOverlap(aStart, aDuration, bStart, bDuration) {
 export async function parseUserInput(text, tasks, image) {
   const scheduleContext = buildScheduleContext(tasks)
 
-  const token = getStoredToken()
-  const res = await fetch('/api/ai-parse', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {})
-    },
-    body: JSON.stringify({
-      text,
-      scheduleContext,
-      today: toDateKey(new Date()),
-      image: image ? { base64: image.base64, mediaType: image.mediaType } : undefined
-    })
+  const data = await callAi('parse', {
+    text,
+    scheduleContext,
+    today: toDateKey(new Date()),
+    image: image ? { base64: image.base64, mediaType: image.mediaType } : undefined
   })
-
-  if (res.status === 401) {
-    clearStoredToken()
-    window.location.reload()
-    throw new Error('ai-parse request failed: 401')
-  }
-
-  if (!res.ok) {
-    throw new Error(`ai-parse request failed: ${res.status}`)
-  }
-
-  const data = await res.json()
   const rawSuggestions = Array.isArray(data.suggestions) ? data.suggestions : []
 
   return rawSuggestions.map((s) => {
@@ -111,26 +137,7 @@ export async function fetchRescheduleOps(text, tasks) {
       priority: t.priority
     }))
 
-  const token = getStoredToken()
-  const res = await fetch('/api/ai-reschedule', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {})
-    },
-    body: JSON.stringify({ text, tasks: context, today: toDateKey(today) })
-  })
-
-  if (res.status === 401) {
-    clearStoredToken()
-    window.location.reload()
-    throw new Error('ai-reschedule request failed: 401')
-  }
-  if (!res.ok) {
-    throw new Error(`ai-reschedule request failed: ${res.status}`)
-  }
-
-  const data = await res.json()
+  const data = await callAi('reschedule', { text, tasks: context, today: toDateKey(today) })
   const moves = Array.isArray(data.moves) ? data.moves : []
   const byId = new Map(tasks.map((t) => [t.id, t]))
 
@@ -183,75 +190,28 @@ export async function fetchScheduleAnswer(question, tasks) {
       done: t.done
     }))
 
-  const token = getStoredToken()
-  const res = await fetch('/api/ai-ask', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {})
-    },
-    body: JSON.stringify({ question, tasks: context, today: toDateKey(today) })
-  })
-
-  if (res.status === 401) {
-    clearStoredToken()
-    window.location.reload()
-    throw new Error('ai-ask request failed: 401')
-  }
-  if (!res.ok) {
-    throw new Error(`ai-ask request failed: ${res.status}`)
-  }
-
-  const data = await res.json()
+  const data = await callAi('ask', { question, tasks: context, today: toDateKey(today) })
   return data.answer || ''
 }
 
 // Best-effort — returns '' on any failure so the caller can silently fall
 // back to the plain stats card instead of blocking the weekly review.
 export async function fetchWeeklyReview(stats, locale) {
-  try {
-    const token = getStoredToken()
-    const res = await fetch('/api/ai-weekly-review', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {})
-      },
-      body: JSON.stringify({ stats, locale })
-    })
-    if (!res.ok) return ''
-    const data = await res.json()
-    return data.review || ''
-  } catch {
-    return ''
-  }
+  const data = await callAiSoft('weekly-review', { stats, locale })
+  return data?.review || ''
 }
 
 // Best-effort — returns '' on any failure so the caller can silently fall
 // back to the plain task list instead of blocking the morning review.
 export async function fetchDailyDigest(todayTasks, locale) {
-  try {
-    const token = getStoredToken()
-    const res = await fetch('/api/ai-digest', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {})
-      },
-      body: JSON.stringify({
-        locale,
-        tasks: todayTasks.map((t) => ({
-          title: t.title,
-          start_time: t.startTime,
-          duration_minutes: t.durationMinutes,
-          priority: t.priority
-        }))
-      })
-    })
-    if (!res.ok) return ''
-    const data = await res.json()
-    return data.digest || ''
-  } catch {
-    return ''
-  }
+  const data = await callAiSoft('digest', {
+    locale,
+    tasks: todayTasks.map((t) => ({
+      title: t.title,
+      start_time: t.startTime,
+      duration_minutes: t.durationMinutes,
+      priority: t.priority
+    }))
+  })
+  return data?.digest || ''
 }
