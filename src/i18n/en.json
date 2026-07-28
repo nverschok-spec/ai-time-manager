@@ -15,6 +15,7 @@
     "placeholder": "What do you want to plan?",
     "mic_start": "Start voice input",
     "mic_unavailable": "Voice input is not available on this device",
+    "mic_error": "Couldn't recognize speech — try the microphone on the iPhone keyboard itself",
     "photo_start": "Attach a photo (invitation, document)",
     "photo_attached": "Photo attached — will be read by the AI",
     "send": "Send"
@@ -36,6 +37,9 @@
   },
   "ask": {
     "dismiss": "Close"
+  },
+  "backup": {
+    "nudge": "It's been a while since your last backup — worth saving a fresh export"
   },
   "reschedule": {
     "title": "AI suggests moving",

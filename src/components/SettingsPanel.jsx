@@ -5,17 +5,12 @@ import { useAppStore } from '../store/useAppStore'
 import LanguageSwitcher from './LanguageSwitcher'
 import PushSettings from './PushSettings'
 import PeopleSettings from './PeopleSettings'
-import { toDateKey } from '../lib/date'
-
-function todayKey() {
-  return toDateKey(new Date())
-}
 
 export default function SettingsPanel({ onClose }) {
   const { t } = useTranslation()
   const person = useAppStore((s) => s.person)
   const feedToken = useAppStore((s) => s.feedToken)
-  const exportData = useAppStore((s) => s.exportData)
+  const exportAndDownload = useAppStore((s) => s.exportAndDownload)
   const importData = useAppStore((s) => s.importData)
   const fileInputRef = useRef(null)
 
@@ -23,16 +18,6 @@ export default function SettingsPanel({ onClose }) {
   // subscription to add, instead of just downloading/opening the file once.
   const icsFeedUrl =
     person && feedToken ? `webcal://${window.location.host}/api/ics-feed?person=${person.id}&token=${feedToken}` : null
-
-  function handleExport() {
-    const blob = new Blob([exportData()], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `ai-time-manager-${todayKey()}.json`
-    a.click()
-    URL.revokeObjectURL(url)
-  }
 
   function handleImportClick() {
     fileInputRef.current?.click()
@@ -84,7 +69,7 @@ export default function SettingsPanel({ onClose }) {
           <div className="flex flex-col gap-2">
             <button
               type="button"
-              onClick={handleExport}
+              onClick={exportAndDownload}
               className="flex items-center justify-center gap-1.5 rounded-full bg-app-cardMuted py-2 text-sm text-slate-200 hover:bg-white/10"
             >
               <Download size={14} /> {t('settings.export')}

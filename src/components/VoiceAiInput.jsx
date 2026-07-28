@@ -10,6 +10,7 @@ export default function VoiceAiInput({ onSubmit, isLoading }) {
   const { t, i18n } = useTranslation()
   const [text, setText] = useState('')
   const [isListening, setIsListening] = useState(false)
+  const [voiceError, setVoiceError] = useState(false)
   const [image, setImage] = useState(null)
   const recognitionRef = useRef(null)
   const textareaRef = useRef(null)
@@ -65,6 +66,7 @@ export default function VoiceAiInput({ onSubmit, isLoading }) {
       return
     }
 
+    setVoiceError(false)
     const recognition = new SpeechRecognitionClass()
     recognition.lang = i18n.resolvedLanguage === 'ru' ? 'ru-RU' : i18n.resolvedLanguage === 'de' ? 'de-DE' : 'en-US'
     recognition.interimResults = false
@@ -75,7 +77,14 @@ export default function VoiceAiInput({ onSubmit, isLoading }) {
       setText((prev) => (prev ? `${prev} ${transcript}` : transcript))
     }
     recognition.onend = () => setIsListening(false)
-    recognition.onerror = () => setIsListening(false)
+    // The Web Speech API exists (voiceAvailable) but iOS Safari refuses to
+    // actually run it once the app is installed as a home-screen PWA — this
+    // fires near-instantly in that case, so tell people to use the
+    // keyboard's own dictation mic instead of leaving the tap unexplained.
+    recognition.onerror = () => {
+      setIsListening(false)
+      setVoiceError(true)
+    }
 
     recognitionRef.current = recognition
     recognition.start()
@@ -84,6 +93,7 @@ export default function VoiceAiInput({ onSubmit, isLoading }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-2">
+      {voiceError && <p className="px-2 text-xs text-priority-medium">{t('input.mic_error')}</p>}
       {image && (
         <div className="flex items-center gap-2 rounded-xl bg-app-card p-2">
           <img src={image.previewUrl} alt="" className="h-12 w-12 rounded-lg object-cover" />

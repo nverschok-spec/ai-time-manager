@@ -15,6 +15,7 @@
     "placeholder": "Was möchtest du planen?",
     "mic_start": "Spracheingabe starten",
     "mic_unavailable": "Spracheingabe auf diesem Gerät nicht verfügbar",
+    "mic_error": "Spracherkennung hat nicht geklappt — versuch das Mikrofon direkt auf der iPhone-Tastatur",
     "photo_start": "Foto anhängen (Einladung, Dokument)",
     "photo_attached": "Foto angehängt — wird von der KI gelesen",
     "send": "Senden"
@@ -36,6 +37,9 @@
   },
   "ask": {
     "dismiss": "Schließen"
+  },
+  "backup": {
+    "nudge": "Lange kein Backup mehr gemacht — Zeit für einen frischen Export"
   },
   "reschedule": {
     "title": "KI schlägt Verschiebung vor",

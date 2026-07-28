@@ -72,6 +72,7 @@ export const useAppStore = create(
         focusSessions: [],
         pendingMutations: [],
         lastRecurringReminderSyncDate: null,
+        lastBackupExportDate: null,
         dataLoaded: false,
 
         // Replays queued mutations in order; stops at the first failure
@@ -437,6 +438,21 @@ export const useAppStore = create(
         )
       },
 
+      // Shared by the Settings export button and the backup-reminder banner
+      // — also stamps lastBackupExportDate so the nudge knows to go quiet
+      // for a while.
+      exportAndDownload: () => {
+        const todayKey = toDateKey(new Date())
+        const blob = new Blob([get().exportData()], { type: 'application/json' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `ai-time-manager-${todayKey}.json`
+        a.click()
+        URL.revokeObjectURL(url)
+        set({ lastBackupExportDate: todayKey })
+      },
+
       // Deliberately not async: JSON.parse must throw synchronously so the
       // caller's try/catch (SettingsPanel's file-read handler) can catch it.
       // The server pushes below are fire-and-forget, same as every other
@@ -475,7 +491,8 @@ export const useAppStore = create(
         quietHoursStart: state.quietHoursStart,
         quietHoursEnd: state.quietHoursEnd,
         focusSessions: state.focusSessions,
-        pendingMutations: state.pendingMutations
+        pendingMutations: state.pendingMutations,
+        lastBackupExportDate: state.lastBackupExportDate
       })
     }
   )

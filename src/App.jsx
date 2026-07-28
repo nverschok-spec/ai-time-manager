@@ -6,6 +6,7 @@ import Logo from './components/Logo'
 import StatsOverview from './components/StatsOverview'
 import ActivityHeatmap from './components/ActivityHeatmap'
 import OverdueBanner from './components/OverdueBanner'
+import BackupReminderBanner from './components/BackupReminderBanner'
 import MorningReview from './components/MorningReview'
 import WeeklyReview from './components/WeeklyReview'
 import SettingsPanel from './components/SettingsPanel'
@@ -176,6 +177,8 @@ export default function App() {
               <ActivityHeatmap />
 
               <OverdueBanner />
+
+              <BackupReminderBanner />
 
               <AiSuggestionCard />
 
