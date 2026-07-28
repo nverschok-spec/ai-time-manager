@@ -430,9 +430,9 @@ export const useAppStore = create(
         set((state) => ({ suggestions: state.suggestions.filter((_, i) => i !== index) })),
 
       exportData: () => {
-        const { tasks, shoppingItems } = get()
+        const { tasks, shoppingItems, familyEvents } = get()
         return JSON.stringify(
-          { version: 2, exportedAt: new Date().toISOString(), tasks, shoppingItems },
+          { version: 3, exportedAt: new Date().toISOString(), tasks, shoppingItems, familyEvents },
           null,
           2
         )
@@ -462,13 +462,17 @@ export const useAppStore = create(
         if (!Array.isArray(parsed.tasks)) throw new Error('Invalid file: missing tasks array')
         set({
           tasks: parsed.tasks,
-          shoppingItems: Array.isArray(parsed.shoppingItems) ? parsed.shoppingItems : get().shoppingItems
+          shoppingItems: Array.isArray(parsed.shoppingItems) ? parsed.shoppingItems : get().shoppingItems,
+          familyEvents: Array.isArray(parsed.familyEvents) ? parsed.familyEvents : get().familyEvents
         })
         for (const task of parsed.tasks) {
           queuedFetch('/api/tasks', { method: 'POST', body: JSON.stringify({ task }) })
         }
         for (const item of parsed.shoppingItems || []) {
           queuedFetch('/api/shopping', { method: 'POST', body: JSON.stringify({ item }) })
+        }
+        for (const event of parsed.familyEvents || []) {
+          queuedFetch('/api/family-events', { method: 'POST', body: JSON.stringify({ event }) })
         }
       }
       }
