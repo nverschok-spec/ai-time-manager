@@ -8,6 +8,7 @@
     "week": "Week",
     "month": "Month",
     "shopping": "Shopping",
+    "family": "Family",
     "settings": "Settings"
   },
   "input": {
@@ -132,6 +133,10 @@
     "placeholder": "What to buy?",
     "empty": "List is empty.",
     "clear_completed": "Clear bought ({{count}})"
+  },
+  "family": {
+    "placeholder": "Event for the whole family",
+    "empty": "No shared events yet."
   },
   "push": {
     "title": "Push notifications",

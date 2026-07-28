@@ -8,6 +8,7 @@
     "week": "Неделя",
     "month": "Месяц",
     "shopping": "Покупки",
+    "family": "Семья",
     "settings": "Настройки"
   },
   "input": {
@@ -132,6 +133,10 @@
     "placeholder": "Что купить?",
     "empty": "Список пуст.",
     "clear_completed": "Убрать купленное ({{count}})"
+  },
+  "family": {
+    "placeholder": "Событие для всей семьи",
+    "empty": "Пока нет общих событий."
   },
   "push": {
     "title": "Push-уведомления",

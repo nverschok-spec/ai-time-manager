@@ -44,6 +44,7 @@ export const useAppStore = create(
       people: [],
       feedToken: null,
       shoppingItems: [],
+      familyEvents: [],
       suggestions: [],
       rescheduleOps: [],
       scheduleAnswer: null,
@@ -79,16 +80,18 @@ export const useAppStore = create(
       // on an interval — safe to call as often as needed.
       loadAll: async () => {
         try {
-          const [tasksRes, peopleRes, shoppingRes] = await Promise.all([
+          const [tasksRes, peopleRes, shoppingRes, familyEventsRes] = await Promise.all([
             apiFetch('/api/tasks').then((r) => r.json()),
             apiFetch('/api/people').then((r) => r.json()),
-            apiFetch('/api/shopping').then((r) => r.json())
+            apiFetch('/api/shopping').then((r) => r.json()),
+            apiFetch('/api/family-events').then((r) => r.json())
           ])
           set({
             tasks: tasksRes.tasks || [],
             people: peopleRes.people || [],
             feedToken: peopleRes.feedToken || null,
             shoppingItems: shoppingRes.items || [],
+            familyEvents: familyEventsRes.events || [],
             dataLoaded: true
           })
         } catch {
@@ -138,6 +141,24 @@ export const useAppStore = create(
         for (const item of done) {
           apiFetch('/api/shopping', { method: 'DELETE', body: JSON.stringify({ id: item.id }) }).catch(() => {})
         }
+      },
+
+      // Household-wide, same sharing model as shopping — everyone sees the
+      // same events, unlike tasks which stay private per person.
+      addFamilyEvent: (event) => {
+        const newEvent = { id: makeId(), ...event }
+        set((state) => ({ familyEvents: [...state.familyEvents, newEvent] }))
+        apiFetch('/api/family-events', { method: 'POST', body: JSON.stringify({ event: newEvent }) }).catch(() => {})
+      },
+
+      removeFamilyEvent: (id) => {
+        set((state) => ({ familyEvents: state.familyEvents.filter((e) => e.id !== id) }))
+        apiFetch('/api/family-events', { method: 'DELETE', body: JSON.stringify({ id }) }).catch(() => {})
+      },
+
+      restoreFamilyEvent: (event) => {
+        set((state) => ({ familyEvents: [...state.familyEvents, event] }))
+        apiFetch('/api/family-events', { method: 'POST', body: JSON.stringify({ event }) }).catch(() => {})
       },
 
       addTask: (task) => {

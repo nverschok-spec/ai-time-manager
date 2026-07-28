@@ -14,6 +14,7 @@ import TaskRow from './TaskRow'
 import MonthView from './MonthView'
 import EmptyStateIllustration from './EmptyStateIllustration'
 import ShoppingList from './ShoppingList'
+import FamilyEventsList from './FamilyEventsList'
 import Confetti from './Confetti'
 
 const RECURRENCE_OPTIONS = ['none', 'daily', 'weekdays', 'weekly', 'yearly']
@@ -421,6 +422,7 @@ export default function CalendarView() {
   }, [tasksByDate, todayKey])
 
   const addFormDefaultDate = view === 'month' && selectedMonthDate ? selectedMonthDate : todayKey
+  const isListView = view === 'shopping' || view === 'family'
 
   return (
     <div className="space-y-5">
@@ -462,8 +464,17 @@ export default function CalendarView() {
           >
             {t('nav.shopping')}
           </button>
+          <button
+            type="button"
+            onClick={() => setView('family')}
+            className={`px-3 py-1 text-sm rounded-md transition-colors ${
+              view === 'family' ? 'bg-slate-100 text-slate-900' : 'text-slate-400 hover:text-slate-100'
+            }`}
+          >
+            {t('nav.family')}
+          </button>
         </div>
-        {view !== 'shopping' && (
+        {!isListView && (
           <div className="flex items-center gap-2">
             <button
               type="button"
@@ -492,7 +503,7 @@ export default function CalendarView() {
         )}
       </div>
 
-      {showSearch && view !== 'shopping' && (
+      {showSearch && !isListView && (
         <div className="space-y-2 rounded-2xl border border-white/5 bg-app-card p-3">
           <input
             type="text"
@@ -535,8 +546,9 @@ export default function CalendarView() {
       )}
 
       {view === 'shopping' && <ShoppingList />}
+      {view === 'family' && <FamilyEventsList />}
 
-      {!showAddForm && !editingTask && view !== 'shopping' && !searchResults && (
+      {!showAddForm && !editingTask && !isListView && !searchResults && (
         <div className="flex flex-wrap gap-1.5">
           {QUICK_TEMPLATES.map((tpl) => (
             <button
@@ -551,7 +563,7 @@ export default function CalendarView() {
         </div>
       )}
 
-      {showAddForm && view !== 'shopping' && (
+      {showAddForm && !isListView && (
         <TaskForm
           defaultDate={addFormDefaultDate}
           prefill={prefillTemplate}
@@ -565,7 +577,7 @@ export default function CalendarView() {
         <TaskForm task={editingTask} defaultDate={todayKey} onCancel={() => setEditingTask(null)} />
       )}
 
-      {searchResults && view !== 'shopping' && (
+      {searchResults && !isListView && (
         <ul className="space-y-2">
           {searchResults.length === 0 ? (
             <li className="text-sm italic text-slate-600">{t('calendar.search_empty')}</li>
@@ -632,7 +644,7 @@ export default function CalendarView() {
         </>
       )}
 
-      {!searchResults && view !== 'month' && view !== 'shopping' && (
+      {!searchResults && view !== 'month' && !isListView && (
       <div className="space-y-5">
         {visibleDateKeys.map((dateKey) => {
           const dayTasks = tasksByDate[dateKey]

@@ -8,6 +8,7 @@
     "week": "Woche",
     "month": "Monat",
     "shopping": "Einkauf",
+    "family": "Familie",
     "settings": "Einstellungen"
   },
   "input": {
@@ -132,6 +133,10 @@
     "placeholder": "Was einkaufen?",
     "empty": "Liste ist leer.",
     "clear_completed": "Gekauftes entfernen ({{count}})"
+  },
+  "family": {
+    "placeholder": "Ereignis für die ganze Familie",
+    "empty": "Noch keine gemeinsamen Ereignisse."
   },
   "push": {
     "title": "Push-Benachrichtigungen",
