@@ -38,26 +38,58 @@ function apiFetch(url, options = {}) {
 
 export const useAppStore = create(
   persist(
-    (set, get) => ({
-      person: null,
-      tasks: [],
-      people: [],
-      feedToken: null,
-      shoppingItems: [],
-      familyEvents: [],
-      suggestions: [],
-      rescheduleOps: [],
-      scheduleAnswer: null,
-      lastReviewDate: null,
-      lastWeeklyReviewWeek: null,
-      pushEnabled: false,
-      quietHoursEnabled: false,
-      quietHoursStart: '22:00',
-      quietHoursEnd: '07:00',
-      focusSessions: [],
-      dataLoaded: false,
+    (set, get) => {
+      // Same fire-and-forget shape as apiFetch, but a network failure (offline,
+      // not a 4xx/5xx — those wouldn't succeed on retry anyway) queues the
+      // request instead of silently dropping it. The optimistic local state
+      // is already correct; without this, going offline mid-edit meant the
+      // next loadAll() would quietly overwrite it back to the stale server copy.
+      function queuedFetch(url, options = {}) {
+        return apiFetch(url, options).catch(() => {
+          set((state) => ({
+            pendingMutations: [...state.pendingMutations, { id: makeId(), url, options }]
+          }))
+        })
+      }
 
-      setPerson: (person) => set({ person }),
+      return {
+        person: null,
+        tasks: [],
+        people: [],
+        feedToken: null,
+        shoppingItems: [],
+        familyEvents: [],
+        suggestions: [],
+        rescheduleOps: [],
+        scheduleAnswer: null,
+        lastReviewDate: null,
+        lastWeeklyReviewWeek: null,
+        pushEnabled: false,
+        quietHoursEnabled: false,
+        quietHoursStart: '22:00',
+        quietHoursEnd: '07:00',
+        focusSessions: [],
+        pendingMutations: [],
+        dataLoaded: false,
+
+        // Replays queued mutations in order; stops at the first failure
+        // (still offline) rather than reordering writes for the same task.
+        // Called on the 'online' event and alongside the existing loadAll
+        // polling in App.jsx.
+        flushPendingMutations: async () => {
+          for (const mutation of get().pendingMutations) {
+            try {
+              await apiFetch(mutation.url, mutation.options)
+              set((state) => ({
+                pendingMutations: state.pendingMutations.filter((m) => m.id !== mutation.id)
+              }))
+            } catch {
+              break
+            }
+          }
+        },
+
+        setPerson: (person) => set({ person }),
       setLastReviewDate: (dateKey) => set({ lastReviewDate: dateKey }),
       setLastWeeklyReviewWeek: (weekKey) => set({ lastWeeklyReviewWeek: weekKey }),
       setPushEnabled: (pushEnabled) => set({ pushEnabled }),
@@ -101,7 +133,7 @@ export const useAppStore = create(
 
       removePerson: (id) => {
         set((state) => ({ people: state.people.filter((p) => p.id !== id) }))
-        apiFetch('/api/people', { method: 'DELETE', body: JSON.stringify({ id }) }).catch(() => {})
+        queuedFetch('/api/people', { method: 'DELETE', body: JSON.stringify({ id }) })
       },
 
       addShoppingItem: (text) => {
@@ -109,7 +141,7 @@ export const useAppStore = create(
         if (!trimmed) return
         const newItem = { id: makeId(), text: trimmed, done: false }
         set((state) => ({ shoppingItems: [...state.shoppingItems, newItem] }))
-        apiFetch('/api/shopping', { method: 'POST', body: JSON.stringify({ item: newItem }) }).catch(() => {})
+        queuedFetch('/api/shopping', { method: 'POST', body: JSON.stringify({ item: newItem }) })
       },
 
       toggleShoppingItem: (id) => {
@@ -118,28 +150,28 @@ export const useAppStore = create(
         }))
         const item = get().shoppingItems.find((i) => i.id === id)
         if (item) {
-          apiFetch('/api/shopping', {
+          queuedFetch('/api/shopping', {
             method: 'PUT',
             body: JSON.stringify({ id, patch: { done: item.done } })
-          }).catch(() => {})
+          })
         }
       },
 
       removeShoppingItem: (id) => {
         set((state) => ({ shoppingItems: state.shoppingItems.filter((i) => i.id !== id) }))
-        apiFetch('/api/shopping', { method: 'DELETE', body: JSON.stringify({ id }) }).catch(() => {})
+        queuedFetch('/api/shopping', { method: 'DELETE', body: JSON.stringify({ id }) })
       },
 
       restoreShoppingItem: (item) => {
         set((state) => ({ shoppingItems: [...state.shoppingItems, item] }))
-        apiFetch('/api/shopping', { method: 'POST', body: JSON.stringify({ item }) }).catch(() => {})
+        queuedFetch('/api/shopping', { method: 'POST', body: JSON.stringify({ item }) })
       },
 
       clearCompletedShopping: () => {
         const done = get().shoppingItems.filter((i) => i.done)
         set((state) => ({ shoppingItems: state.shoppingItems.filter((i) => !i.done) }))
         for (const item of done) {
-          apiFetch('/api/shopping', { method: 'DELETE', body: JSON.stringify({ id: item.id }) }).catch(() => {})
+          queuedFetch('/api/shopping', { method: 'DELETE', body: JSON.stringify({ id: item.id }) })
         }
       },
 
@@ -148,24 +180,24 @@ export const useAppStore = create(
       addFamilyEvent: (event) => {
         const newEvent = { id: makeId(), ...event }
         set((state) => ({ familyEvents: [...state.familyEvents, newEvent] }))
-        apiFetch('/api/family-events', { method: 'POST', body: JSON.stringify({ event: newEvent }) }).catch(() => {})
+        queuedFetch('/api/family-events', { method: 'POST', body: JSON.stringify({ event: newEvent }) })
       },
 
       removeFamilyEvent: (id) => {
         set((state) => ({ familyEvents: state.familyEvents.filter((e) => e.id !== id) }))
-        apiFetch('/api/family-events', { method: 'DELETE', body: JSON.stringify({ id }) }).catch(() => {})
+        queuedFetch('/api/family-events', { method: 'DELETE', body: JSON.stringify({ id }) })
       },
 
       restoreFamilyEvent: (event) => {
         set((state) => ({ familyEvents: [...state.familyEvents, event] }))
-        apiFetch('/api/family-events', { method: 'POST', body: JSON.stringify({ event }) }).catch(() => {})
+        queuedFetch('/api/family-events', { method: 'POST', body: JSON.stringify({ event }) })
       },
 
       addTask: (task) => {
         const id = makeId()
         const newTask = { id, done: false, ...task }
         set((state) => ({ tasks: [...state.tasks, newTask] }))
-        apiFetch('/api/tasks', { method: 'POST', body: JSON.stringify({ task: newTask }) }).catch(() => {})
+        queuedFetch('/api/tasks', { method: 'POST', body: JSON.stringify({ task: newTask }) })
 
         const { pushEnabled } = get()
         if (pushEnabled && !task.recurrence && task.date && task.startTime) {
@@ -186,9 +218,7 @@ export const useAppStore = create(
         }))
         const task = get().tasks.find((t) => t.id === id)
         if (task) {
-          apiFetch('/api/tasks', { method: 'PUT', body: JSON.stringify({ id, patch: { done: task.done } }) }).catch(
-            () => {}
-          )
+          queuedFetch('/api/tasks', { method: 'PUT', body: JSON.stringify({ id, patch: { done: task.done } }) })
         }
       },
 
@@ -210,10 +240,10 @@ export const useAppStore = create(
         }))
         const task = get().tasks.find((t) => t.id === id)
         if (task) {
-          apiFetch('/api/tasks', {
+          queuedFetch('/api/tasks', {
             method: 'PUT',
             body: JSON.stringify({ id, patch: { completedDates: task.completedDates } })
-          }).catch(() => {})
+          })
         }
       },
 
@@ -221,7 +251,7 @@ export const useAppStore = create(
         set((state) => ({
           tasks: state.tasks.map((t) => (t.id === id ? { ...t, ...patch } : t))
         }))
-        apiFetch('/api/tasks', { method: 'PUT', body: JSON.stringify({ id, patch }) }).catch(() => {})
+        queuedFetch('/api/tasks', { method: 'PUT', body: JSON.stringify({ id, patch }) })
       },
 
       toggleChecklistItem: (taskId, itemId) => {
@@ -285,7 +315,7 @@ export const useAppStore = create(
 
       removeTask: (id) => {
         set((state) => ({ tasks: state.tasks.filter((t) => t.id !== id) }))
-        apiFetch('/api/tasks', { method: 'DELETE', body: JSON.stringify({ id }) }).catch(() => {})
+        queuedFetch('/api/tasks', { method: 'DELETE', body: JSON.stringify({ id }) })
       },
 
       // Quiet hygiene pass, called once per app load — recurring templates
@@ -301,7 +331,7 @@ export const useAppStore = create(
       // pairs with the undo snackbar in CalendarView.
       restoreTask: (task) => {
         set((state) => ({ tasks: [...state.tasks, task] }))
-        apiFetch('/api/tasks', { method: 'POST', body: JSON.stringify({ task }) }).catch(() => {})
+        queuedFetch('/api/tasks', { method: 'POST', body: JSON.stringify({ task }) })
       },
 
       setSuggestions: (suggestions) => set({ suggestions }),
@@ -369,13 +399,14 @@ export const useAppStore = create(
           shoppingItems: Array.isArray(parsed.shoppingItems) ? parsed.shoppingItems : get().shoppingItems
         })
         for (const task of parsed.tasks) {
-          apiFetch('/api/tasks', { method: 'POST', body: JSON.stringify({ task }) }).catch(() => {})
+          queuedFetch('/api/tasks', { method: 'POST', body: JSON.stringify({ task }) })
         }
         for (const item of parsed.shoppingItems || []) {
-          apiFetch('/api/shopping', { method: 'POST', body: JSON.stringify({ item }) }).catch(() => {})
+          queuedFetch('/api/shopping', { method: 'POST', body: JSON.stringify({ item }) })
         }
       }
-    }),
+      }
+    },
     {
       // Deliberately a NEW key, distinct from the old 'ai-time-manager-store'
       // (which held tasks/people/shopping pre-sync) — migrateLegacyData.js
@@ -393,7 +424,8 @@ export const useAppStore = create(
         quietHoursEnabled: state.quietHoursEnabled,
         quietHoursStart: state.quietHoursStart,
         quietHoursEnd: state.quietHoursEnd,
-        focusSessions: state.focusSessions
+        focusSessions: state.focusSessions,
+        pendingMutations: state.pendingMutations
       })
     }
   )

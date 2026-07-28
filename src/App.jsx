@@ -39,6 +39,7 @@ export default function App() {
   const setRescheduleOps = useAppStore((s) => s.setRescheduleOps)
   const setScheduleAnswer = useAppStore((s) => s.setScheduleAnswer)
   const archiveOldCompleted = useAppStore((s) => s.archiveOldCompleted)
+  const flushPendingMutations = useAppStore((s) => s.flushPendingMutations)
   const [isLoading, setIsLoading] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [focusMode, setFocusMode] = useState(false)
@@ -73,17 +74,28 @@ export default function App() {
   // in sync without needing a websocket — cheap enough at this scale.
   useEffect(() => {
     function handleVisibility() {
-      if (document.visibilityState === 'visible') loadAll()
+      if (document.visibilityState === 'visible') {
+        flushPendingMutations().then(loadAll)
+      }
     }
     document.addEventListener('visibilitychange', handleVisibility)
     const interval = setInterval(() => {
-      if (document.visibilityState === 'visible') loadAll()
+      if (document.visibilityState === 'visible') {
+        flushPendingMutations().then(loadAll)
+      }
     }, REFRESH_INTERVAL_MS)
     return () => {
       document.removeEventListener('visibilitychange', handleVisibility)
       clearInterval(interval)
     }
-  }, [loadAll])
+  }, [loadAll, flushPendingMutations])
+
+  // Retry any edits that failed to reach the server while offline, the
+  // moment connectivity actually comes back — don't wait for the next poll.
+  useEffect(() => {
+    window.addEventListener('online', flushPendingMutations)
+    return () => window.removeEventListener('online', flushPendingMutations)
+  }, [flushPendingMutations])
 
   async function handleSubmit({ text, image }) {
     setIsLoading(true)
