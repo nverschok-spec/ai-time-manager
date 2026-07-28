@@ -13,11 +13,13 @@ import CalendarView from './components/CalendarView'
 import VoiceAiInput from './components/VoiceAiInput'
 import AiSuggestionCard from './components/AiSuggestionCard'
 import AiRescheduleCard from './components/AiRescheduleCard'
+import AiAnswerCard from './components/AiAnswerCard'
 import FocusMode from './components/FocusMode'
 import { getStoredPerson } from './components/PinGate'
 import { useAppStore } from './store/useAppStore'
-import { parseUserInput, fetchRescheduleOps } from './services/ai'
+import { parseUserInput, fetchRescheduleOps, fetchScheduleAnswer } from './services/ai'
 import { isRescheduleCommand } from './lib/rescheduleIntent'
+import { isScheduleQuestion } from './lib/scheduleQuestion'
 import { migrateLegacyDataIfNeeded } from './lib/migrateLegacyData'
 import { hexToRgbChannels } from './lib/color'
 import { updateAppBadge } from './lib/badge'
@@ -35,6 +37,7 @@ export default function App() {
   const loadAll = useAppStore((s) => s.loadAll)
   const setSuggestions = useAppStore((s) => s.setSuggestions)
   const setRescheduleOps = useAppStore((s) => s.setRescheduleOps)
+  const setScheduleAnswer = useAppStore((s) => s.setScheduleAnswer)
   const archiveOldCompleted = useAppStore((s) => s.archiveOldCompleted)
   const [isLoading, setIsLoading] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
@@ -91,6 +94,9 @@ export default function App() {
       if (!image && isRescheduleCommand(text)) {
         const ops = await fetchRescheduleOps(text, tasks)
         setRescheduleOps(ops)
+      } else if (!image && isScheduleQuestion(text)) {
+        const answer = await fetchScheduleAnswer(text, tasks)
+        setScheduleAnswer(answer)
       } else {
         const suggestions = await parseUserInput(text, tasks, image)
         setSuggestions(suggestions)
@@ -160,6 +166,8 @@ export default function App() {
               <AiSuggestionCard />
 
               <AiRescheduleCard />
+
+              <AiAnswerCard />
 
               <CalendarView />
             </>

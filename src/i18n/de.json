@@ -24,6 +24,7 @@
     "edit": "Bearbeiten",
     "dismiss": "Ablehnen",
     "conflict": "Terminkonflikt",
+    "find_free_slot": "Freie Zeit finden",
     "low_confidence": "Bitte bestätigen"
   },
   "quick_templates": {
@@ -31,6 +32,9 @@
     "groceries": "Einkaufen",
     "workout": "Training",
     "cleaning": "Putzen"
+  },
+  "ask": {
+    "dismiss": "Schließen"
   },
   "reschedule": {
     "title": "KI schlägt Verschiebung vor",
@@ -120,7 +124,9 @@
   "weekly": {
     "title": "Wochenrückblick",
     "loading": "Die KI schaut sich deine Woche an…",
-    "close": "Verstanden, weiter"
+    "close": "Verstanden, weiter",
+    "month_trend": "Diesen Monat: {{thisPct}}% (letzten Monat: {{lastPct}}%)",
+    "busiest_day": "Meist beschäftigter Wochentag — {{day}}"
   },
   "shopping": {
     "placeholder": "Was einkaufen?",

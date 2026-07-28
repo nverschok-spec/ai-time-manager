@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CalendarCheck, Share2 } from 'lucide-react'
+import { CalendarCheck, Share2, TrendingDown, TrendingUp } from 'lucide-react'
 import { useAppStore } from '../store/useAppStore'
 import { computeWeeklyStats, toWeekKey } from '../lib/weeklyStats'
+import { computeMonthlyTrend, weekdayIndexToDate } from '../lib/monthlyTrends'
 import { categoryMeta } from '../lib/categories'
 import { fetchWeeklyReview } from '../services/ai'
 import { shareText } from '../lib/share'
@@ -23,6 +24,7 @@ export default function WeeklyReview() {
   const shouldShow = isReviewDay && lastWeeklyReviewWeek !== currentWeekKey
 
   const stats = useMemo(() => computeWeeklyStats(tasks, today), [tasks]) // eslint-disable-line react-hooks/exhaustive-deps
+  const monthlyTrend = useMemo(() => computeMonthlyTrend(tasks, today), [tasks]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!shouldShow) return
@@ -104,6 +106,34 @@ export default function WeeklyReview() {
             })}
           </div>
         )}
+
+        {(monthlyTrend.thisMonth.pct !== null && monthlyTrend.lastMonth.pct !== null) ||
+        monthlyTrend.busiestDay !== null ? (
+          <div className="space-y-1 border-t border-white/5 pt-3 text-xs text-slate-500">
+            {monthlyTrend.thisMonth.pct !== null && monthlyTrend.lastMonth.pct !== null && (
+              <p className="flex items-center gap-1.5">
+                {monthlyTrend.thisMonth.pct >= monthlyTrend.lastMonth.pct ? (
+                  <TrendingUp size={13} className="shrink-0 text-brand-cta" />
+                ) : (
+                  <TrendingDown size={13} className="shrink-0 text-priority-medium" />
+                )}
+                {t('weekly.month_trend', {
+                  thisPct: monthlyTrend.thisMonth.pct,
+                  lastPct: monthlyTrend.lastMonth.pct
+                })}
+              </p>
+            )}
+            {monthlyTrend.busiestDay !== null && (
+              <p>
+                {t('weekly.busiest_day', {
+                  day: weekdayIndexToDate(monthlyTrend.busiestDay).toLocaleDateString(i18n.resolvedLanguage, {
+                    weekday: 'long'
+                  })
+                })}
+              </p>
+            )}
+          </div>
+        ) : null}
 
         <button
           type="button"

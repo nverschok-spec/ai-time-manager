@@ -1,5 +1,6 @@
 import { clearStoredToken, getStoredToken } from '../components/PinGate'
 import { toDateKey } from '../lib/date'
+import { expandOccurrences } from '../lib/occurrences'
 
 const CONTEXT_WINDOW_DAYS = 7
 const LOW_CONFIDENCE_THRESHOLD = 0.6
@@ -147,6 +148,62 @@ export async function fetchRescheduleOps(text, tasks) {
       }
     })
     .filter(Boolean)
+}
+
+// Wide enough window for "next week" / "in three weeks" style questions;
+// unlike fetchRescheduleOps, recurring tasks ARE expanded into concrete
+// occurrences here since a question like "when's my next yoga class" needs
+// actual dates, not just the template.
+const ASK_WINDOW_DAYS = 21
+
+export async function fetchScheduleAnswer(question, tasks) {
+  const today = new Date()
+  const start = new Date(today)
+  start.setDate(start.getDate() - ASK_WINDOW_DAYS)
+  const end = new Date(today)
+  end.setDate(end.getDate() + ASK_WINDOW_DAYS)
+
+  const dateKeys = []
+  const cursor = new Date(start)
+  while (cursor <= end) {
+    dateKeys.push(toDateKey(cursor))
+    cursor.setDate(cursor.getDate() + 1)
+  }
+
+  const occurrencesByDate = expandOccurrences(tasks, dateKeys)
+  const context = dateKeys
+    .flatMap((key) => occurrencesByDate[key])
+    .map((t) => ({
+      date: t.occurrenceDate,
+      start_time: t.startTime,
+      duration_minutes: t.durationMinutes,
+      title: t.title,
+      priority: t.priority,
+      category: t.category,
+      done: t.done
+    }))
+
+  const token = getStoredToken()
+  const res = await fetch('/api/ai-ask', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    },
+    body: JSON.stringify({ question, tasks: context, today: toDateKey(today) })
+  })
+
+  if (res.status === 401) {
+    clearStoredToken()
+    window.location.reload()
+    throw new Error('ai-ask request failed: 401')
+  }
+  if (!res.ok) {
+    throw new Error(`ai-ask request failed: ${res.status}`)
+  }
+
+  const data = await res.json()
+  return data.answer || ''
 }
 
 // Best-effort — returns '' on any failure so the caller can silently fall

@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Check, Pencil, X } from 'lucide-react'
+import { Check, Pencil, Wand2, X } from 'lucide-react'
 import { useAppStore } from '../store/useAppStore'
 import { priorityMeta } from '../lib/priority'
+import { findFreeSlotOnDate } from '../lib/freeSlot'
 
 export default function AiSuggestionCard() {
   const { t } = useTranslation()
+  const tasks = useAppStore((s) => s.tasks)
   const suggestions = useAppStore((s) => s.suggestions)
   const updateSuggestion = useAppStore((s) => s.updateSuggestion)
   const acceptSuggestion = useAppStore((s) => s.acceptSuggestion)
@@ -13,6 +15,12 @@ export default function AiSuggestionCard() {
   const [editingIndex, setEditingIndex] = useState(null)
 
   if (suggestions.length === 0) return null
+
+  function handleResolveConflict(index) {
+    const s = suggestions[index]
+    const freeTime = findFreeSlotOnDate(tasks, s.date, s.duration_minutes)
+    if (freeTime) updateSuggestion(index, { start_time: freeTime, conflict: false })
+  }
 
   return (
     <div className="space-y-3">
@@ -24,8 +32,16 @@ export default function AiSuggestionCard() {
             {(s.conflict || s.lowConfidence) && (
               <div className="flex gap-2">
                 {s.conflict && (
-                  <span className="text-xs rounded-full bg-priority-high/20 text-priority-high px-2 py-0.5">
+                  <span className="flex items-center gap-1 text-xs rounded-full bg-priority-high/20 text-priority-high px-2 py-0.5">
                     {t('suggestion.conflict')}
+                    <button
+                      type="button"
+                      onClick={() => handleResolveConflict(index)}
+                      className="flex items-center gap-0.5 rounded-full bg-priority-high/20 pl-1 hover:text-priority-high/70"
+                      title={t('suggestion.find_free_slot')}
+                    >
+                      <Wand2 size={11} />
+                    </button>
                   </span>
                 )}
                 {s.lowConfidence && (

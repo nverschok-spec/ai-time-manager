@@ -24,6 +24,7 @@
     "edit": "Edit",
     "dismiss": "Dismiss",
     "conflict": "Time conflict",
+    "find_free_slot": "Find free time",
     "low_confidence": "Please confirm"
   },
   "quick_templates": {
@@ -31,6 +32,9 @@
     "groceries": "Groceries",
     "workout": "Workout",
     "cleaning": "Cleaning"
+  },
+  "ask": {
+    "dismiss": "Close"
   },
   "reschedule": {
     "title": "AI suggests moving",
@@ -120,7 +124,9 @@
   "weekly": {
     "title": "Weekly review",
     "loading": "AI is looking at your week…",
-    "close": "Got it, continue"
+    "close": "Got it, continue",
+    "month_trend": "This month: {{thisPct}}% (last month: {{lastPct}}%)",
+    "busiest_day": "Busiest day of the week — {{day}}"
   },
   "shopping": {
     "placeholder": "What to buy?",

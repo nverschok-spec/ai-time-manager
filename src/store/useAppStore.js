@@ -45,6 +45,7 @@ export const useAppStore = create(
       shoppingItems: [],
       suggestions: [],
       rescheduleOps: [],
+      scheduleAnswer: null,
       lastReviewDate: null,
       lastWeeklyReviewWeek: null,
       pushEnabled: false,
@@ -59,6 +60,7 @@ export const useAppStore = create(
       setLastWeeklyReviewWeek: (weekKey) => set({ lastWeeklyReviewWeek: weekKey }),
       setPushEnabled: (pushEnabled) => set({ pushEnabled }),
       setQuietHours: (patch) => set(patch),
+      setScheduleAnswer: (scheduleAnswer) => set({ scheduleAnswer }),
 
       quietHoursConfig: () => {
         const { quietHoursEnabled, quietHoursStart, quietHoursEnd } = get()

@@ -24,6 +24,7 @@
     "edit": "Изменить",
     "dismiss": "Отклонить",
     "conflict": "Конфликт по времени",
+    "find_free_slot": "Найти свободное время",
     "low_confidence": "Уточните"
   },
   "quick_templates": {
@@ -31,6 +32,9 @@
     "groceries": "Продукты",
     "workout": "Тренировка",
     "cleaning": "Уборка"
+  },
+  "ask": {
+    "dismiss": "Закрыть"
   },
   "reschedule": {
     "title": "ИИ предлагает перенести",
@@ -120,7 +124,9 @@
   "weekly": {
     "title": "Итоги недели",
     "loading": "ИИ анализирует неделю…",
-    "close": "Понятно, дальше"
+    "close": "Понятно, дальше",
+    "month_trend": "В этом месяце {{thisPct}}% (в прошлом было {{lastPct}}%)",
+    "busiest_day": "Самый загруженный день недели — {{day}}"
   },
   "shopping": {
     "placeholder": "Что купить?",
