@@ -62,12 +62,13 @@ export default function CalendarPage() {
   }, [tasks, query, categoryFilter, todayKey])
 
   const visibleDateKeys = useMemo(() => {
+    const start = new Date(`${todayKey}T00:00:00`)
     return Array.from({ length: 7 }, (_, i) => {
-      const d = new Date()
+      const d = new Date(start)
       d.setDate(d.getDate() + i)
       return toDateKey(d)
     })
-  }, [todayKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [todayKey])
 
   const tasksByDate = useMemo(() => {
     const map = expandOccurrences(tasks, visibleDateKeys)

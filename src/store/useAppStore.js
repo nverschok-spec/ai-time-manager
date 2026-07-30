@@ -74,6 +74,7 @@ export const useAppStore = create(
         lastRecurringReminderSyncDate: null,
         lastBackupExportDate: null,
         dataLoaded: false,
+        activeTab: 'today',
 
         // Replays queued mutations in order; stops at the first failure
         // (still offline) rather than reordering writes for the same task.
@@ -121,6 +122,7 @@ export const useAppStore = create(
         },
 
         setPerson: (person) => set({ person }),
+      setActiveTab: (activeTab) => set({ activeTab }),
       setLastReviewDate: (dateKey) => set({ lastReviewDate: dateKey }),
       setLastWeeklyReviewWeek: (weekKey) => set({ lastWeeklyReviewWeek: weekKey }),
       setPushEnabled: (pushEnabled) => set({ pushEnabled }),
@@ -457,14 +459,34 @@ export const useAppStore = create(
       // caller's try/catch (SettingsPanel's file-read handler) can catch it.
       // The server pushes below are fire-and-forget, same as every other
       // mutation in this store.
+      //
+      // Tasks are private per-person, so a full restore (delete whatever's on
+      // the server but missing from the file, on top of the usual upsert) is
+      // safe and is what "import a backup" should mean. Shopping/family
+      // events are household-shared — deleting anything missing from THIS
+      // device's backup file risks erasing the other person's concurrent
+      // edits that simply weren't in the file when it was exported, so those
+      // two stay merge-only (add/update, never delete) on import.
       importData: (json) => {
         const parsed = JSON.parse(json)
         if (!Array.isArray(parsed.tasks)) throw new Error('Invalid file: missing tasks array')
+
+        const prevTasks = get().tasks
+        const importedShopping = Array.isArray(parsed.shoppingItems) ? parsed.shoppingItems : get().shoppingItems
+        const importedFamilyEvents = Array.isArray(parsed.familyEvents) ? parsed.familyEvents : get().familyEvents
+
         set({
           tasks: parsed.tasks,
-          shoppingItems: Array.isArray(parsed.shoppingItems) ? parsed.shoppingItems : get().shoppingItems,
-          familyEvents: Array.isArray(parsed.familyEvents) ? parsed.familyEvents : get().familyEvents
+          shoppingItems: importedShopping,
+          familyEvents: importedFamilyEvents
         })
+
+        const importedTaskIds = new Set(parsed.tasks.map((t) => t.id))
+        for (const task of prevTasks) {
+          if (!importedTaskIds.has(task.id)) {
+            queuedFetch('/api/tasks', { method: 'DELETE', body: JSON.stringify({ id: task.id }) })
+          }
+        }
         for (const task of parsed.tasks) {
           queuedFetch('/api/tasks', { method: 'POST', body: JSON.stringify({ task }) })
         }
@@ -488,6 +510,7 @@ export const useAppStore = create(
       // live on the server (see loadAll) so they can't drift out of sync
       // with what other household members see.
       partialize: (state) => ({
+        activeTab: state.activeTab,
         lastReviewDate: state.lastReviewDate,
         lastWeeklyReviewWeek: state.lastWeeklyReviewWeek,
         pushEnabled: state.pushEnabled,

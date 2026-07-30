@@ -43,6 +43,7 @@ const PAGES = {
 export default function App() {
   const { t } = useTranslation()
   const tasks = useAppStore((s) => s.tasks)
+  const shoppingItems = useAppStore((s) => s.shoppingItems)
   const person = useAppStore((s) => s.person)
   const dataLoaded = useAppStore((s) => s.dataLoaded)
   const setPerson = useAppStore((s) => s.setPerson)
@@ -53,10 +54,12 @@ export default function App() {
   const archiveOldCompleted = useAppStore((s) => s.archiveOldCompleted)
   const syncRecurringReminders = useAppStore((s) => s.syncRecurringReminders)
   const flushPendingMutations = useAppStore((s) => s.flushPendingMutations)
+  const addShoppingItem = useAppStore((s) => s.addShoppingItem)
+  const activeTab = useAppStore((s) => s.activeTab)
+  const setActiveTab = useAppStore((s) => s.setActiveTab)
   const [isLoading, setIsLoading] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [focusMode, setFocusMode] = useState(false)
-  const [activeTab, setActiveTab] = useState('today')
 
   useEffect(() => {
     setPerson(getStoredPerson())
@@ -126,7 +129,15 @@ export default function App() {
         setScheduleAnswer(answer)
       } else {
         const suggestions = await parseUserInput(text, tasks, attachment)
-        setSuggestions(suggestions)
+        // On the Shared page, plain text with no date/time info the AI could
+        // extract is almost always meant for the shopping list ("молоко",
+        // typed into the global bar out of habit) rather than an actually
+        // failed task-parse — route it there instead of showing nothing.
+        if (suggestions.length === 0 && activeTab === 'shared' && !attachment) {
+          addShoppingItem(text)
+        } else {
+          setSuggestions(suggestions)
+        }
       }
     } catch (err) {
       setSuggestions([])
@@ -199,7 +210,12 @@ export default function App() {
       </div>
 
       {!focusMode && (
-        <BottomNav activeTab={activeTab} onSelectTab={setActiveTab} onOpenSettings={() => setShowSettings(true)} />
+        <BottomNav
+          activeTab={activeTab}
+          onSelectTab={setActiveTab}
+          onOpenSettings={() => setShowSettings(true)}
+          badges={{ shared: shoppingItems.filter((i) => !i.done).length }}
+        />
       )}
     </div>
   )
