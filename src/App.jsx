@@ -112,20 +112,20 @@ export default function App() {
     return () => window.removeEventListener('online', flushPendingMutations)
   }, [flushPendingMutations])
 
-  async function handleSubmit({ text, image }) {
+  async function handleSubmit({ text, attachment }) {
     setIsLoading(true)
     try {
       // Bulk-move commands ("move everything today to tomorrow") skip the
       // create-task flow entirely and go through a narrower endpoint that
       // can only reschedule tasks it's given, never invent new ones.
-      if (!image && isRescheduleCommand(text)) {
+      if (!attachment && isRescheduleCommand(text)) {
         const ops = await fetchRescheduleOps(text, tasks)
         setRescheduleOps(ops)
-      } else if (!image && isScheduleQuestion(text)) {
+      } else if (!attachment && isScheduleQuestion(text)) {
         const answer = await fetchScheduleAnswer(text, tasks)
         setScheduleAnswer(answer)
       } else {
-        const suggestions = await parseUserInput(text, tasks, image)
+        const suggestions = await parseUserInput(text, tasks, attachment)
         setSuggestions(suggestions)
       }
     } catch (err) {

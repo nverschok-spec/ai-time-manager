@@ -32,3 +32,26 @@ export function compressImageFile(file) {
     reader.readAsDataURL(file)
   })
 }
+
+// PDFs need no compression (there's no re-encoding that makes sense for a
+// scanned document) — just base64-encode the raw bytes for the "document"
+// content block the AI endpoint expects. Rejects large files client-side
+// since Vercel serverless functions cap request bodies around 4.5MB and a
+// base64 PDF inflates ~33% over its raw size.
+const MAX_PDF_BYTES = 4 * 1024 * 1024
+
+export function readPdfFile(file) {
+  return new Promise((resolve, reject) => {
+    if (file.size > MAX_PDF_BYTES) {
+      reject(new Error('pdf_too_large'))
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = () => {
+      const dataUrl = reader.result
+      resolve({ base64: dataUrl.split(',')[1], mediaType: 'application/pdf', fileName: file.name })
+    }
+    reader.onerror = () => reject(new Error('pdf_read_failed'))
+    reader.readAsDataURL(file)
+  })
+}

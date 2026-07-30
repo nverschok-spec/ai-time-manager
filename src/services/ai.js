@@ -81,14 +81,14 @@ function rangesOverlap(aStart, aDuration, bStart, bDuration) {
   return aStart < bEnd && bStart < aEnd
 }
 
-export async function parseUserInput(text, tasks, image) {
+export async function parseUserInput(text, tasks, attachment) {
   const scheduleContext = buildScheduleContext(tasks)
 
   const data = await callAi('parse', {
     text,
     scheduleContext,
     today: toDateKey(new Date()),
-    image: image ? { base64: image.base64, mediaType: image.mediaType } : undefined
+    attachment: attachment ? { base64: attachment.base64, mediaType: attachment.mediaType } : undefined
   })
   const rawSuggestions = Array.isArray(data.suggestions) ? data.suggestions : []
 

@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Camera, Mic, MicOff, Send, X } from 'lucide-react'
-import { compressImageFile } from '../lib/image'
+import { FileText, Mic, MicOff, Paperclip, Send, X } from 'lucide-react'
+import { compressImageFile, readPdfFile } from '../lib/image'
 
 const SpeechRecognitionClass =
   typeof window !== 'undefined' ? window.SpeechRecognition || window.webkitSpeechRecognition : null
@@ -11,7 +11,7 @@ export default function VoiceAiInput({ onSubmit, isLoading }) {
   const [text, setText] = useState('')
   const [isListening, setIsListening] = useState(false)
   const [voiceError, setVoiceError] = useState(false)
-  const [image, setImage] = useState(null)
+  const [attachment, setAttachment] = useState(null)
   const recognitionRef = useRef(null)
   const textareaRef = useRef(null)
   const fileInputRef = useRef(null)
@@ -32,10 +32,10 @@ export default function VoiceAiInput({ onSubmit, isLoading }) {
   function handleSubmit(e) {
     e.preventDefault()
     const trimmed = text.trim()
-    if ((!trimmed && !image) || isLoading) return
-    onSubmit({ text: trimmed, image })
+    if ((!trimmed && !attachment) || isLoading) return
+    onSubmit({ text: trimmed, attachment })
     setText('')
-    setImage(null)
+    setAttachment(null)
     if (textareaRef.current) textareaRef.current.style.height = 'auto'
   }
 
@@ -46,15 +46,18 @@ export default function VoiceAiInput({ onSubmit, isLoading }) {
     }
   }
 
-  async function handlePhotoChange(e) {
+  async function handleFileChange(e) {
     const file = e.target.files?.[0]
     e.target.value = ''
     if (!file) return
     try {
-      const compressed = await compressImageFile(file)
-      setImage(compressed)
+      if (file.type === 'application/pdf') {
+        setAttachment(await readPdfFile(file))
+      } else {
+        setAttachment(await compressImageFile(file))
+      }
     } catch {
-      // unreadable file — ignore, user can retry
+      // unreadable or too-large file — ignore, user can retry
     }
   }
 
@@ -94,13 +97,21 @@ export default function VoiceAiInput({ onSubmit, isLoading }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-2">
       {voiceError && <p className="px-2 text-xs text-priority-medium">{t('input.mic_error')}</p>}
-      {image && (
+      {attachment && (
         <div className="flex items-center gap-2 rounded-xl bg-app-card p-2">
-          <img src={image.previewUrl} alt="" className="h-12 w-12 rounded-lg object-cover" />
-          <span className="min-w-0 flex-1 truncate text-xs text-muted">{t('input.photo_attached')}</span>
+          {attachment.mediaType === 'application/pdf' ? (
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-app-cardMuted text-slate-300">
+              <FileText size={20} />
+            </div>
+          ) : (
+            <img src={attachment.previewUrl} alt="" className="h-12 w-12 rounded-lg object-cover" />
+          )}
+          <span className="min-w-0 flex-1 truncate text-xs text-muted">
+            {attachment.mediaType === 'application/pdf' ? attachment.fileName : t('input.photo_attached')}
+          </span>
           <button
             type="button"
-            onClick={() => setImage(null)}
+            onClick={() => setAttachment(null)}
             className="text-slate-500 hover:text-priority-high transition-colors"
           >
             <X size={16} />
@@ -120,9 +131,9 @@ export default function VoiceAiInput({ onSubmit, isLoading }) {
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/*"
+          accept="image/*,application/pdf"
           capture="environment"
-          onChange={handlePhotoChange}
+          onChange={handleFileChange}
           className="hidden"
         />
         <button
@@ -131,7 +142,7 @@ export default function VoiceAiInput({ onSubmit, isLoading }) {
           title={t('input.photo_start')}
           className="rounded-full bg-app-card p-2.5 text-slate-300 hover:text-slate-100 transition-colors"
         >
-          <Camera size={18} />
+          <Paperclip size={18} />
         </button>
         <button
           type="button"
@@ -150,7 +161,7 @@ export default function VoiceAiInput({ onSubmit, isLoading }) {
         </button>
         <button
           type="submit"
-          disabled={isLoading || (!text.trim() && !image)}
+          disabled={isLoading || (!text.trim() && !attachment)}
           title={t('input.send')}
           className="rounded-full bg-brand-cta p-2.5 text-app-bg disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all"
         >

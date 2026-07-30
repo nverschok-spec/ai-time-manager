@@ -66,10 +66,11 @@ function parsePrompt(today) {
 Today's date is ${today} (YYYY-MM-DD). The user may write in Russian, German, or English.
 You will also receive a compact list of already-scheduled slots (the user's busy times, ±7 days).
 Do not worry about detecting conflicts yourself — that is handled separately downstream.
-The user may attach a photo instead of (or in addition to) typing — an invitation, an
-appointment card, a screenshot, a document with a date/time on it. Read any relevant text
-in the image and extract the same fields from it as you would from typed text. If the image
-contains no date/time/scheduling information at all, return an empty suggestions array.
+The user may attach a photo or a PDF document instead of (or in addition to) typing — an
+invitation, an appointment card, a screenshot, a booking confirmation, a scanned document
+with a date/time on it. Read any relevant text in the photo or document and extract the
+same fields from it as you would from typed text. If it contains no date/time/scheduling
+information at all, return an empty suggestions array.
 For each distinct task/appointment/reminder implied by the user's text or photo, produce one suggestion with:
 - title: short, in the same language the user wrote in
 - date: resolved absolute date in YYYY-MM-DD, based on today's date and relative terms like "tomorrow"/"Thursday"
@@ -120,17 +121,19 @@ If total is 0, write one short encouraging sentence about a quiet week.`
 }
 
 async function handleParse(client, body) {
-  const { text, scheduleContext, today, image } = body
-  if (!text && !image?.base64) return { status: 400, json: { error: 'Missing "text" or "image" in request body' } }
+  const { text, scheduleContext, today, attachment } = body
+  if (!text && !attachment?.base64) return { status: 400, json: { error: 'Missing "text" or "attachment" in request body' } }
 
   const resolvedToday = today || new Date().toISOString().slice(0, 10)
   const userContent = []
-  if (image?.base64 && image?.mediaType) {
-    userContent.push({ type: 'image', source: { type: 'base64', media_type: image.mediaType, data: image.base64 } })
+  if (attachment?.base64 && attachment?.mediaType === 'application/pdf') {
+    userContent.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: attachment.base64 } })
+  } else if (attachment?.base64 && attachment?.mediaType) {
+    userContent.push({ type: 'image', source: { type: 'base64', media_type: attachment.mediaType, data: attachment.base64 } })
   }
   userContent.push({
     type: 'text',
-    text: `User request: ${text || '(see attached photo)'}\n\nExisting busy slots (JSON): ${JSON.stringify(scheduleContext || [])}`
+    text: `User request: ${text || '(see attached photo/document)'}\n\nExisting busy slots (JSON): ${JSON.stringify(scheduleContext || [])}`
   })
 
   const response = await client.messages.create({
