@@ -22,7 +22,7 @@ export default function BottomNav({ activeTab, onSelectTab, onOpenSettings, badg
               key={key}
               type="button"
               onClick={() => onSelectTab(key)}
-              className={`relative flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] transition-colors ${
+              className={`flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] transition-colors ${
                 active ? 'text-brand-cta' : 'text-slate-500 hover:text-slate-300'
               }`}
             >
