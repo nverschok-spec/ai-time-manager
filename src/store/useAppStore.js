@@ -184,6 +184,20 @@ export const useAppStore = create(
         queuedFetch('/api/people', { method: 'PUT', body: JSON.stringify({ color }) })
       },
 
+      // One-tap "дома / на работе / в пути / не беспокоить" — purely a
+      // household-coordination signal (see SharedPage), never persisted
+      // locally like color since it's meant to reflect "right now", not
+      // survive as a stale value across logins/reloads.
+      updatePersonStatus: (status) => {
+        const me = get().person
+        if (!me) return
+        set((state) => ({
+          person: { ...state.person, status },
+          people: state.people.map((p) => (p.id === me.id ? { ...p, status } : p))
+        }))
+        queuedFetch('/api/people', { method: 'PUT', body: JSON.stringify({ status }) })
+      },
+
       addShoppingItem: (text) => {
         const trimmed = text.trim()
         if (!trimmed) return
@@ -201,6 +215,26 @@ export const useAppStore = create(
           queuedFetch('/api/shopping', {
             method: 'PUT',
             body: JSON.stringify({ id, patch: { done: item.done } })
+          })
+        }
+      },
+
+      // Tapping always claims/unclaims for YOURSELF — if someone else had
+      // claimed it, tapping reassigns it to you rather than being a no-op,
+      // since "I'll grab that instead" is the common real case.
+      toggleShoppingClaim: (id) => {
+        const me = get().person
+        if (!me) return
+        set((state) => ({
+          shoppingItems: state.shoppingItems.map((i) =>
+            i.id === id ? { ...i, claimedBy: i.claimedBy === me.id ? null : me.id } : i
+          )
+        }))
+        const item = get().shoppingItems.find((i) => i.id === id)
+        if (item) {
+          queuedFetch('/api/shopping', {
+            method: 'PUT',
+            body: JSON.stringify({ id, patch: { claimedBy: item.claimedBy } })
           })
         }
       },
@@ -239,6 +273,45 @@ export const useAppStore = create(
       restoreFamilyEvent: (event) => {
         set((state) => ({ familyEvents: [...state.familyEvents, event] }))
         queuedFetch('/api/family-events', { method: 'POST', body: JSON.stringify({ event }) })
+      },
+
+      updateFamilyEvent: (id, patch) => {
+        set((state) => ({
+          familyEvents: state.familyEvents.map((e) => (e.id === id ? { ...e, ...patch } : e))
+        }))
+        queuedFetch('/api/family-events', { method: 'PUT', body: JSON.stringify({ id, patch }) })
+      },
+
+      // Same "tapping always claims for yourself" behavior as shopping items.
+      toggleFamilyEventClaim: (id) => {
+        const me = get().person
+        if (!me) return
+        const event = get().familyEvents.find((e) => e.id === id)
+        if (!event) return
+        get().updateFamilyEvent(id, { claimedBy: event.claimedBy === me.id ? null : me.id })
+      },
+
+      addFamilyEventChecklistItem: (eventId, text) => {
+        const trimmed = text.trim()
+        if (!trimmed) return
+        const event = get().familyEvents.find((e) => e.id === eventId)
+        if (!event) return
+        const checklist = [...(event.checklist || []), { id: makeId(), text: trimmed, done: false }]
+        get().updateFamilyEvent(eventId, { checklist })
+      },
+
+      toggleFamilyEventChecklistItem: (eventId, itemId) => {
+        const event = get().familyEvents.find((e) => e.id === eventId)
+        if (!event) return
+        const checklist = (event.checklist || []).map((i) => (i.id === itemId ? { ...i, done: !i.done } : i))
+        get().updateFamilyEvent(eventId, { checklist })
+      },
+
+      removeFamilyEventChecklistItem: (eventId, itemId) => {
+        const event = get().familyEvents.find((e) => e.id === eventId)
+        if (!event) return
+        const checklist = (event.checklist || []).filter((i) => i.id !== itemId)
+        get().updateFamilyEvent(eventId, { checklist })
       },
 
       addTask: (task) => {
@@ -430,6 +503,21 @@ export const useAppStore = create(
 
       dismissSuggestion: (index) =>
         set((state) => ({ suggestions: state.suggestions.filter((_, i) => i !== index) })),
+
+      // Alternative to acceptSuggestion — routes to the shared family-events
+      // list instead of the accepting person's own private tasks, for when
+      // the AI (or the user, via the "make it shared" tip) flags this as a
+      // household errand rather than something personal.
+      acceptSuggestionAsShared: (index) => {
+        const suggestion = get().suggestions[index]
+        if (!suggestion) return
+        get().addFamilyEvent({
+          title: suggestion.title,
+          date: suggestion.date,
+          createdByName: get().person?.name
+        })
+        set((state) => ({ suggestions: state.suggestions.filter((_, i) => i !== index) }))
+      },
 
       exportData: () => {
         const { tasks, shoppingItems, familyEvents } = get()

@@ -26,9 +26,27 @@ const SUGGESTION_SCHEMA = {
           duration_minutes: { type: 'integer' },
           priority: { type: 'string', enum: ['low', 'medium', 'high'] },
           emoji: { type: 'string', description: 'A single emoji representing this task' },
-          confidence: { type: 'number', description: '0.0 to 1.0' }
+          confidence: { type: 'number', description: '0.0 to 1.0' },
+          is_shared_candidate: {
+            type: 'boolean',
+            description: 'True if this is a household errand both partners would plausibly care about (shopping trip, repair, gift, joint appointment) rather than a personal task'
+          },
+          ai_tip: {
+            type: ['string', 'null'],
+            description: 'A short suggestion string shown to the user when is_shared_candidate is true (e.g. "Похоже на общее дело"), null otherwise'
+          }
         },
-        required: ['title', 'date', 'start_time', 'duration_minutes', 'priority', 'emoji', 'confidence'],
+        required: [
+          'title',
+          'date',
+          'start_time',
+          'duration_minutes',
+          'priority',
+          'emoji',
+          'confidence',
+          'is_shared_candidate',
+          'ai_tip'
+        ],
         additionalProperties: false
       }
     }
@@ -79,6 +97,8 @@ For each distinct task/appointment/reminder implied by the user's text or photo,
 - priority: "low" | "medium" | "high"
 - emoji: a single emoji that best fits this specific task (e.g. 💊 for medication, 🏋️ for a workout, 🦷 for a dentist visit) — pick something concrete and fitting, not generic like 📅
 - confidence: 0.0-1.0, how confident you are in this interpretation. Use a lower value when the request is ambiguous (missing date, vague duration, unclear intent).
+- is_shared_candidate: true if this is a household errand both partners would plausibly care about — a shopping trip, a repair, a gift, a joint appointment, preparing for guests. false for anything personal (work meeting, solo workout, personal health appointment).
+- ai_tip: if is_shared_candidate is true, a very short suggestion string in the same language as the user (e.g. "Похоже на общее дело — сделать общим?" / "Sounds like a shared errand" / "Klingt nach einer gemeinsamen Aufgabe"). null if is_shared_candidate is false.
 If the text contains no actionable scheduling request, return an empty suggestions array.`
 }
 
@@ -113,11 +133,13 @@ If the task list is empty, write one short encouraging sentence about a free day
 }
 
 function weeklyReviewPrompt() {
-  return `You write a very short weekly reflection for a personal scheduling app.
+  return `You write a very short weekly reflection for a personal scheduling app, used by one member of a couple.
 The user may write/read in Russian, German, or English — always reply in the language given as "locale" (ru, de, or en).
 You will receive stats for the last 7 days as JSON: total tasks, how many were completed, a breakdown by category, and a breakdown by priority.
 Write 2-3 short sentences: acknowledge the completion rate (be encouraging even if it's low), note one interesting pattern if there is one (e.g. a category that got neglected, or a lot of high-priority items), and end with one gentle, concrete nudge for the coming week. Warm, concise, no bullet points, no greeting, no markdown.
-If total is 0, write one short encouraging sentence about a quiet week.`
+If total is 0, write one short encouraging sentence about a quiet week.
+
+You may also receive "household" context: shared family events coming up in the next 7 days, the partner's current status (home/work/out/do-not-disturb, or none set), and how many items are still on the shared shopping list. This is the ONLY visibility you have into the partner — you never see their personal tasks, only these three shared signals. If there's anything worth mentioning there (an upcoming shared event, a long pending-shopping count), fold ONE brief mention of it into your last sentence. Don't force it if there's nothing notable — most of the response should still be about the user's own week.`
 }
 
 async function handleParse(client, body) {
@@ -207,14 +229,19 @@ async function handleDigest(client, body) {
 }
 
 async function handleWeeklyReview(client, body) {
-  const { stats, locale } = body
+  const { stats, locale, household } = body
   if (!stats || typeof stats.total !== 'number') return { status: 400, json: { error: 'Missing "stats" in request body' } }
 
   const response = await client.messages.create({
     model: 'claude-haiku-4-5',
     max_tokens: 220,
     system: weeklyReviewPrompt(),
-    messages: [{ role: 'user', content: `locale: ${locale || 'en'}\n\nStats (JSON): ${JSON.stringify(stats)}` }]
+    messages: [
+      {
+        role: 'user',
+        content: `locale: ${locale || 'en'}\n\nStats (JSON): ${JSON.stringify(stats)}\n\nHousehold context (JSON): ${JSON.stringify(household || {})}`
+      }
+    ]
   })
 
   if (response.stop_reason === 'refusal') return { status: 200, json: { review: '' } }

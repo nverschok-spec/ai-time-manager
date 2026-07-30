@@ -30,7 +30,8 @@
     "dismiss": "Отклонить",
     "conflict": "Конфликт по времени",
     "find_free_slot": "Найти свободное время",
-    "low_confidence": "Уточните"
+    "low_confidence": "Уточните",
+    "make_shared": "Сделать общим"
   },
   "quick_templates": {
     "pharmacy": "Аптека",
@@ -140,11 +141,13 @@
   "shopping": {
     "placeholder": "Что купить?",
     "empty": "Список пуст.",
-    "clear_completed": "Убрать купленное ({{count}})"
+    "clear_completed": "Убрать купленное ({{count}})",
+    "claim": "Взять на себя"
   },
   "family": {
     "placeholder": "Событие для всей семьи",
-    "empty": "Пока нет общих событий."
+    "empty": "Пока нет общих событий.",
+    "claim": "Я этим занимаюсь"
   },
   "push": {
     "title": "Push-уведомления",
@@ -160,5 +163,14 @@
     "error": "Неверный код",
     "who_are_you": "Кто ты?",
     "new_person": "Новый человек — имя"
+  },
+  "status": {
+    "home": "Дома",
+    "work": "На работе",
+    "away": "В пути",
+    "dnd": "Не беспокоить"
+  },
+  "sync": {
+    "pending": "Не отправлено на сервер: {{count}}"
   }
 }

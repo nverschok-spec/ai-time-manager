@@ -30,7 +30,8 @@
     "dismiss": "Dismiss",
     "conflict": "Time conflict",
     "find_free_slot": "Find free time",
-    "low_confidence": "Please confirm"
+    "low_confidence": "Please confirm",
+    "make_shared": "Make shared"
   },
   "quick_templates": {
     "pharmacy": "Pharmacy",
@@ -140,11 +141,13 @@
   "shopping": {
     "placeholder": "What to buy?",
     "empty": "List is empty.",
-    "clear_completed": "Clear bought ({{count}})"
+    "clear_completed": "Clear bought ({{count}})",
+    "claim": "I'll get it"
   },
   "family": {
     "placeholder": "Event for the whole family",
-    "empty": "No shared events yet."
+    "empty": "No shared events yet.",
+    "claim": "I've got this"
   },
   "push": {
     "title": "Push notifications",
@@ -160,5 +163,14 @@
     "error": "Wrong passcode",
     "who_are_you": "Who are you?",
     "new_person": "New person — name"
+  },
+  "status": {
+    "home": "Home",
+    "work": "At work",
+    "away": "Out",
+    "dnd": "Do not disturb"
+  },
+  "sync": {
+    "pending": "Not yet sent: {{count}}"
   }
 }

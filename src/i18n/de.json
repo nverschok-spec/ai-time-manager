@@ -30,7 +30,8 @@
     "dismiss": "Ablehnen",
     "conflict": "Terminkonflikt",
     "find_free_slot": "Freie Zeit finden",
-    "low_confidence": "Bitte bestätigen"
+    "low_confidence": "Bitte bestätigen",
+    "make_shared": "Gemeinsam machen"
   },
   "quick_templates": {
     "pharmacy": "Apotheke",
@@ -140,11 +141,13 @@
   "shopping": {
     "placeholder": "Was einkaufen?",
     "empty": "Liste ist leer.",
-    "clear_completed": "Gekauftes entfernen ({{count}})"
+    "clear_completed": "Gekauftes entfernen ({{count}})",
+    "claim": "Ich übernehme das"
   },
   "family": {
     "placeholder": "Ereignis für die ganze Familie",
-    "empty": "Noch keine gemeinsamen Ereignisse."
+    "empty": "Noch keine gemeinsamen Ereignisse.",
+    "claim": "Ich kümmere mich darum"
   },
   "push": {
     "title": "Push-Benachrichtigungen",
@@ -160,5 +163,14 @@
     "error": "Falscher Code",
     "who_are_you": "Wer bist du?",
     "new_person": "Neue Person — Name"
+  },
+  "status": {
+    "home": "Zuhause",
+    "work": "Bei der Arbeit",
+    "away": "Unterwegs",
+    "dnd": "Nicht stören"
+  },
+  "sync": {
+    "pending": "Noch nicht gesendet: {{count}}"
   }
 }

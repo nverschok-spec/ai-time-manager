@@ -7,12 +7,17 @@ import { computeMonthlyTrend, weekdayIndexToDate } from '../lib/monthlyTrends'
 import { categoryMeta } from '../lib/categories'
 import { fetchWeeklyReview } from '../services/ai'
 import { shareText } from '../lib/share'
+import { toDateKey } from '../lib/date'
 
 // Shown once per week, on the first open that lands on Sunday or Monday —
 // broad enough to catch most people without nagging on the other 5 days.
 export default function WeeklyReview() {
   const { t, i18n } = useTranslation()
   const tasks = useAppStore((s) => s.tasks)
+  const familyEvents = useAppStore((s) => s.familyEvents)
+  const shoppingItems = useAppStore((s) => s.shoppingItems)
+  const people = useAppStore((s) => s.people)
+  const person = useAppStore((s) => s.person)
   const lastWeeklyReviewWeek = useAppStore((s) => s.lastWeeklyReviewWeek)
   const setLastWeeklyReviewWeek = useAppStore((s) => s.setLastWeeklyReviewWeek)
   const [review, setReview] = useState('')
@@ -26,11 +31,25 @@ export default function WeeklyReview() {
   const stats = useMemo(() => computeWeeklyStats(tasks, today), [tasks]) // eslint-disable-line react-hooks/exhaustive-deps
   const monthlyTrend = useMemo(() => computeMonthlyTrend(tasks, today), [tasks]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // The only partner-related data point ever sent to the AI — shared family
+  // events, their coarse presence status, and a shared-list count. Never
+  // their private tasks (see fetchWeeklyReview).
+  const todayKey = toDateKey(today)
+  const weekAheadKey = toDateKey(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 7))
+  const partner = people.find((p) => p.id !== person?.id)
+  const householdContext = {
+    upcomingFamilyEvents: familyEvents
+      .filter((e) => e.date >= todayKey && e.date <= weekAheadKey)
+      .map((e) => ({ title: e.title, date: e.date })),
+    partnerStatus: partner ? { name: partner.name, status: partner.status || null } : null,
+    pendingShoppingCount: shoppingItems.filter((i) => !i.done).length
+  }
+
   useEffect(() => {
     if (!shouldShow) return
     let cancelled = false
     setLoading(true)
-    fetchWeeklyReview(stats, i18n.resolvedLanguage).then((text) => {
+    fetchWeeklyReview(stats, i18n.resolvedLanguage, householdContext).then((text) => {
       if (!cancelled) {
         setReview(text)
         setLoading(false)

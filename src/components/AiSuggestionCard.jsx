@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Check, Pencil, Wand2, X } from 'lucide-react'
+import { Check, Pencil, Users, Wand2, X } from 'lucide-react'
 import { useAppStore } from '../store/useAppStore'
 import { priorityMeta } from '../lib/priority'
 import { findFreeSlotOnDate } from '../lib/freeSlot'
@@ -11,6 +11,7 @@ export default function AiSuggestionCard() {
   const suggestions = useAppStore((s) => s.suggestions)
   const updateSuggestion = useAppStore((s) => s.updateSuggestion)
   const acceptSuggestion = useAppStore((s) => s.acceptSuggestion)
+  const acceptSuggestionAsShared = useAppStore((s) => s.acceptSuggestionAsShared)
   const dismissSuggestion = useAppStore((s) => s.dismissSuggestion)
   const [editingIndex, setEditingIndex] = useState(null)
 
@@ -29,6 +30,13 @@ export default function AiSuggestionCard() {
         const isEditing = editingIndex === index
         return (
           <div key={`${s.title}-${index}`} className="rounded-2xl border border-white/5 bg-app-card p-3 space-y-2">
+            {s.is_shared_candidate && s.ai_tip && (
+              <p className="flex items-center gap-1.5 text-xs text-brand-cta">
+                <Users size={12} className="shrink-0" />
+                {s.ai_tip}
+              </p>
+            )}
+
             {(s.conflict || s.lowConfidence) && (
               <div className="flex gap-2">
                 {s.conflict && (
@@ -98,6 +106,15 @@ export default function AiSuggestionCard() {
               >
                 <Check size={14} /> {t('suggestion.accept')}
               </button>
+              {s.is_shared_candidate && (
+                <button
+                  type="button"
+                  onClick={() => acceptSuggestionAsShared(index)}
+                  className="flex items-center gap-1 rounded-md bg-app-cardMuted px-2.5 py-1 text-xs font-medium text-slate-200 hover:bg-white/10 transition-colors"
+                >
+                  <Users size={14} /> {t('suggestion.make_shared')}
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => setEditingIndex(isEditing ? null : index)}

@@ -34,6 +34,14 @@ export default async function handler(req, res) {
     return res.status(200).json({ event: newEvent })
   }
 
+  if (req.method === 'PUT') {
+    const { id, patch } = req.body || {}
+    if (!id || !patch) return res.status(400).json({ error: 'Missing id or patch' })
+    const events = (await redis.get(KEY)) || []
+    await redis.set(KEY, events.map((e) => (e.id === id ? { ...e, ...patch } : e)))
+    return res.status(200).json({ ok: true })
+  }
+
   if (req.method === 'DELETE') {
     const { id } = req.body || {}
     if (!id) return res.status(400).json({ error: 'Missing id' })

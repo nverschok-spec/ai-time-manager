@@ -25,12 +25,20 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'PUT') {
-    // Only your own color — personId comes from the auth token, never the
-    // body, so one household member can't repaint another's accent color.
-    const { color } = req.body || {}
-    if (!color) return res.status(400).json({ error: 'Missing color' })
+    // Only your own color/status — personId comes from the auth token, never
+    // the body, so one household member can't repaint or re-flag another's.
+    // status is nullable (clearing it), so check for its key explicitly
+    // rather than truthiness.
+    const { color, status } = req.body || {}
+    if (!color && !('status' in (req.body || {}))) return res.status(400).json({ error: 'Missing color or status' })
     const people = (await redis.get('people')) || []
-    const updated = people.map((p) => (p.id === personId ? { ...p, color } : p))
+    const updated = people.map((p) => {
+      if (p.id !== personId) return p
+      const next = { ...p }
+      if (color) next.color = color
+      if ('status' in (req.body || {})) next.status = status
+      return next
+    })
     await redis.set('people', updated)
     return res.status(200).json({ ok: true })
   }

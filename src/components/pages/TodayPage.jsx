@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Plus, X } from 'lucide-react'
+import { Plus, Users, X } from 'lucide-react'
 import { useAppStore } from '../../store/useAppStore'
 import { expandOccurrences } from '../../lib/occurrences'
 import { toDateKey } from '../../lib/date'
@@ -20,6 +20,7 @@ import Confetti from '../Confetti'
 export default function TodayPage() {
   const { t } = useTranslation()
   const tasks = useAppStore((s) => s.tasks)
+  const familyEvents = useAppStore((s) => s.familyEvents)
   const toggleTask = useAppStore((s) => s.toggleTask)
   const toggleTaskOccurrence = useAppStore((s) => s.toggleTaskOccurrence)
   const removeTask = useAppStore((s) => s.removeTask)
@@ -40,6 +41,14 @@ export default function TodayPage() {
     const map = expandOccurrences(tasks, [todayKey])
     return map[todayKey].sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''))
   }, [tasks, todayKey])
+
+  // Shared events land here too — they're the one thing on this page that
+  // isn't private to whoever's logged in, so they get their own small block
+  // instead of being mixed into the personal task list below.
+  const todayFamilyEvents = useMemo(
+    () => familyEvents.filter((e) => e.date === todayKey),
+    [familyEvents, todayKey]
+  )
 
   function handleToggle(task) {
     if (task.recurrence) toggleTaskOccurrence(task.id, task.occurrenceDate)
@@ -123,6 +132,18 @@ export default function TodayPage() {
         />
       )}
       {editingTask && <TaskForm task={editingTask} defaultDate={todayKey} onCancel={() => setEditingTask(null)} />}
+
+      {todayFamilyEvents.length > 0 && !showAddForm && !editingTask && (
+        <div className="space-y-1.5 rounded-2xl border border-brand-cta/20 bg-brand-cta/10 p-3">
+          {todayFamilyEvents.map((event) => (
+            <div key={event.id} className="flex items-center gap-2 text-sm text-slate-100">
+              <Users size={14} className="shrink-0 text-brand-cta" />
+              <span className="min-w-0 flex-1 truncate">{event.title}</span>
+              {event.createdByName && <span className="shrink-0 text-xs text-slate-400">{event.createdByName}</span>}
+            </div>
+          ))}
+        </div>
+      )}
 
       {todayTasks.length === 0 && !showAddForm && !editingTask && <EmptyStateIllustration />}
 

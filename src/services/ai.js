@@ -196,8 +196,11 @@ export async function fetchScheduleAnswer(question, tasks) {
 
 // Best-effort — returns '' on any failure so the caller can silently fall
 // back to the plain stats card instead of blocking the weekly review.
-export async function fetchWeeklyReview(stats, locale) {
-  const data = await callAiSoft('weekly-review', { stats, locale })
+// `household` is the only cross-person context the AI ever sees for the
+// partner — shared signals (upcoming family events, presence status,
+// pending shopping count), never the partner's own private tasks.
+export async function fetchWeeklyReview(stats, locale, household) {
+  const data = await callAiSoft('weekly-review', { stats, locale, household })
   return data?.review || ''
 }
 

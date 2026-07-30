@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Plus, Trash2 } from 'lucide-react'
+import { Plus, Trash2, User } from 'lucide-react'
 import { useAppStore } from '../store/useAppStore'
 import SwipeableRow from './SwipeableRow'
 import UndoSnackbar from './UndoSnackbar'
@@ -8,8 +8,10 @@ import UndoSnackbar from './UndoSnackbar'
 export default function ShoppingList() {
   const { t } = useTranslation()
   const items = useAppStore((s) => s.shoppingItems)
+  const people = useAppStore((s) => s.people)
   const addShoppingItem = useAppStore((s) => s.addShoppingItem)
   const toggleShoppingItem = useAppStore((s) => s.toggleShoppingItem)
+  const toggleShoppingClaim = useAppStore((s) => s.toggleShoppingClaim)
   const removeShoppingItem = useAppStore((s) => s.removeShoppingItem)
   const restoreShoppingItem = useAppStore((s) => s.restoreShoppingItem)
   const clearCompletedShopping = useAppStore((s) => s.clearCompletedShopping)
@@ -69,6 +71,30 @@ export default function ShoppingList() {
                   <span className={`flex-1 text-sm ${item.done ? 'line-through text-slate-500' : 'text-slate-100'}`}>
                     {item.text}
                   </span>
+                  {(() => {
+                    const claimant = item.claimedBy ? people.find((p) => p.id === item.claimedBy) : null
+                    return (
+                      <button
+                        type="button"
+                        onClick={() => toggleShoppingClaim(item.id)}
+                        title={claimant ? claimant.name : t('shopping.claim')}
+                        className="shrink-0"
+                      >
+                        {claimant ? (
+                          <span
+                            className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-semibold text-app-bg"
+                            style={{ backgroundColor: claimant.color }}
+                          >
+                            {claimant.name.slice(0, 1).toUpperCase()}
+                          </span>
+                        ) : (
+                          <span className="flex h-5 w-5 items-center justify-center rounded-full border border-slate-600 text-slate-600 transition-colors hover:border-slate-400 hover:text-slate-400">
+                            <User size={11} />
+                          </span>
+                        )}
+                      </button>
+                    )
+                  })()}
                   <button
                     type="button"
                     onClick={() => handleRemove(item)}

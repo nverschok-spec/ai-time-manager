@@ -15,3 +15,16 @@ export function nextAvailableColor(existingPeople) {
   const used = new Set(existingPeople.map((p) => p.color))
   return PEOPLE_COLORS.find((c) => !used.has(c)) || PEOPLE_COLORS[existingPeople.length % PEOPLE_COLORS.length]
 }
+
+// Coarse, opt-in presence — deliberately not tied to location/tasks, just a
+// one-tap signal the other person can see on the Shared page.
+export const STATUS_OPTIONS = [
+  { key: 'home', emoji: '🏠' },
+  { key: 'work', emoji: '💼' },
+  { key: 'away', emoji: '🚗' },
+  { key: 'dnd', emoji: '🔕' }
+]
+
+export function statusMeta(key) {
+  return STATUS_OPTIONS.find((s) => s.key === key) || null
+}

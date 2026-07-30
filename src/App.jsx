@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Target } from 'lucide-react'
 import LanguageSwitcher from './components/LanguageSwitcher'
 import Logo from './components/Logo'
+import OfflineIndicator from './components/OfflineIndicator'
 import OverdueBanner from './components/OverdueBanner'
 import MorningReview from './components/MorningReview'
 import WeeklyReview from './components/WeeklyReview'
@@ -173,6 +174,7 @@ export default function App() {
               </div>
             </div>
             <div className="flex shrink-0 items-center gap-1.5">
+              <OfflineIndicator />
               <LanguageSwitcher />
               <button
                 type="button"
