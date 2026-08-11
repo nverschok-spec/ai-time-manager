@@ -7,6 +7,10 @@ dev-dist
 *.log
 .DS_Store
 
+# Machine-local Claude Code hook config (from `npx impeccable install`) —
+# not meant to be shared, per the tool's own convention.
+.claude/settings.local.json
+
 .vercel
 .env*
 
