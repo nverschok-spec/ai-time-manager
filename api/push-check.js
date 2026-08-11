@@ -1,5 +1,6 @@
 import { Redis } from '@upstash/redis'
 import webpush from 'web-push'
+import { timingSafeStringEqual } from './_lib/auth.js'
 
 const redis = new Redis({ url: process.env.KV_REST_API_URL, token: process.env.KV_REST_API_TOKEN })
 
@@ -8,7 +9,7 @@ webpush.setVapidDetails(process.env.VAPID_SUBJECT, process.env.VAPID_PUBLIC_KEY,
 // Polled every few minutes by an external scheduler (Vercel Hobby cron only
 // runs once/day, too coarse for time-accurate reminders) — see README.
 export default async function handler(req, res) {
-  if (req.query.secret !== process.env.PUSH_CHECK_SECRET) {
+  if (!timingSafeStringEqual(req.query.secret, process.env.PUSH_CHECK_SECRET)) {
     return res.status(401).json({ error: 'Unauthorized' })
   }
 

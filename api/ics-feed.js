@@ -5,6 +5,7 @@
 
 import { Redis } from '@upstash/redis'
 import { buildIcs } from '../src/lib/ics.js'
+import { timingSafeStringEqual } from './_lib/auth.js'
 
 const redis = new Redis({ url: process.env.KV_REST_API_URL, token: process.env.KV_REST_API_TOKEN })
 
@@ -19,7 +20,7 @@ export default async function handler(req, res) {
   }
 
   const expectedToken = await redis.get(`feedToken:${person}`)
-  if (!expectedToken || expectedToken !== token) {
+  if (!expectedToken || !timingSafeStringEqual(expectedToken, token)) {
     return res.status(403).json({ error: 'Invalid token' })
   }
 

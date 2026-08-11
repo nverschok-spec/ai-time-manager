@@ -66,19 +66,19 @@ export default function AiSuggestionCard() {
                   type="text"
                   value={s.title}
                   onChange={(e) => updateSuggestion(index, { title: e.target.value })}
-                  className="col-span-2 rounded-md bg-app-bg px-2 py-1 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-brand-cta"
+                  className="col-span-2 w-full min-w-0 rounded-md bg-app-bg px-2 py-1 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-brand-cta"
                 />
                 <input
                   type="date"
                   value={s.date}
                   onChange={(e) => updateSuggestion(index, { date: e.target.value })}
-                  className="rounded-md bg-app-bg px-2 py-1 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-brand-cta"
+                  className="w-full min-w-0 rounded-md bg-app-bg px-2 py-1 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-brand-cta"
                 />
                 <input
                   type="time"
                   value={s.start_time}
                   onChange={(e) => updateSuggestion(index, { start_time: e.target.value })}
-                  className="rounded-md bg-app-bg px-2 py-1 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-brand-cta"
+                  className="w-full min-w-0 rounded-md bg-app-bg px-2 py-1 text-sm text-slate-100 outline-none focus:ring-1 focus:ring-brand-cta"
                 />
               </div>
             ) : (

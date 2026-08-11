@@ -29,7 +29,7 @@ export default function OverdueBanner() {
   return (
     <div className="flex items-center gap-3 rounded-2xl border border-priority-medium/30 bg-priority-medium/10 px-3 py-2.5">
       <CalendarClock size={18} className="shrink-0 text-priority-medium" />
-      <p className="flex-1 text-sm text-priority-medium">
+      <p className="min-w-0 flex-1 text-sm text-priority-medium">
         {t('calendar.overdue_message', { count: overdueTasks.length })}
       </p>
       <button

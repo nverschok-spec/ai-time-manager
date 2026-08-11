@@ -37,7 +37,7 @@ export default function PeopleSettings() {
           {people.map((p) => (
             <li key={p.id} className="flex items-center gap-2 rounded-lg bg-app-cardMuted px-2.5 py-1.5">
               <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: p.color }} />
-              <span className="flex-1 text-sm text-slate-200">
+              <span className="min-w-0 flex-1 truncate text-sm text-slate-200">
                 {p.name}
                 {person?.id === p.id && <span className="ml-1 text-xs text-muted">({t('settings.you')})</span>}
               </span>

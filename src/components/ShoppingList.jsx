@@ -44,7 +44,7 @@ export default function ShoppingList() {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder={t('shopping.placeholder')}
-          className="flex-1 rounded-full bg-app-card px-4 py-2 text-sm text-slate-100 placeholder:text-muted outline-none focus:ring-2 focus:ring-brand-cta"
+          className="min-w-0 flex-1 rounded-full bg-app-card px-4 py-2 text-sm text-slate-100 placeholder:text-muted outline-none focus:ring-2 focus:ring-brand-cta"
         />
         <button
           type="submit"
@@ -68,7 +68,9 @@ export default function ShoppingList() {
                     onChange={() => toggleShoppingItem(item.id)}
                     className="h-4 w-4 accent-brand-cta"
                   />
-                  <span className={`flex-1 text-sm ${item.done ? 'line-through text-slate-500' : 'text-slate-100'}`}>
+                  <span
+                    className={`min-w-0 flex-1 truncate text-sm ${item.done ? 'line-through text-slate-500' : 'text-slate-100'}`}
+                  >
                     {item.text}
                   </span>
                   {(() => {

@@ -54,6 +54,16 @@ function verify(token, secret) {
   return null
 }
 
+// Shared by any endpoint comparing a caller-supplied secret against a known
+// value (query-param tokens, cron secrets) — plain `!==` leaks a timing
+// signal proportional to how many leading bytes match.
+export function timingSafeStringEqual(a, b) {
+  if (typeof a !== 'string' || typeof b !== 'string') return false
+  const aBuf = Buffer.from(a)
+  const bBuf = Buffer.from(b)
+  return aBuf.length === bBuf.length && crypto.timingSafeEqual(aBuf, bBuf)
+}
+
 function bearerToken(req) {
   const header = req.headers.authorization || ''
   return header.startsWith('Bearer ') ? header.slice(7) : null
