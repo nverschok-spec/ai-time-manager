@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Plus, Trash2, User } from 'lucide-react'
 import { useAppStore } from '../store/useAppStore'
+import { readableForegroundChannels } from '../lib/color'
 import SwipeableRow from './SwipeableRow'
 import UndoSnackbar from './UndoSnackbar'
 
@@ -48,7 +49,7 @@ export default function ShoppingList() {
         />
         <button
           type="submit"
-          className="rounded-full bg-brand-cta p-2.5 text-app-bg hover:brightness-110 transition-all"
+          className="rounded-full bg-brand-cta p-2.5 text-brand-ctaForeground hover:brightness-110 transition-all"
         >
           <Plus size={18} />
         </button>
@@ -84,8 +85,11 @@ export default function ShoppingList() {
                       >
                         {claimant ? (
                           <span
-                            className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-semibold text-app-bg"
-                            style={{ backgroundColor: claimant.color }}
+                            className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-semibold"
+                            style={{
+                              backgroundColor: claimant.color,
+                              color: `rgb(${readableForegroundChannels(claimant.color)})`
+                            }}
                           >
                             {claimant.name.slice(0, 1).toUpperCase()}
                           </span>

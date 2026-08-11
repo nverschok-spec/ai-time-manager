@@ -74,7 +74,7 @@ export default function WeeklyReview() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/85 backdrop-blur-sm p-4">
-      <div className="w-full max-w-sm rounded-3xl border border-white/5 bg-app-card p-5 space-y-4 animate-modal-in">
+      <div className="w-full max-w-sm rounded-3xl border border-white/[0.06] bg-app-card p-5 space-y-4 animate-modal-in">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <CalendarCheck size={20} className="text-brand-cta" />
@@ -128,7 +128,7 @@ export default function WeeklyReview() {
 
         {(monthlyTrend.thisMonth.pct !== null && monthlyTrend.lastMonth.pct !== null) ||
         monthlyTrend.busiestDay !== null ? (
-          <div className="space-y-1 border-t border-white/5 pt-3 text-xs text-slate-500">
+          <div className="space-y-1 border-t border-white/[0.06] pt-3 text-xs text-slate-500">
             {monthlyTrend.thisMonth.pct !== null && monthlyTrend.lastMonth.pct !== null && (
               <p className="flex items-center gap-1.5">
                 {monthlyTrend.thisMonth.pct >= monthlyTrend.lastMonth.pct ? (
@@ -157,7 +157,7 @@ export default function WeeklyReview() {
         <button
           type="button"
           onClick={() => setLastWeeklyReviewWeek(currentWeekKey)}
-          className="w-full rounded-full bg-brand-cta py-2 text-sm font-medium text-app-bg hover:brightness-110 transition-all"
+          className="w-full rounded-full bg-brand-cta py-2 text-sm font-medium text-brand-ctaForeground hover:brightness-110 transition-all"
         >
           {t('weekly.close')}
         </button>

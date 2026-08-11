@@ -6,7 +6,7 @@ export default {
       colors: {
         app: {
           bg: '#12141C',
-          card: '#1E2130',
+          card: '#181B26',
           cardMuted: '#232840'
         },
         muted: '#9AA3B8',
@@ -17,7 +17,12 @@ export default {
           // logged-in person at runtime — see lib/color.js + App.jsx. The
           // "R G B" (space-separated channel) form is required for Tailwind's
           // bg-brand-cta/NN opacity-modifier syntax to keep working.
-          cta: 'rgb(var(--accent) / <alpha-value>)'
+          cta: 'rgb(var(--accent) / <alpha-value>)',
+          // Text/icon color for content sitting on top of a solid --accent
+          // fill — computed per-person alongside --accent (see lib/color.js'
+          // readableForeground + App.jsx) so a light accent (e.g. amber)
+          // still gets readable dark text instead of hardcoded white.
+          ctaForeground: 'rgb(var(--accent-foreground) / <alpha-value>)'
         },
         priority: {
           high: '#FF6B6B',
@@ -44,12 +49,24 @@ export default {
         'modal-in': {
           from: { opacity: '0', transform: 'scale(0.96)' },
           to: { opacity: '1', transform: 'scale(1)' }
+        },
+        'sheet-up': {
+          from: { transform: 'translateY(100%)' },
+          to: { transform: 'translateY(0)' }
+        },
+        'backdrop-in': {
+          from: { opacity: '0' },
+          to: { opacity: '1' }
         }
       },
       animation: {
         shake: 'shake 0.4s ease-in-out',
         'page-in': 'page-in 0.16s ease-out',
-        'modal-in': 'modal-in 0.18s ease-out'
+        'modal-in': 'modal-in 0.18s ease-out',
+        // Apple-style confident-arrival curve (cubic-bezier(0.16,1,0.3,1)) —
+        // decelerates hard at the end instead of a linear/ease-out snap.
+        'sheet-up': 'sheet-up 0.28s cubic-bezier(0.16,1,0.3,1)',
+        'backdrop-in': 'backdrop-in 0.2s ease-out'
       }
     }
   },

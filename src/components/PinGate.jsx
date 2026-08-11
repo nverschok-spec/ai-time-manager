@@ -180,7 +180,7 @@ export default function PinGate({ children }) {
             <button
               type="submit"
               disabled={isSubmitting || !newName.trim()}
-              className="flex shrink-0 items-center justify-center rounded-xl bg-brand-cta px-3 text-app-bg disabled:opacity-40"
+              className="flex shrink-0 items-center justify-center rounded-xl bg-brand-cta px-3 text-brand-ctaForeground disabled:opacity-40"
             >
               <Plus size={18} />
             </button>

@@ -29,7 +29,7 @@ export default function AiSuggestionCard() {
       {suggestions.map((s, index) => {
         const isEditing = editingIndex === index
         return (
-          <div key={`${s.title}-${index}`} className="rounded-2xl border border-white/5 bg-app-card p-3 space-y-2 animate-page-in">
+          <div key={`${s.title}-${index}`} className="rounded-2xl border border-white/[0.06] bg-app-card p-3 space-y-2 animate-page-in">
             {s.is_shared_candidate && s.ai_tip && (
               <p className="flex items-center gap-1.5 text-xs text-brand-cta">
                 <Users size={12} className="shrink-0" />
@@ -102,7 +102,7 @@ export default function AiSuggestionCard() {
               <button
                 type="button"
                 onClick={() => acceptSuggestion(index)}
-                className="flex items-center gap-1 rounded-md bg-brand-cta px-2.5 py-1 text-xs font-medium text-app-bg hover:brightness-110 transition-colors"
+                className="flex items-center gap-1 rounded-md bg-brand-cta px-2.5 py-1 text-xs font-medium text-brand-ctaForeground hover:brightness-110 transition-colors"
               >
                 <Check size={14} /> {t('suggestion.accept')}
               </button>

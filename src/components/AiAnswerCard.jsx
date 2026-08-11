@@ -10,7 +10,7 @@ export default function AiAnswerCard() {
   if (!scheduleAnswer) return null
 
   return (
-    <div className="flex items-start gap-2.5 rounded-2xl border border-white/5 bg-app-card p-3">
+    <div className="flex items-start gap-2.5 rounded-2xl border border-white/[0.06] bg-app-card p-3">
       <MessageCircleQuestion size={18} className="mt-0.5 shrink-0 text-brand-cta" />
       <p className="min-w-0 flex-1 text-sm text-slate-200">{scheduleAnswer}</p>
       <button

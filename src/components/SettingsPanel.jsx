@@ -59,11 +59,11 @@ export default function SettingsPanel({ onClose }) {
           <h2 className="px-1 text-xs font-medium uppercase tracking-wide text-slate-500">
             {t('settings.section_profile')}
           </h2>
-          <div className="flex items-center justify-between rounded-3xl border border-white/5 bg-app-card p-4 text-sm">
+          <div className="flex items-center justify-between rounded-3xl border border-white/[0.06] bg-app-card p-4 text-sm">
             <span className="text-slate-300">{t('settings.language')}</span>
             <LanguageSwitcher />
           </div>
-          <div className="rounded-3xl border border-white/5 bg-app-card p-4">
+          <div className="rounded-3xl border border-white/[0.06] bg-app-card p-4">
             <PeopleSettings />
           </div>
         </section>
@@ -72,7 +72,7 @@ export default function SettingsPanel({ onClose }) {
           <h2 className="px-1 text-xs font-medium uppercase tracking-wide text-slate-500">
             {t('settings.section_notifications')}
           </h2>
-          <div className="rounded-3xl border border-white/5 bg-app-card p-4">
+          <div className="rounded-3xl border border-white/[0.06] bg-app-card p-4">
             <PushSettings />
           </div>
         </section>
@@ -81,7 +81,7 @@ export default function SettingsPanel({ onClose }) {
           <h2 className="px-1 text-xs font-medium uppercase tracking-wide text-slate-500">
             {t('settings.section_data')}
           </h2>
-          <div className="space-y-3 rounded-3xl border border-white/5 bg-app-card p-4">
+          <div className="space-y-3 rounded-3xl border border-white/[0.06] bg-app-card p-4">
           <div className="flex flex-col gap-2">
             <button
               type="button"
@@ -121,7 +121,7 @@ export default function SettingsPanel({ onClose }) {
           <h2 className="px-1 text-xs font-medium uppercase tracking-wide text-slate-500">
             {t('settings.section_features')}
           </h2>
-          <div className="rounded-3xl border border-white/5 bg-app-card p-4">
+          <div className="rounded-3xl border border-white/[0.06] bg-app-card p-4">
             <button
               type="button"
               onClick={() => setShowFeatures((v) => !v)}

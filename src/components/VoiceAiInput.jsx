@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FileText, Mic, MicOff, Paperclip, Send, X } from 'lucide-react'
 import { compressImageFile, readPdfFile } from '../lib/image'
@@ -6,7 +6,7 @@ import { compressImageFile, readPdfFile } from '../lib/image'
 const SpeechRecognitionClass =
   typeof window !== 'undefined' ? window.SpeechRecognition || window.webkitSpeechRecognition : null
 
-export default function VoiceAiInput({ onSubmit, isLoading }) {
+export default function VoiceAiInput({ onSubmit, isLoading, autoFocus }) {
   const { t, i18n } = useTranslation()
   const [text, setText] = useState('')
   const [isListening, setIsListening] = useState(false)
@@ -17,6 +17,16 @@ export default function VoiceAiInput({ onSubmit, isLoading }) {
   const fileInputRef = useRef(null)
 
   const voiceAvailable = useMemo(() => Boolean(SpeechRecognitionClass), [])
+
+  // Delayed past the sheet's own enter transition (see AiInputSheet) so iOS
+  // Safari doesn't fight two viewport shifts at once — the sheet sliding up
+  // and the keyboard opening — which is what causes the jump the brief
+  // called out. Skipped entirely when not opened inside the sheet.
+  useEffect(() => {
+    if (!autoFocus) return
+    const timer = setTimeout(() => textareaRef.current?.focus(), 260)
+    return () => clearTimeout(timer)
+  }, [autoFocus])
 
   function autoGrow(el) {
     if (!el) return
@@ -140,7 +150,7 @@ export default function VoiceAiInput({ onSubmit, isLoading }) {
           type="button"
           onClick={() => fileInputRef.current?.click()}
           title={t('input.photo_start')}
-          className="rounded-full bg-app-card p-2.5 text-slate-300 hover:text-slate-100 transition-colors"
+          className="rounded-full bg-app-card p-2.5 text-slate-300 transition-transform active:scale-[0.97] hover:text-slate-100"
         >
           <Paperclip size={18} />
         </button>
@@ -149,12 +159,12 @@ export default function VoiceAiInput({ onSubmit, isLoading }) {
           onClick={toggleListening}
           disabled={!voiceAvailable}
           title={voiceAvailable ? t('input.mic_start') : t('input.mic_unavailable')}
-          className={`rounded-full p-2.5 transition-colors ${
+          className={`rounded-full p-2.5 transition-transform active:scale-[0.97] ${
             !voiceAvailable
               ? 'text-slate-700 cursor-not-allowed'
               : isListening
                 ? 'bg-priority-high text-white'
-                : 'bg-brand-cta text-app-bg hover:brightness-110'
+                : 'bg-brand-cta text-brand-ctaForeground hover:brightness-110'
           }`}
         >
           {voiceAvailable ? <Mic size={18} /> : <MicOff size={18} />}
@@ -163,7 +173,7 @@ export default function VoiceAiInput({ onSubmit, isLoading }) {
           type="submit"
           disabled={isLoading || (!text.trim() && !attachment)}
           title={t('input.send')}
-          className="rounded-full bg-brand-cta p-2.5 text-app-bg disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110 transition-all"
+          className="rounded-full bg-brand-cta p-2.5 text-brand-ctaForeground transition-transform active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110"
         >
           <Send size={18} />
         </button>

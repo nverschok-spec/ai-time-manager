@@ -12,7 +12,7 @@ export default function BottomNav({ activeTab, onSelectTab, onOpenSettings, badg
   const { t } = useTranslation()
 
   return (
-    <nav className="shrink-0 border-t border-white/5 bg-app-bg/95 backdrop-blur">
+    <nav className="shrink-0 border-t border-white/[0.06] bg-app-bg/95 backdrop-blur">
       <div className="mx-auto flex max-w-md items-stretch justify-between px-1">
         {TABS.map(({ key, icon: Icon, labelKey }) => {
           const active = activeTab === key
@@ -26,10 +26,10 @@ export default function BottomNav({ activeTab, onSelectTab, onOpenSettings, badg
                 active ? 'text-brand-cta' : 'text-slate-500 hover:text-slate-300'
               }`}
             >
-              <span className="relative">
+              <span className="relative transition-transform active:scale-90">
                 <Icon size={20} />
                 {badgeCount > 0 && (
-                  <span className="absolute -right-2 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-priority-high px-1 text-[9px] font-semibold leading-none text-white">
+                  <span className="absolute -right-2 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-priority-high px-1 text-[9px] font-semibold leading-none tabular-nums text-white">
                     {badgeCount > 9 ? '9+' : badgeCount}
                   </span>
                 )}
@@ -41,9 +41,9 @@ export default function BottomNav({ activeTab, onSelectTab, onOpenSettings, badg
         <button
           type="button"
           onClick={onOpenSettings}
-          className="flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] text-slate-500 transition-colors hover:text-slate-300"
+          className="flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] text-slate-500 hover:text-slate-300"
         >
-          <SettingsIcon size={20} />
+          <SettingsIcon size={20} className="transition-transform active:scale-90" />
           {t('nav.settings')}
         </button>
       </div>

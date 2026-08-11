@@ -43,7 +43,7 @@ export default function AiRescheduleCard() {
               <button
                 type="button"
                 onClick={handleAcceptAll}
-                className="flex items-center gap-1 rounded-md bg-brand-cta px-2.5 py-1 text-xs font-medium text-app-bg hover:brightness-110 transition-colors"
+                className="flex items-center gap-1 rounded-md bg-brand-cta px-2.5 py-1 text-xs font-medium text-brand-ctaForeground hover:brightness-110 transition-colors"
               >
                 <CheckCheck size={14} /> {t('reschedule.accept_all')}
               </button>
@@ -53,7 +53,7 @@ export default function AiRescheduleCard() {
           {rescheduleOps.map((op, index) => (
             <div
               key={op.id}
-              className="flex items-center gap-2 rounded-2xl border border-white/5 bg-app-card p-3"
+              className="flex items-center gap-2 rounded-2xl border border-white/[0.06] bg-app-card p-3"
             >
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm text-slate-100">{op.title}</p>

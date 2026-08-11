@@ -164,7 +164,7 @@ export default function CalendarPage() {
               }
             }}
             className={`rounded-full p-2 transition-colors ${
-              showSearch ? 'bg-brand-cta text-app-bg' : 'bg-app-card text-slate-300 hover:text-slate-100'
+              showSearch ? 'bg-brand-cta text-brand-ctaForeground' : 'bg-app-card text-slate-300 hover:text-slate-100'
             }`}
           >
             {showSearch ? <X size={16} /> : <Search size={16} />}
@@ -172,7 +172,7 @@ export default function CalendarPage() {
           <button
             type="button"
             onClick={openAddForm}
-            className="flex items-center gap-1 rounded-full bg-brand-cta px-2.5 py-1.5 text-sm font-medium text-app-bg hover:brightness-110 transition-all"
+            className="flex items-center gap-1 rounded-full bg-brand-cta px-2.5 py-1.5 text-sm font-medium text-brand-ctaForeground hover:brightness-110 transition-all"
           >
             {showAddForm ? <X size={16} /> : <Plus size={16} />}
             {t('calendar.add_task')}
@@ -181,7 +181,7 @@ export default function CalendarPage() {
       </div>
 
       {showSearch && (
-        <div className="space-y-2 rounded-2xl border border-white/5 bg-app-card p-3">
+        <div className="space-y-2 rounded-2xl border border-white/[0.06] bg-app-card p-3">
           <input
             type="text"
             autoFocus
@@ -304,7 +304,7 @@ export default function CalendarPage() {
           <MonthView selectedDate={selectedMonthDate} onSelectDate={setSelectedMonthDate} />
 
           {selectedMonthDate && (
-            <div className="space-y-2 rounded-2xl border border-white/5 bg-app-card/60 p-3">
+            <div className="space-y-2 rounded-2xl border border-white/[0.06] bg-app-card/60 p-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-medium capitalize text-slate-300">
                   {formatDayLabel(selectedMonthDate, i18n.resolvedLanguage)}

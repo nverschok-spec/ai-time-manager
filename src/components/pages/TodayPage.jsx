@@ -13,6 +13,7 @@ import ReminderPicker from '../ReminderPicker'
 import UndoSnackbar from '../UndoSnackbar'
 import EmptyStateIllustration from '../EmptyStateIllustration'
 import Confetti from '../Confetti'
+import AiActivityStack from '../AiActivityStack'
 
 // The default landing page — just today, nothing else. Week/Month browsing
 // and search live on the Calendar page; this one page's whole job is "what
@@ -104,7 +105,7 @@ export default function TodayPage() {
                 key={tpl.key}
                 type="button"
                 onClick={() => openTemplate(tpl)}
-                className="rounded-full bg-app-card px-2.5 py-1 text-xs text-slate-400 hover:text-slate-100 hover:bg-app-cardMuted transition-colors"
+                className="rounded-full bg-app-card px-2.5 py-1 text-xs text-slate-400 transition-transform active:scale-[0.97] hover:bg-app-cardMuted hover:text-slate-100"
               >
                 {t(`quick_templates.${tpl.key}`)}
               </button>
@@ -114,12 +115,14 @@ export default function TodayPage() {
         <button
           type="button"
           onClick={openAddForm}
-          className="ml-auto flex shrink-0 items-center gap-1 rounded-full bg-brand-cta px-2.5 py-1.5 text-sm font-medium text-app-bg hover:brightness-110 transition-all"
+          className="ml-auto flex shrink-0 items-center gap-1 rounded-full bg-brand-cta px-2.5 py-1.5 text-sm font-medium text-brand-ctaForeground transition-transform active:scale-[0.97] hover:brightness-110"
         >
           {showAddForm ? <X size={16} /> : <Plus size={16} />}
           {t('calendar.add_task')}
         </button>
       </div>
+
+      {!showAddForm && !editingTask && <AiActivityStack />}
 
       {showAddForm && (
         <TaskForm

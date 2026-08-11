@@ -4,7 +4,7 @@ export default function EmptyStateIllustration() {
   const { t } = useTranslation()
 
   return (
-    <div className="flex flex-col items-center gap-4 rounded-3xl border border-white/5 bg-app-card px-6 py-10 text-center">
+    <div className="flex flex-col items-center gap-4 rounded-3xl border border-white/[0.06] bg-app-card px-6 py-10 text-center">
       <svg width="140" height="140" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="empty-gradient" x1="0" y1="0" x2="140" y2="140" gradientUnits="userSpaceOnUse">

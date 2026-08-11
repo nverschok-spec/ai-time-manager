@@ -97,7 +97,7 @@ export default function PomodoroTimer({ task, onClose }) {
           <button
             type="button"
             onClick={() => setIsRunning((v) => !v)}
-            className="flex items-center gap-1.5 rounded-md bg-brand-cta px-4 py-1.5 text-sm font-medium text-app-bg hover:brightness-110 transition-colors"
+            className="flex items-center gap-1.5 rounded-md bg-brand-cta px-4 py-1.5 text-sm font-medium text-brand-ctaForeground hover:brightness-110 transition-colors"
           >
             {isRunning ? <Pause size={14} /> : <Play size={14} />}
             {isRunning ? t('pomodoro.pause') : t('pomodoro.start')}

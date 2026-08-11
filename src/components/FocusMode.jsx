@@ -41,7 +41,7 @@ export default function FocusMode() {
   const Icon = meta.icon
 
   return (
-    <div className="space-y-3 rounded-3xl border border-white/5 bg-app-card p-6 text-center">
+    <div className="space-y-3 rounded-3xl border border-white/[0.06] bg-app-card p-6 text-center">
       <p className="text-xs uppercase tracking-wide text-slate-500">{t('focus.now')}</p>
       <div className="space-y-1">
         <p className="text-xl font-semibold text-slate-100">
@@ -57,7 +57,7 @@ export default function FocusMode() {
       <button
         type="button"
         onClick={handleDone}
-        className="flex w-full items-center justify-center gap-2 rounded-full bg-brand-cta py-3 text-base font-semibold text-app-bg hover:brightness-110 transition-all"
+        className="flex w-full items-center justify-center gap-2 rounded-full bg-brand-cta py-3 text-base font-semibold text-brand-ctaForeground hover:brightness-110 transition-all"
       >
         <Check size={18} /> {t('focus.mark_done')}
       </button>

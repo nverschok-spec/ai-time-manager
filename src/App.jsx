@@ -1,14 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Target } from 'lucide-react'
-import LanguageSwitcher from './components/LanguageSwitcher'
-import Logo from './components/Logo'
 import OfflineIndicator from './components/OfflineIndicator'
+import PersonAvatar from './components/PersonAvatar'
 import MorningReview from './components/MorningReview'
 import WeeklyReview from './components/WeeklyReview'
 import SettingsPanel from './components/SettingsPanel'
-import VoiceAiInput from './components/VoiceAiInput'
-import AiActivityStack from './components/AiActivityStack'
+import AiInputFab, { AiInputSheet } from './components/AiInputSheet'
 import FocusMode from './components/FocusMode'
 import BottomNav from './components/BottomNav'
 import TodayPage from './components/pages/TodayPage'
@@ -21,7 +19,7 @@ import { parseUserInput, fetchRescheduleOps, fetchScheduleAnswer } from './servi
 import { isRescheduleCommand } from './lib/rescheduleIntent'
 import { isScheduleQuestion } from './lib/scheduleQuestion'
 import { migrateLegacyDataIfNeeded } from './lib/migrateLegacyData'
-import { hexToRgbChannels } from './lib/color'
+import { hexToRgbChannels, readableForegroundChannels } from './lib/color'
 import { updateAppBadge } from './lib/badge'
 import { expandOccurrences } from './lib/occurrences'
 import { toDateKey } from './lib/date'
@@ -39,7 +37,7 @@ const PAGES = {
 }
 
 export default function App() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const tasks = useAppStore((s) => s.tasks)
   const shoppingItems = useAppStore((s) => s.shoppingItems)
   const person = useAppStore((s) => s.person)
@@ -58,6 +56,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [focusMode, setFocusMode] = useState(false)
+  const [showAiSheet, setShowAiSheet] = useState(false)
 
   useEffect(() => {
     setPerson(getStoredPerson())
@@ -72,8 +71,12 @@ export default function App() {
 
   // Personalizes the accent color per logged-in person (see tailwind.config.js
   // + index.css) — falls back to the default green when no color is set.
+  // --accent-foreground rides along so text/icons on solid accent fills
+  // (buttons, the avatar initial) stay readable even on a light accent.
   useEffect(() => {
-    document.documentElement.style.setProperty('--accent', person?.color ? hexToRgbChannels(person.color) : '46 204 145')
+    const color = person?.color || '#2ECC91'
+    document.documentElement.style.setProperty('--accent', hexToRgbChannels(color))
+    document.documentElement.style.setProperty('--accent-foreground', readableForegroundChannels(color))
   }, [person])
 
   // App-icon badge (iOS Safari, home-screen installs) — overdue plus
@@ -154,6 +157,17 @@ export default function App() {
 
   const ActivePage = PAGES[activeTab]
 
+  // "12 августа, Вт" — split into two calls rather than one Intl pattern
+  // string so the day-month order and weekday-abbreviation form stay
+  // correct per locale instead of chasing one format across ru/de/en.
+  const headerDate = useMemo(() => {
+    const now = new Date()
+    const dayMonth = now.toLocaleDateString(i18n.resolvedLanguage, { day: 'numeric', month: 'long' })
+    const weekday = now.toLocaleDateString(i18n.resolvedLanguage, { weekday: 'short' })
+    return `${dayMonth}, ${weekday}`
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i18n.resolvedLanguage, activeTab])
+
   return (
     <div className="flex min-h-dvh flex-col bg-app-bg text-slate-100">
       <MorningReview />
@@ -163,47 +177,40 @@ export default function App() {
       <div className="flex-1 overflow-y-auto overflow-x-hidden">
         <div className="mx-auto max-w-md p-4 space-y-5">
           <header className="flex items-center justify-between gap-2">
-            <div className="flex min-w-0 items-center gap-2">
-              <Logo />
-              <div className="min-w-0">
-                <h1 className="truncate text-base font-semibold leading-tight">{t('app.title')}</h1>
-                {person && <p className="truncate text-xs leading-tight text-muted">{person.name}</p>}
-              </div>
-            </div>
-            <div className="flex shrink-0 items-center gap-1.5">
+            <span className="tabular-nums text-sm font-medium capitalize text-slate-300">{headerDate}</span>
+            <div className="flex shrink-0 items-center gap-2">
               <OfflineIndicator />
-              <LanguageSwitcher />
               <button
                 type="button"
                 onClick={() => setFocusMode((v) => !v)}
-                className={`rounded-lg p-1.5 transition-colors ${
-                  focusMode ? 'bg-brand-cta text-app-bg' : 'bg-app-card text-slate-300 hover:text-slate-100'
+                title={t('focus.toggle')}
+                className={`rounded-lg p-1.5 transition-transform active:scale-90 ${
+                  focusMode ? 'bg-brand-cta text-brand-ctaForeground' : 'bg-app-card text-slate-300 hover:text-slate-100'
                 }`}
               >
                 <Target size={18} />
               </button>
+              <PersonAvatar />
             </div>
           </header>
 
           {focusMode ? (
             <FocusMode />
           ) : (
-            <>
-              <AiActivityStack />
-
-              <div key={activeTab} className="animate-page-in">
-                <ActivePage />
-              </div>
-            </>
+            <div key={activeTab} className="animate-page-in">
+              <ActivePage />
+            </div>
           )}
         </div>
       </div>
 
-      <div className="shrink-0 border-t border-white/5 bg-app-bg/95 p-4 backdrop-blur">
-        <div className="mx-auto max-w-md">
-          <VoiceAiInput onSubmit={handleSubmit} isLoading={isLoading} />
-        </div>
-      </div>
+      {!focusMode && <AiInputFab onOpen={() => setShowAiSheet(true)} isLoading={isLoading} />}
+      <AiInputSheet
+        open={showAiSheet}
+        onClose={() => setShowAiSheet(false)}
+        onSubmit={handleSubmit}
+        isLoading={isLoading}
+      />
 
       {!focusMode && (
         <BottomNav

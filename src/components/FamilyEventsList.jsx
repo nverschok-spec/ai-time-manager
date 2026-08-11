@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { ChevronDown, ChevronUp, ListChecks, Plus, Trash2, User, Users, X } from 'lucide-react'
 import { useAppStore } from '../store/useAppStore'
 import { toDateKey } from '../lib/date'
+import { readableForegroundChannels } from '../lib/color'
 import SwipeableRow from './SwipeableRow'
 import UndoSnackbar from './UndoSnackbar'
 
@@ -113,7 +114,7 @@ export default function FamilyEventsList() {
         />
         <button
           type="submit"
-          className="shrink-0 rounded-full bg-brand-cta p-2.5 text-app-bg hover:brightness-110 transition-all"
+          className="shrink-0 rounded-full bg-brand-cta p-2.5 text-brand-ctaForeground hover:brightness-110 transition-all"
         >
           <Plus size={18} />
         </button>
@@ -148,8 +149,11 @@ export default function FamilyEventsList() {
                       >
                         {claimant ? (
                           <span
-                            className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-semibold text-app-bg"
-                            style={{ backgroundColor: claimant.color }}
+                            className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-semibold"
+                            style={{
+                              backgroundColor: claimant.color,
+                              color: `rgb(${readableForegroundChannels(claimant.color)})`
+                            }}
                           >
                             {claimant.name.slice(0, 1).toUpperCase()}
                           </span>

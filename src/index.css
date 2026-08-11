@@ -6,6 +6,9 @@
   /* Default accent (matches the original #2ECC91) — overridden per-person
      at runtime via App.jsx once someone is logged in. */
   --accent: 46 204 145;
+  /* Readable text/icon color for content on top of a solid --accent fill —
+     recomputed alongside --accent per person's color (see lib/color.js). */
+  --accent-foreground: 8 11 15;
 }
 
 html, body, #root {

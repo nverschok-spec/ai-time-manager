@@ -31,7 +31,7 @@ export default function ReminderPicker({ task, onClose }) {
               onClick={() => handlePick(minutes)}
               className={`rounded-md px-3 py-1.5 text-sm transition-colors ${
                 (task.reminderOffsetMinutes ?? 0) === minutes
-                  ? 'bg-brand-cta text-app-bg'
+                  ? 'bg-brand-cta text-brand-ctaForeground'
                   : 'bg-app-cardMuted text-slate-200 hover:bg-white/10'
               }`}
             >

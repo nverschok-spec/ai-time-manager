@@ -21,7 +21,9 @@
     "mic_error": "Couldn't recognize speech — try the microphone on the iPhone keyboard itself",
     "photo_start": "Attach a photo (invitation, document)",
     "photo_attached": "Photo attached — will be read by the AI",
-    "send": "Send"
+    "send": "Send",
+    "open": "Open AI input",
+    "close": "Close"
   },
   "suggestion": {
     "title": "AI suggests",
@@ -103,7 +105,9 @@
     "category_all": "All categories",
     "search_placeholder": "Search by title or note",
     "search_empty": "No matches",
-    "more_options": "More options"
+    "more_options": "More options",
+    "pill_date": "Date",
+    "pill_checklist": "Checklist"
   },
   "priority": {
     "high": "High",
@@ -140,6 +144,7 @@
     "digest_loading": "AI is looking at your day…"
   },
   "focus": {
+    "toggle": "Focus mode",
     "now": "Most important right now",
     "mark_done": "Mark as done",
     "remaining": "{{count}} more today",

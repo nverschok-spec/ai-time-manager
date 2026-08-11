@@ -21,7 +21,9 @@
     "mic_error": "Spracherkennung hat nicht geklappt — versuch das Mikrofon direkt auf der iPhone-Tastatur",
     "photo_start": "Foto anhängen (Einladung, Dokument)",
     "photo_attached": "Foto angehängt — wird von der KI gelesen",
-    "send": "Senden"
+    "send": "Senden",
+    "open": "KI-Eingabe öffnen",
+    "close": "Schließen"
   },
   "suggestion": {
     "title": "KI schlägt vor",
@@ -103,7 +105,9 @@
     "category_all": "Alle Kategorien",
     "search_placeholder": "Suche nach Titel oder Notiz",
     "search_empty": "Keine Treffer",
-    "more_options": "Weitere Optionen"
+    "more_options": "Weitere Optionen",
+    "pill_date": "Datum",
+    "pill_checklist": "Checkliste"
   },
   "priority": {
     "high": "Hoch",
@@ -140,6 +144,7 @@
     "digest_loading": "Die KI schaut sich deinen Tag an…"
   },
   "focus": {
+    "toggle": "Fokus-Modus",
     "now": "Gerade am wichtigsten",
     "mark_done": "Als erledigt markieren",
     "remaining": "Noch {{count}} heute",

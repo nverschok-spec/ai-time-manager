@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { Check, X } from 'lucide-react'
 import { useAppStore } from '../store/useAppStore'
 import { PEOPLE_COLORS } from '../lib/people'
+import { readableForegroundChannels } from '../lib/color'
 
 export default function PeopleSettings() {
   const { t } = useTranslation()
@@ -21,10 +22,12 @@ export default function PeopleSettings() {
                 key={color}
                 type="button"
                 onClick={() => updatePersonColor(color)}
-                className="flex h-7 w-7 items-center justify-center rounded-full transition-transform hover:scale-110"
+                className="flex h-7 w-7 items-center justify-center rounded-full transition-transform hover:scale-110 active:scale-95"
                 style={{ backgroundColor: color }}
               >
-                {person.color === color && <Check size={14} className="text-app-bg" strokeWidth={3} />}
+                {person.color === color && (
+                  <Check size={14} style={{ color: `rgb(${readableForegroundChannels(color)})` }} strokeWidth={3} />
+                )}
               </button>
             ))}
           </div>

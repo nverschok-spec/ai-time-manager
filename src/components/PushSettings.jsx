@@ -44,7 +44,7 @@ export default function PushSettings() {
             className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
               pushEnabled
                 ? 'bg-app-cardMuted text-slate-300 hover:bg-white/10'
-                : 'bg-brand-cta text-app-bg hover:brightness-110'
+                : 'bg-brand-cta text-brand-ctaForeground hover:brightness-110'
             }`}
           >
             {pushEnabled ? <BellOff size={13} /> : <Bell size={13} />}
@@ -61,7 +61,7 @@ export default function PushSettings() {
       {error && <p className="text-xs text-priority-high">{t('push.error')}</p>}
 
       {pushEnabled && (
-        <div className="flex items-center justify-between border-t border-white/5 pt-2 text-sm">
+        <div className="flex items-center justify-between border-t border-white/[0.06] pt-2 text-sm">
           <span className="text-slate-300">{t('push.quiet_hours')}</span>
           <div className="flex items-center gap-1.5">
             {quietHoursEnabled && (
@@ -86,7 +86,7 @@ export default function PushSettings() {
               onClick={() => setQuietHours({ quietHoursEnabled: !quietHoursEnabled })}
               className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
                 quietHoursEnabled
-                  ? 'bg-brand-cta text-app-bg hover:brightness-110'
+                  ? 'bg-brand-cta text-brand-ctaForeground hover:brightness-110'
                   : 'bg-app-cardMuted text-slate-300 hover:bg-white/10'
               }`}
             >

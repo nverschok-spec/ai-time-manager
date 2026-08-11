@@ -50,7 +50,7 @@ export default function StatsOverview() {
   }, [tasks])
 
   return (
-    <div className="rounded-3xl border border-white/5 bg-app-card p-4 space-y-4">
+    <div className="rounded-3xl border border-white/[0.06] bg-app-card p-4 space-y-4">
       <div className="flex items-center gap-4">
         <ProgressCircle done={today.done} total={today.total} />
         <div className="flex-1 space-y-2">
@@ -63,7 +63,7 @@ export default function StatsOverview() {
               {today.done}/{today.total}
             </p>
           </div>
-          <div className="border-t border-white/5 pt-2">
+          <div className="border-t border-white/[0.06] pt-2">
             <p className="text-xs text-slate-500">{t('stats.week')}</p>
             <p className="text-lg font-semibold text-slate-100 tabular-nums">
               {week.done}/{week.total}
@@ -107,7 +107,7 @@ export default function StatsOverview() {
       )}
 
       {(monthYearStats.month.total > 0 || monthYearStats.year.total > 0) && (
-        <div className="flex gap-4 border-t border-white/5 pt-3 text-xs text-slate-400">
+        <div className="flex gap-4 border-t border-white/[0.06] pt-3 text-xs text-slate-400">
           {monthYearStats.month.total > 0 && (
             <span>
               {t('stats.month')}:{' '}
@@ -128,7 +128,7 @@ export default function StatsOverview() {
       )}
 
       {focusStats.weekMinutes > 0 && (
-        <div className="flex items-center gap-1.5 border-t border-white/5 pt-3 text-xs text-slate-400">
+        <div className="flex items-center gap-1.5 border-t border-white/[0.06] pt-3 text-xs text-slate-400">
           <Timer size={13} className="shrink-0 text-brand-cta" />
           <span>
             {t('stats.focus', { today: focusStats.todayMinutes, week: focusStats.weekMinutes })}

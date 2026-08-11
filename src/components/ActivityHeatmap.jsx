@@ -47,17 +47,17 @@ export default function ActivityHeatmap() {
   }, [tasks])
 
   return (
-    <div className="rounded-3xl border border-white/5 bg-app-card p-4">
+    <div className="rounded-3xl border border-white/[0.06] bg-app-card p-4">
       <p className="mb-3 text-xs text-slate-500">{t('stats.activity')}</p>
       <div
-        className="grid grid-flow-col grid-rows-7 gap-1 overflow-x-auto pb-1"
-        style={{ gridAutoColumns: '10px' }}
+        className="grid grid-flow-col grid-rows-7 gap-[3px] overflow-x-auto pb-1"
+        style={{ gridAutoColumns: 'clamp(7px, 2.1vw, 10px)' }}
       >
         {cells.map((day, i) => (
           <div
             key={day?.key ?? `pad-${i}`}
             title={day ? `${day.key}: ${day.done}/${day.total}` : undefined}
-            className={`h-2.5 w-2.5 rounded-sm ${levelClass(day)}`}
+            className={`aspect-square rounded-sm transition-transform hover:scale-125 ${levelClass(day)}`}
           />
         ))}
       </div>
