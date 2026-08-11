@@ -13,6 +13,11 @@
 
 html, body, #root {
   height: 100%;
+  /* Explicit dark fill so nothing white shows through — the status-bar
+     area under black-translucent (index.html) is transparent, revealing
+     whatever's actually painted there, and html/body had no background of
+     their own before (only the React root div did). */
+  background: #12141C;
 }
 
 /* Pairs with apple-mobile-web-app-status-bar-style=black-translucent
