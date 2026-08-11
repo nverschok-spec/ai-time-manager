@@ -40,11 +40,16 @@ export default {
         'page-in': {
           from: { opacity: '0', transform: 'translateY(6px)' },
           to: { opacity: '1', transform: 'translateY(0)' }
+        },
+        'modal-in': {
+          from: { opacity: '0', transform: 'scale(0.96)' },
+          to: { opacity: '1', transform: 'scale(1)' }
         }
       },
       animation: {
         shake: 'shake 0.4s ease-in-out',
-        'page-in': 'page-in 0.16s ease-out'
+        'page-in': 'page-in 0.16s ease-out',
+        'modal-in': 'modal-in 0.18s ease-out'
       }
     }
   },

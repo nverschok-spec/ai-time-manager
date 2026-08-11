@@ -87,7 +87,7 @@ export default function TaskForm({ task, defaultDate, prefill, onCancel }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-2xl border border-white/5 bg-app-card p-3 space-y-2">
+    <form onSubmit={handleSubmit} className="rounded-2xl border border-white/5 bg-app-card p-3 space-y-2 animate-page-in">
       <input
         type="text"
         autoFocus

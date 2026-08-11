@@ -56,7 +56,7 @@ export default function MonthView({ selectedDate, onSelectDate }) {
         <button
           type="button"
           onClick={() => changeMonth(-1)}
-          className="rounded-md p-1.5 text-slate-400 hover:text-slate-100"
+          className="rounded-md p-1.5 text-slate-400 transition-colors hover:text-slate-100"
         >
           <ChevronLeft size={18} />
         </button>
@@ -66,7 +66,7 @@ export default function MonthView({ selectedDate, onSelectDate }) {
         <button
           type="button"
           onClick={() => changeMonth(1)}
-          className="rounded-md p-1.5 text-slate-400 hover:text-slate-100"
+          className="rounded-md p-1.5 text-slate-400 transition-colors hover:text-slate-100"
         >
           <ChevronRight size={18} />
         </button>
@@ -94,7 +94,7 @@ export default function MonthView({ selectedDate, onSelectDate }) {
               type="button"
               key={key}
               onClick={() => onSelectDate(key)}
-              className={`flex flex-col items-center gap-0.5 rounded-md py-1.5 transition-colors ${
+              className={`flex flex-col items-center gap-0.5 rounded-md py-1.5 transition-all duration-150 active:scale-90 ${
                 isSelected ? 'bg-brand-cta/40' : isToday ? 'bg-brand-cta/20' : 'hover:bg-white/5'
               } ${isCurrentMonth ? '' : 'opacity-30'}`}
             >

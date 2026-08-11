@@ -73,7 +73,7 @@ export default function PomodoroTimer({ task, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
-      <div className="w-full max-w-xs rounded-xl bg-app-card p-5 space-y-4 text-center">
+      <div className="w-full max-w-xs rounded-xl bg-app-card p-5 space-y-4 text-center animate-modal-in">
         <div className="flex items-center justify-between">
           <span className="text-xs font-medium uppercase tracking-wide text-slate-400">
             {phase === 'focus' ? t('pomodoro.focus') : t('pomodoro.break')}

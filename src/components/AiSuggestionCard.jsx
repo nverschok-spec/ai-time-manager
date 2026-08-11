@@ -29,7 +29,7 @@ export default function AiSuggestionCard() {
       {suggestions.map((s, index) => {
         const isEditing = editingIndex === index
         return (
-          <div key={`${s.title}-${index}`} className="rounded-2xl border border-white/5 bg-app-card p-3 space-y-2">
+          <div key={`${s.title}-${index}`} className="rounded-2xl border border-white/5 bg-app-card p-3 space-y-2 animate-page-in">
             {s.is_shared_candidate && s.ai_tip && (
               <p className="flex items-center gap-1.5 text-xs text-brand-cta">
                 <Users size={12} className="shrink-0" />

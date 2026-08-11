@@ -69,7 +69,7 @@ export default function TaskRow({ task, todayKey, pushEnabled, onToggle, onEdit,
 
   return (
     <SwipeableRow onSwipeLeft={handleRemove} onSwipeRight={handleToggle}>
-      <div className="flex flex-col gap-1.5 rounded-xl bg-app-card px-3 py-2">
+      <div className="flex flex-col gap-1.5 rounded-xl bg-app-card px-3 py-2 animate-page-in">
         <div className="flex items-center gap-2.5">
           <input
             type="checkbox"
@@ -80,7 +80,7 @@ export default function TaskRow({ task, todayKey, pushEnabled, onToggle, onEdit,
           <Icon size={14} color={meta.color} className="shrink-0" />
           <span className="shrink-0 text-sm text-slate-400 tabular-nums">{task.startTime}</span>
           <span
-            className={`min-w-0 flex-1 truncate text-sm ${task.done ? 'line-through text-slate-500' : 'text-slate-100'}`}
+            className={`min-w-0 flex-1 truncate text-sm transition-colors duration-200 ${task.done ? 'line-through text-slate-500' : 'text-slate-100'}`}
           >
             {task.emoji && <span className="mr-1">{task.emoji}</span>}
             {task.title}

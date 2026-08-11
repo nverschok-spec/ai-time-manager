@@ -49,7 +49,7 @@ export default function MorningReview() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/85 backdrop-blur-sm p-4">
-      <div className="w-full max-w-sm rounded-3xl border border-white/5 bg-app-card p-5 space-y-4">
+      <div className="w-full max-w-sm rounded-3xl border border-white/5 bg-app-card p-5 space-y-4 animate-modal-in">
         <div className="flex items-center gap-2">
           <Sun size={20} className="text-priority-medium" />
           <h2 className="text-base font-semibold text-slate-100">{t('morning.title')}</h2>

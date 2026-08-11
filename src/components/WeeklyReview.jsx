@@ -74,7 +74,7 @@ export default function WeeklyReview() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/85 backdrop-blur-sm p-4">
-      <div className="w-full max-w-sm rounded-3xl border border-white/5 bg-app-card p-5 space-y-4">
+      <div className="w-full max-w-sm rounded-3xl border border-white/5 bg-app-card p-5 space-y-4 animate-modal-in">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <CalendarCheck size={20} className="text-brand-cta" />
