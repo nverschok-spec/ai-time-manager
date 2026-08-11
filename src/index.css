@@ -15,6 +15,14 @@ html, body, #root {
   height: 100%;
 }
 
+/* Pairs with apple-mobile-web-app-status-bar-style=black-translucent
+   (index.html) — that draws our own dark background under the iOS status
+   bar instead of a separate white strip, so the header needs to clear the
+   notch/status-bar area itself instead of relying on the browser chrome. */
+.pt-safe {
+  padding-top: max(1rem, env(safe-area-inset-top));
+}
+
 body {
   -webkit-tap-highlight-color: transparent;
   /* Safety net: a flex/grid child forgetting min-w-0 shouldn't be able to

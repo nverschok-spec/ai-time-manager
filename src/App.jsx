@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Target } from 'lucide-react'
 import OfflineIndicator from './components/OfflineIndicator'
 import PersonAvatar from './components/PersonAvatar'
+import WeatherBadge from './components/WeatherBadge'
 import MorningReview from './components/MorningReview'
 import WeeklyReview from './components/WeeklyReview'
 import SettingsPanel from './components/SettingsPanel'
@@ -178,11 +179,19 @@ export default function App() {
       {showSettings && <SettingsPanel onClose={() => setShowSettings(false)} />}
 
       <div className="flex-1 overflow-y-auto overflow-x-hidden">
-        <div className="mx-auto max-w-md p-4 space-y-5">
-          <header className="flex items-center justify-between gap-2">
-            <span className="tabular-nums text-sm font-medium capitalize text-slate-300">{headerDate}</span>
-            <div className="flex shrink-0 items-center gap-2">
+        <div className="mx-auto max-w-md px-4 pb-4 pt-safe space-y-5">
+          {/* Equal-width side columns keep the date/weather block genuinely
+              centered regardless of how wide the avatar or offline pill get,
+              instead of drifting with justify-between's leftover space. */}
+          <header className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+            <div className="justify-self-start">
               <OfflineIndicator />
+            </div>
+            <div className="flex items-center gap-2 justify-self-center">
+              <span className="tabular-nums text-lg font-semibold capitalize text-slate-100">{headerDate}</span>
+              <WeatherBadge />
+            </div>
+            <div className="flex shrink-0 items-center gap-2 justify-self-end">
               <button
                 type="button"
                 onClick={() => setFocusMode((v) => !v)}

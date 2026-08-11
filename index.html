@@ -4,6 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#12141C" />
+    <!-- iOS ignores theme-color for the installed-PWA status bar — without
+         these two, the status-bar strip stays the system default (white)
+         instead of matching the app's dark background. black-translucent
+         draws app content under the status bar (paired with the safe-area
+         padding in index.css) instead of leaving a separate opaque bar. -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>AI Time Manager</title>
     <link rel="icon" type="image/png" href="/icons/icon-192.png" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
