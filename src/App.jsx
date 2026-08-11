@@ -116,6 +116,20 @@ export default function App() {
     return () => window.removeEventListener('online', flushPendingMutations)
   }, [flushPendingMutations])
 
+  // "12 августа, Вт" — split into two calls rather than one Intl pattern
+  // string so the day-month order and weekday-abbreviation form stay
+  // correct per locale instead of chasing one format across ru/de/en.
+  // Must run unconditionally (before the !dataLoaded early return below) —
+  // a hook called only on some renders desyncs React's hook order and
+  // crashes the whole tree the moment dataLoaded flips to true.
+  const headerDate = useMemo(() => {
+    const now = new Date()
+    const dayMonth = now.toLocaleDateString(i18n.resolvedLanguage, { day: 'numeric', month: 'long' })
+    const weekday = now.toLocaleDateString(i18n.resolvedLanguage, { weekday: 'short' })
+    return `${dayMonth}, ${weekday}`
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [i18n.resolvedLanguage, activeTab])
+
   async function handleSubmit({ text, attachment }) {
     setIsLoading(true)
     try {
@@ -147,6 +161,8 @@ export default function App() {
     }
   }
 
+  const ActivePage = PAGES[activeTab]
+
   if (!dataLoaded) {
     return (
       <div className="flex min-h-dvh items-center justify-center bg-app-bg text-sm text-muted">
@@ -154,19 +170,6 @@ export default function App() {
       </div>
     )
   }
-
-  const ActivePage = PAGES[activeTab]
-
-  // "12 августа, Вт" — split into two calls rather than one Intl pattern
-  // string so the day-month order and weekday-abbreviation form stay
-  // correct per locale instead of chasing one format across ru/de/en.
-  const headerDate = useMemo(() => {
-    const now = new Date()
-    const dayMonth = now.toLocaleDateString(i18n.resolvedLanguage, { day: 'numeric', month: 'long' })
-    const weekday = now.toLocaleDateString(i18n.resolvedLanguage, { weekday: 'short' })
-    return `${dayMonth}, ${weekday}`
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [i18n.resolvedLanguage, activeTab])
 
   return (
     <div className="flex min-h-dvh flex-col bg-app-bg text-slate-100">
