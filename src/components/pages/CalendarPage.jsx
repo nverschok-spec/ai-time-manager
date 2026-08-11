@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Plus, Search, X } from 'lucide-react'
+import { Plus, Search, ShoppingCart, Users, X } from 'lucide-react'
 import { useAppStore } from '../../store/useAppStore'
 import { CATEGORY_ORDER, categoryMeta } from '../../lib/categories'
 import { expandOccurrences, isOccurrenceDone } from '../../lib/occurrences'
@@ -22,6 +22,9 @@ function formatDayLabel(dateKey, locale) {
 export default function CalendarPage() {
   const { t, i18n } = useTranslation()
   const tasks = useAppStore((s) => s.tasks)
+  const shoppingItems = useAppStore((s) => s.shoppingItems)
+  const familyEvents = useAppStore((s) => s.familyEvents)
+  const toggleShoppingItem = useAppStore((s) => s.toggleShoppingItem)
   const toggleTask = useAppStore((s) => s.toggleTask)
   const toggleTaskOccurrence = useAppStore((s) => s.toggleTaskOccurrence)
   const removeTask = useAppStore((s) => s.removeTask)
@@ -60,6 +63,20 @@ export default function CalendarPage() {
       }))
       .sort((a, b) => (a.date + a.startTime).localeCompare(b.date + b.startTime))
   }, [tasks, query, categoryFilter, todayKey])
+
+  // Shopping/family have no category, so they only ever show up for a text
+  // query, never for a bare category-filter click.
+  const shoppingMatches = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    if (!q) return []
+    return shoppingItems.filter((item) => item.text.toLowerCase().includes(q))
+  }, [shoppingItems, query])
+
+  const familyMatches = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    if (!q) return []
+    return familyEvents.filter((event) => event.title.toLowerCase().includes(q))
+  }, [familyEvents, query])
 
   const visibleDateKeys = useMemo(() => {
     const start = new Date(`${todayKey}T00:00:00`)
@@ -213,26 +230,73 @@ export default function CalendarPage() {
       )}
 
       {searchResults && (
-        <ul className="space-y-2">
-          {searchResults.length === 0 ? (
-            <li className="text-sm italic text-slate-600">{t('calendar.search_empty')}</li>
-          ) : (
-            searchResults.map((task) => (
-              <li key={`${task.id}_${task.occurrenceDate}`}>
-                <TaskRow
-                  task={task}
-                  todayKey={todayKey}
-                  pushEnabled={pushEnabled}
-                  onToggle={handleToggle}
-                  onEdit={openEditForm}
-                  onRemove={handleRemove}
-                  onOpenTimer={setTimerTask}
-                  onOpenReminder={setReminderTask}
-                />
-              </li>
-            ))
+        <div className="space-y-4">
+          <ul className="space-y-2">
+            {searchResults.length === 0 && shoppingMatches.length === 0 && familyMatches.length === 0 ? (
+              <li className="text-sm italic text-slate-600">{t('calendar.search_empty')}</li>
+            ) : (
+              searchResults.map((task) => (
+                <li key={`${task.id}_${task.occurrenceDate}`}>
+                  <TaskRow
+                    task={task}
+                    todayKey={todayKey}
+                    pushEnabled={pushEnabled}
+                    onToggle={handleToggle}
+                    onEdit={openEditForm}
+                    onRemove={handleRemove}
+                    onOpenTimer={setTimerTask}
+                    onOpenReminder={setReminderTask}
+                  />
+                </li>
+              ))
+            )}
+          </ul>
+
+          {shoppingMatches.length > 0 && (
+            <div className="space-y-1.5">
+              <h3 className="flex items-center gap-1.5 px-1 text-xs font-medium text-slate-500">
+                <ShoppingCart size={12} /> {t('nav.shopping')}
+              </h3>
+              <ul className="space-y-1.5">
+                {shoppingMatches.map((item) => (
+                  <li key={item.id} className="flex items-center gap-2 rounded-xl bg-app-card px-3 py-2">
+                    <input
+                      type="checkbox"
+                      checked={item.done}
+                      onChange={() => toggleShoppingItem(item.id)}
+                      className="h-4 w-4 shrink-0 accent-brand-cta"
+                    />
+                    <span
+                      className={`min-w-0 flex-1 truncate text-sm ${item.done ? 'line-through text-slate-500' : 'text-slate-100'}`}
+                    >
+                      {item.text}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
-        </ul>
+
+          {familyMatches.length > 0 && (
+            <div className="space-y-1.5">
+              <h3 className="flex items-center gap-1.5 px-1 text-xs font-medium text-slate-500">
+                <Users size={12} /> {t('nav.family')}
+              </h3>
+              <ul className="space-y-1.5">
+                {familyMatches.map((event) => (
+                  <li
+                    key={event.id}
+                    className="flex items-center gap-2 rounded-xl bg-app-card px-3 py-2 text-sm text-slate-100"
+                  >
+                    <Users size={14} className="shrink-0 text-brand-cta" />
+                    <span className="min-w-0 flex-1 truncate">{event.title}</span>
+                    <span className="shrink-0 text-xs text-slate-500 tabular-nums">{event.date}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
       )}
 
       {!searchResults && view === 'month' && (

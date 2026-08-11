@@ -60,7 +60,18 @@
     "my_color": "My color",
     "people": "Who's using this",
     "you": "you",
-    "people_hint": "A new person is added from the PIN entry screen."
+    "people_hint": "A new person is added from the PIN entry screen.",
+    "section_profile": "Profile",
+    "section_notifications": "Notifications",
+    "section_data": "Data",
+    "section_features": "Features",
+    "features_hide": "Hide",
+    "features_show": "What this app can do",
+    "feature_attach": "You can attach a photo or PDF (an invitation, an appointment) — the AI reads the date and time itself",
+    "feature_shared": "If the AI thinks a task is shared (a purchase, a gift), a \"Make shared\" button appears",
+    "feature_claim": "On shopping items and family events, tap the circle to take it on yourself",
+    "feature_status": "On the Shared tab you can set a status — home, at work, do not disturb",
+    "feature_search": "Search on the Calendar page also matches shopping items and family events, not just tasks"
   },
   "calendar": {
     "add_task": "Task",
@@ -91,7 +102,8 @@
     "category_none": "No category",
     "category_all": "All categories",
     "search_placeholder": "Search by title or note",
-    "search_empty": "No matches"
+    "search_empty": "No matches",
+    "more_options": "More options"
   },
   "priority": {
     "high": "High",
@@ -108,6 +120,8 @@
   "stats": {
     "today": "Today",
     "week": "This week",
+    "month": "This month",
+    "year": "This year",
     "by_priority": "By priority",
     "activity": "12-week activity",
     "focus": "Focus: {{today}} min today · {{week}} min this week"
@@ -172,5 +186,8 @@
   },
   "sync": {
     "pending": "Not yet sent: {{count}}"
+  },
+  "ai_stack": {
+    "summary": "Unread from AI ({{count}})"
   }
 }

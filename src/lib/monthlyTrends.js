@@ -45,6 +45,14 @@ export function computeMonthlyTrend(tasks, today = new Date()) {
   return { thisMonth, lastMonth, busiestDay }
 }
 
+// Year-to-date completion — separate from computeMonthlyTrend since the
+// 12-week activity heatmap has no view past ~3 months and there was no way
+// to see "how's the year going" at all before this.
+export function computeYearToDate(tasks, today = new Date()) {
+  const yearStart = new Date(today.getFullYear(), 0, 1)
+  return completionRate(tasks, dateKeysBetween(yearStart, today))
+}
+
 // 0 (Sunday) .. 6 (Saturday) -> a real Date landing on that weekday, so the
 // caller can format a localized weekday name with toLocaleDateString.
 export function weekdayIndexToDate(day) {

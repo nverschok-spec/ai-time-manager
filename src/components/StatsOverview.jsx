@@ -5,6 +5,7 @@ import { useAppStore } from '../store/useAppStore'
 import { PRIORITY_ORDER, priorityMeta } from '../lib/priority'
 import { expandOccurrences } from '../lib/occurrences'
 import { computeFocusStats } from '../lib/focusStats'
+import { computeMonthlyTrend, computeYearToDate } from '../lib/monthlyTrends'
 import ProgressCircle from './ProgressCircle'
 import WeatherBadge from './WeatherBadge'
 import { toDateKey } from '../lib/date'
@@ -40,6 +41,13 @@ export default function StatsOverview() {
   }, [tasks])
 
   const priorityTotal = byPriority.high + byPriority.medium + byPriority.low
+
+  // Separate from the week stat above — the 12-week heatmap has no view
+  // past ~3 months, so "how's this month/year going" had nowhere to live.
+  const monthYearStats = useMemo(() => {
+    const now = new Date()
+    return { month: computeMonthlyTrend(tasks, now).thisMonth, year: computeYearToDate(tasks, now) }
+  }, [tasks])
 
   return (
     <div className="rounded-3xl border border-white/5 bg-app-card p-4 space-y-4">
@@ -95,6 +103,27 @@ export default function StatsOverview() {
               )
             })}
           </div>
+        </div>
+      )}
+
+      {(monthYearStats.month.total > 0 || monthYearStats.year.total > 0) && (
+        <div className="flex gap-4 border-t border-white/5 pt-3 text-xs text-slate-400">
+          {monthYearStats.month.total > 0 && (
+            <span>
+              {t('stats.month')}:{' '}
+              <span className="tabular-nums text-slate-200">
+                {monthYearStats.month.done}/{monthYearStats.month.total}
+              </span>
+            </span>
+          )}
+          {monthYearStats.year.total > 0 && (
+            <span>
+              {t('stats.year')}:{' '}
+              <span className="tabular-nums text-slate-200">
+                {monthYearStats.year.done}/{monthYearStats.year.total}
+              </span>
+            </span>
+          )}
         </div>
       )}
 

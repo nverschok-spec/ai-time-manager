@@ -4,14 +4,11 @@ import { Target } from 'lucide-react'
 import LanguageSwitcher from './components/LanguageSwitcher'
 import Logo from './components/Logo'
 import OfflineIndicator from './components/OfflineIndicator'
-import OverdueBanner from './components/OverdueBanner'
 import MorningReview from './components/MorningReview'
 import WeeklyReview from './components/WeeklyReview'
 import SettingsPanel from './components/SettingsPanel'
 import VoiceAiInput from './components/VoiceAiInput'
-import AiSuggestionCard from './components/AiSuggestionCard'
-import AiRescheduleCard from './components/AiRescheduleCard'
-import AiAnswerCard from './components/AiAnswerCard'
+import AiActivityStack from './components/AiActivityStack'
 import FocusMode from './components/FocusMode'
 import BottomNav from './components/BottomNav'
 import TodayPage from './components/pages/TodayPage'
@@ -192,10 +189,7 @@ export default function App() {
             <FocusMode />
           ) : (
             <>
-              <AiSuggestionCard />
-              <AiRescheduleCard />
-              <AiAnswerCard />
-              <OverdueBanner />
+              <AiActivityStack />
 
               <div key={activeTab} className="animate-page-in">
                 <ActivePage />
