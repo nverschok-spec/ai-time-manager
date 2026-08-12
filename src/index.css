@@ -35,6 +35,18 @@ body {
   overflow-x: hidden;
 }
 
+/* iOS Safari auto-zooms the whole page on focus for any text input under
+   16px, then doesn't cleanly zoom back out — that's the "page runs away and
+   gets wider" jump on every text field. Most inputs here use text-sm (14px)
+   for visual density; !important is required because a bare `input` type
+   selector is lower specificity than Tailwind's `.text-sm` class and would
+   otherwise silently lose to it. */
+input,
+textarea,
+select {
+  font-size: 16px !important;
+}
+
 @keyframes confetti-fall {
   from {
     top: -5%;
