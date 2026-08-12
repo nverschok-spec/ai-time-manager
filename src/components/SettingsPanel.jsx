@@ -43,7 +43,7 @@ export default function SettingsPanel({ onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto overflow-x-hidden bg-app-bg">
-      <div className="mx-auto max-w-md space-y-5 p-4 animate-page-in">
+      <div className="mx-auto max-w-md space-y-5 px-4 pb-4 pt-safe animate-page-in">
         <header className="flex items-center gap-3">
           <button
             type="button"
