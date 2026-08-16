@@ -25,7 +25,12 @@ import { updateAppBadge } from './lib/badge'
 import { expandOccurrences } from './lib/occurrences'
 import { toDateKey } from './lib/date'
 
-const REFRESH_INTERVAL_MS = 30000
+// 3 min, not 30s — at 30s this polls 4 endpoints roughly every half-minute
+// per open session, which is what actually burned through Upstash's free
+// 500k-commands/month tier during real daily two-person use. Tab-focus
+// (visibilitychange, below) still re-syncs immediately on switching back,
+// so this interval only matters while the app sits open and idle.
+const REFRESH_INTERVAL_MS = 3 * 60 * 1000
 
 // One job per page — Home (today), Calendar (week/month + search), Shared
 // (shopping/family), Stats (progress + heatmap). Replaces the old single
