@@ -26,7 +26,7 @@ function buildMonthGrid(monthCursor) {
 }
 
 export default function MonthView({ selectedDate, onSelectDate }) {
-  const { i18n } = useTranslation()
+  const { t, i18n } = useTranslation()
   const tasks = useAppStore((s) => s.tasks)
   const [monthCursor, setMonthCursor] = useState(() => new Date())
 
@@ -56,6 +56,7 @@ export default function MonthView({ selectedDate, onSelectDate }) {
         <button
           type="button"
           onClick={() => changeMonth(-1)}
+          aria-label={t('calendar.prev_month')}
           className="rounded-md p-1.5 text-slate-400 transition-colors hover:text-slate-100"
         >
           <ChevronLeft size={18} />
@@ -66,6 +67,7 @@ export default function MonthView({ selectedDate, onSelectDate }) {
         <button
           type="button"
           onClick={() => changeMonth(1)}
+          aria-label={t('calendar.next_month')}
           className="rounded-md p-1.5 text-slate-400 transition-colors hover:text-slate-100"
         >
           <ChevronRight size={18} />

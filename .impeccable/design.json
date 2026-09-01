@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-01T00:00:00Z",
+  "title": "Design System: AI Time Manager",
+  "extensions": {
+    "colorMeta": {
+      "accent-default": { "role": "primary", "displayName": "Signal Mint", "canonical": "rgb(46 204 145)", "tonalRamp": ["#06231a", "#0a3a2b", "#0f5a41", "#158058", "#1ea16e", "#2ecc91", "#6adcb0", "#a9ecd0"] },
+      "brand-gradient-start": { "role": "brand", "displayName": "Teal-to-Mint (start)", "canonical": "#00C2A8" },
+      "brand-gradient-end": { "role": "brand", "displayName": "Teal-to-Mint (end)", "canonical": "#3DDC97" },
+      "bg": { "role": "neutral", "displayName": "Midnight Ink", "canonical": "#12141C", "tonalRamp": ["#05060a", "#0a0b12", "#12141c", "#181b26", "#232840", "#343b5c", "#4d5580", "#7078a3"] },
+      "card": { "role": "neutral", "displayName": "Panel Navy", "canonical": "#181B26" },
+      "card-muted": { "role": "neutral", "displayName": "Muted Indigo", "canonical": "#232840" },
+      "muted-text": { "role": "neutral", "displayName": "Cool Slate", "canonical": "#9AA3B8" },
+      "priority-high": { "role": "semantic", "displayName": "Coral Alert", "canonical": "#FF6B6B" },
+      "priority-medium": { "role": "semantic", "displayName": "Warm Amber", "canonical": "#F4B740" },
+      "priority-low": { "role": "semantic", "displayName": "Slate Low", "canonical": "#8B93A7" }
+    },
+    "typographyMeta": {
+      "body": { "displayName": "Body", "purpose": "Default size for nearly all UI text." },
+      "label": { "displayName": "Label", "purpose": "Bottom-nav tab labels; smallest text in the app." }
+    },
+    "shadows": [
+      { "name": "floating", "value": "0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3)", "purpose": "shadow-lg shadow-black/30 — the only shadow treatment, reserved for elements that float above the console (FAB, snackbar, avatar ring)." }
+    ],
+    "motion": [
+      { "name": "confident-arrival", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Apple-style hard deceleration used for sheet-up transitions; decelerates hard at the end instead of a linear/ease-out snap. Never combine with overshoot/bounce." },
+      { "name": "duration-fast", "value": "0.16s", "purpose": "page-in transitions" },
+      { "name": "duration-standard", "value": "0.2s", "purpose": "backdrop-in" },
+      { "name": "duration-modal", "value": "0.18s", "purpose": "modal-in (ease-out)" },
+      { "name": "duration-sheet", "value": "0.28s", "purpose": "sheet-up (confident-arrival easing)" }
+    ],
+    "breakpoints": []
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main call-to-action inside forms/sheets (e.g. Save).",
+      "html": "<button class=\"ds-btn-primary\">SAVE</button>",
+      "css": ".ds-btn-primary { background: rgb(46 204 145); color: rgb(8 11 15); border-radius: 6px; padding: 6px 16px; font-size: 14px; font-weight: 500; border: none; transition: filter 0.15s, transform 0.15s; } .ds-btn-primary:hover { filter: brightness(1.1); } .ds-btn-primary:active { transform: scale(0.97); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 1px rgb(46 204 145); }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Cancel/dismiss action alongside a primary button.",
+      "html": "<button class=\"ds-btn-secondary\">CANCEL</button>",
+      "css": ".ds-btn-secondary { background: #232840; color: #CBD5E1; border-radius: 6px; padding: 6px 12px; font-size: 14px; border: none; transition: background 0.15s, transform 0.15s; } .ds-btn-secondary:hover { background: rgb(255 255 255 / 0.1); } .ds-btn-secondary:active { transform: scale(0.97); }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Standard text field inside a form card.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Title\" />",
+      "css": ".ds-input { background: #12141C; color: #F1F5F9; border-radius: 6px; padding: 6px 8px; font-size: 16px; border: none; outline: none; } .ds-input::placeholder { color: #64748b; } .ds-input:focus { box-shadow: 0 0 0 1px rgb(46 204 145); }"
+    },
+    {
+      "name": "Form Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Container for a task/event form.",
+      "html": "<div class=\"ds-card\">Card content</div>",
+      "css": ".ds-card { background: #181B26; border: 1px solid rgb(255 255 255 / 0.06); border-radius: 20px; padding: 12px; }"
+    },
+    {
+      "name": "Bottom Nav Item",
+      "kind": "nav",
+      "refersTo": "bottom-nav-item",
+      "description": "One tab in the fixed bottom navigation bar; active state uses the live accent color.",
+      "html": "<button class=\"ds-nav-item ds-nav-item--active\"><span>Today</span></button>",
+      "css": ".ds-nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 0; font-size: 11px; color: #64748b; background: none; border: none; transition: color 0.15s; } .ds-nav-item:hover { color: #cbd5e1; } .ds-nav-item--active { color: rgb(46 204 145); } .ds-nav-item:active { transform: scale(0.9); }"
+    },
+    {
+      "name": "AI Input FAB",
+      "kind": "button",
+      "refersTo": "fab",
+      "description": "Persistent floating action button that opens the AI input sheet — the app's one deliberately floating element.",
+      "html": "<button class=\"ds-fab\" aria-label=\"Open AI input\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><line x1=\"12\" y1=\"5\" x2=\"12\" y2=\"19\"/><line x1=\"5\" y1=\"12\" x2=\"19\" y2=\"12\"/></svg></button>",
+      "css": ".ds-fab { width: 56px; height: 56px; border-radius: 9999px; background: rgb(46 204 145); color: rgb(8 11 15); display: flex; align-items: center; justify-content: center; border: none; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3); transition: transform 0.15s; } .ds-fab:active { transform: scale(0.9); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Night Console",
+    "overview": "The app reads as a dim instrument panel, not a productivity dashboard. Almost the entire surface sits in near-black navy; the single accent color — mint-teal by default, but recomputed per logged-in person — only ever lights up the one thing that matters on screen: the active tab, the primary button, a focused input's ring. Priority reds and ambers are the only other colors allowed to interrupt, and only as status signals, never as decoration.\n\nNothing here uses depth for its own sake. Panels step up in tone instead of casting shadows; real shadows are reserved for the handful of elements genuinely floating above the console. Motion is quick and physical, presses register as a tactile scale-down, and everything resolves with a confident deceleration curve, never a spring or bounce.",
+    "keyCharacteristics": [
+      "Near-black tonal canvas with one live, personalizable accent color",
+      "Flat by default; shadow means \"this is floating,\" nothing else",
+      "Hairline dividers (white/6%), never solid gray borders or boxed cards",
+      "System font stack — no imported webfont",
+      "Fast, deceleration-only motion; presses scale down, nothing overshoots"
+    ],
+    "rules": [
+      { "name": "The One Signal Rule", "body": "The accent color is reserved for exactly one thing per view — the current tab, the primary action, or an active focus ring. It never fills a background or decorates a static element.", "section": "colors" },
+      { "name": "The No-Import Rule", "body": "Never add a Google Fonts (or any webfont) link/import. The system-font choice is deliberate.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "A static card, row, or panel never gets a shadow — tone-stepping is the only depth cue. Add a shadow only when the element is meant to read as floating above everything else.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do reserve the accent color for exactly one focal element per screen.",
+      "Do use tonal steps for hierarchy instead of borders or shadows.",
+      "Do give every pressable element a plain active:scale press state.",
+      "Do keep hairline dividers at white/[0.06], not a solid gray border.",
+      "Do add new strings to all three locale files (ru, en, de)."
+    ],
+    "donts": [
+      "Don't import a webfont — the OS system font is deliberate.",
+      "Don't use flat gray cards — every surface color is a navy/indigo tone, never true gray.",
+      "Don't add gradient text, neon/purple glow effects, or decorative box-shadows on static cards.",
+      "Don't use a left-side accent border as a card highlight pattern.",
+      "Don't give buttons or sheets a bounce/elastic/spring easing.",
+      "Don't apply the brand gradient to anything other than the logo mark."
+    ]
+  }
+}

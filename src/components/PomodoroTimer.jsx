@@ -78,7 +78,12 @@ export default function PomodoroTimer({ task, onClose }) {
           <span className="text-xs font-medium uppercase tracking-wide text-slate-400">
             {phase === 'focus' ? t('pomodoro.focus') : t('pomodoro.break')}
           </span>
-          <button type="button" onClick={onClose} className="text-slate-500 hover:text-slate-200">
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label={t('ask.dismiss')}
+            className="p-1 text-slate-500 hover:text-slate-200"
+          >
             <X size={18} />
           </button>
         </div>
@@ -105,6 +110,7 @@ export default function PomodoroTimer({ task, onClose }) {
           <button
             type="button"
             onClick={handleReset}
+            aria-label={t('pomodoro.reset')}
             className="flex items-center gap-1.5 rounded-md bg-app-cardMuted px-3 py-1.5 text-sm text-slate-200 hover:bg-white/10 transition-colors"
           >
             <RotateCcw size={14} />

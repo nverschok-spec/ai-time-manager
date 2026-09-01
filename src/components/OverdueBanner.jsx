@@ -42,7 +42,8 @@ export default function OverdueBanner() {
       <button
         type="button"
         onClick={() => setDismissed(true)}
-        className="text-priority-medium/70 hover:text-priority-medium transition-colors"
+        aria-label={t('ask.dismiss')}
+        className="p-1 text-priority-medium/70 hover:text-priority-medium transition-colors"
       >
         <X size={16} />
       </button>

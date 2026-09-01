@@ -23,7 +23,8 @@
     "photo_attached": "Photo attached — will be read by the AI",
     "send": "Send",
     "open": "Open AI input",
-    "close": "Close"
+    "close": "Close",
+    "remove_attachment": "Remove attachment"
   },
   "suggestion": {
     "title": "AI suggests",
@@ -43,6 +44,14 @@
   },
   "ask": {
     "dismiss": "Close"
+  },
+  "task_row": {
+    "remind": "Reminder",
+    "snooze": "Snooze 1 hour",
+    "timer": "Start timer",
+    "share": "Share",
+    "edit": "Edit",
+    "delete": "Delete"
   },
   "backup": {
     "nudge": "It's been a while since your last backup — worth saving a fresh export"
@@ -73,7 +82,10 @@
     "feature_shared": "If the AI thinks a task is shared (a purchase, a gift), a \"Make shared\" button appears",
     "feature_claim": "On shopping items and family events, tap the circle to take it on yourself",
     "feature_status": "On the Shared tab you can set a status — home, at work, do not disturb",
-    "feature_search": "Search on the Calendar page also matches shopping items and family events, not just tasks"
+    "feature_search": "Search on the Calendar page also matches shopping items and family events, not just tasks",
+    "back": "Back",
+    "my_color_choose": "Choose color",
+    "remove_person": "Remove person"
   },
   "calendar": {
     "add_task": "Task",
@@ -107,7 +119,12 @@
     "search_empty": "No matches",
     "more_options": "More options",
     "pill_date": "Date",
-    "pill_checklist": "Checklist"
+    "pill_checklist": "Checklist",
+    "prev_month": "Previous month",
+    "next_month": "Next month",
+    "toggle_search": "Search",
+    "remove_item": "Remove item",
+    "add_item": "Add item"
   },
   "priority": {
     "high": "High",
@@ -134,7 +151,8 @@
     "focus": "Focus",
     "break": "Break",
     "start": "Start",
-    "pause": "Pause"
+    "pause": "Pause",
+    "reset": "Reset"
   },
   "morning": {
     "title": "Good morning!",
@@ -155,13 +173,15 @@
     "loading": "AI is looking at your week…",
     "close": "Got it, continue",
     "month_trend": "This month: {{thisPct}}% (last month: {{lastPct}}%)",
-    "busiest_day": "Busiest day of the week — {{day}}"
+    "busiest_day": "Busiest day of the week — {{day}}",
+    "share": "Share"
   },
   "shopping": {
     "placeholder": "What to buy?",
     "empty": "List is empty.",
     "clear_completed": "Clear bought ({{count}})",
-    "claim": "I'll get it"
+    "claim": "I'll get it",
+    "add": "Add"
   },
   "family": {
     "placeholder": "Event for the whole family",
@@ -181,7 +201,8 @@
     "delete": "Delete digit",
     "error": "Wrong passcode",
     "who_are_you": "Who are you?",
-    "new_person": "New person — name"
+    "new_person": "New person — name",
+    "add_person": "Add person"
   },
   "status": {
     "home": "Home",

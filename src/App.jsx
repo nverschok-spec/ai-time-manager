@@ -201,6 +201,7 @@ export default function App() {
                 type="button"
                 onClick={() => setFocusMode((v) => !v)}
                 title={t('focus.toggle')}
+                aria-label={t('focus.toggle')}
                 className={`rounded-lg p-1.5 transition-transform active:scale-90 ${
                   focusMode ? 'bg-brand-cta text-brand-ctaForeground' : 'bg-app-card text-slate-300 hover:text-slate-100'
                 }`}

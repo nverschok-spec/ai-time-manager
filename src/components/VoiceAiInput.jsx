@@ -122,7 +122,8 @@ export default function VoiceAiInput({ onSubmit, isLoading, autoFocus }) {
           <button
             type="button"
             onClick={() => setAttachment(null)}
-            className="text-slate-500 hover:text-priority-high transition-colors"
+            aria-label={t('input.remove_attachment')}
+            className="p-1 text-slate-500 hover:text-priority-high transition-colors"
           >
             <X size={16} />
           </button>
@@ -136,7 +137,7 @@ export default function VoiceAiInput({ onSubmit, isLoading, autoFocus }) {
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           placeholder={t('input.placeholder')}
-          className="min-w-0 flex-1 max-h-36 resize-none overflow-y-auto rounded-full bg-app-card px-4 py-2.5 text-sm text-slate-100 placeholder:text-muted outline-none focus:ring-2 focus:ring-brand-cta"
+          className="min-w-0 flex-1 max-h-36 resize-none overflow-y-auto rounded-full bg-app-card px-4 py-2.5 text-sm text-slate-100 placeholder:text-muted outline-none focus:ring-1 focus:ring-brand-cta"
         />
         <input
           ref={fileInputRef}
@@ -150,6 +151,7 @@ export default function VoiceAiInput({ onSubmit, isLoading, autoFocus }) {
           type="button"
           onClick={() => fileInputRef.current?.click()}
           title={t('input.photo_start')}
+          aria-label={t('input.photo_start')}
           className="rounded-full bg-app-card p-2.5 text-slate-300 transition-transform active:scale-[0.97] hover:text-slate-100"
         >
           <Paperclip size={18} />
@@ -159,6 +161,7 @@ export default function VoiceAiInput({ onSubmit, isLoading, autoFocus }) {
           onClick={toggleListening}
           disabled={!voiceAvailable}
           title={voiceAvailable ? t('input.mic_start') : t('input.mic_unavailable')}
+          aria-label={voiceAvailable ? t('input.mic_start') : t('input.mic_unavailable')}
           className={`rounded-full p-2.5 transition-transform active:scale-[0.97] ${
             !voiceAvailable
               ? 'text-slate-700 cursor-not-allowed'
@@ -173,6 +176,7 @@ export default function VoiceAiInput({ onSubmit, isLoading, autoFocus }) {
           type="submit"
           disabled={isLoading || (!text.trim() && !attachment)}
           title={t('input.send')}
+          aria-label={t('input.send')}
           className="rounded-full bg-brand-cta p-2.5 text-brand-ctaForeground transition-transform active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed hover:brightness-110"
         >
           <Send size={18} />

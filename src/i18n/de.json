@@ -23,7 +23,8 @@
     "photo_attached": "Foto angehängt — wird von der KI gelesen",
     "send": "Senden",
     "open": "KI-Eingabe öffnen",
-    "close": "Schließen"
+    "close": "Schließen",
+    "remove_attachment": "Anhang entfernen"
   },
   "suggestion": {
     "title": "KI schlägt vor",
@@ -43,6 +44,14 @@
   },
   "ask": {
     "dismiss": "Schließen"
+  },
+  "task_row": {
+    "remind": "Erinnerung",
+    "snooze": "Um 1 Stunde verschieben",
+    "timer": "Timer starten",
+    "share": "Teilen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen"
   },
   "backup": {
     "nudge": "Lange kein Backup mehr gemacht — Zeit für einen frischen Export"
@@ -73,7 +82,10 @@
     "feature_shared": "Hält die KI eine Aufgabe für gemeinsam (Einkauf, Geschenk), erscheint ein Button „Gemeinsam machen“",
     "feature_claim": "Bei Einkäufen und Familienereignissen kannst du auf den Kreis tippen, um es zu übernehmen",
     "feature_status": "Im Tab „Gemeinsam“ kannst du einen Status setzen — zuhause, bei der Arbeit, nicht stören",
-    "feature_search": "Die Suche im Kalender findet nicht nur Aufgaben, sondern auch Einkäufe und Familienereignisse"
+    "feature_search": "Die Suche im Kalender findet nicht nur Aufgaben, sondern auch Einkäufe und Familienereignisse",
+    "back": "Zurück",
+    "my_color_choose": "Farbe wählen",
+    "remove_person": "Person entfernen"
   },
   "calendar": {
     "add_task": "Aufgabe",
@@ -107,7 +119,12 @@
     "search_empty": "Keine Treffer",
     "more_options": "Weitere Optionen",
     "pill_date": "Datum",
-    "pill_checklist": "Checkliste"
+    "pill_checklist": "Checkliste",
+    "prev_month": "Vorheriger Monat",
+    "next_month": "Nächster Monat",
+    "toggle_search": "Suche",
+    "remove_item": "Eintrag entfernen",
+    "add_item": "Eintrag hinzufügen"
   },
   "priority": {
     "high": "Hoch",
@@ -134,7 +151,8 @@
     "focus": "Fokus",
     "break": "Pause",
     "start": "Start",
-    "pause": "Pause"
+    "pause": "Pause",
+    "reset": "Zurücksetzen"
   },
   "morning": {
     "title": "Guten Morgen!",
@@ -155,13 +173,15 @@
     "loading": "Die KI schaut sich deine Woche an…",
     "close": "Verstanden, weiter",
     "month_trend": "Diesen Monat: {{thisPct}}% (letzten Monat: {{lastPct}}%)",
-    "busiest_day": "Meist beschäftigter Wochentag — {{day}}"
+    "busiest_day": "Meist beschäftigter Wochentag — {{day}}",
+    "share": "Teilen"
   },
   "shopping": {
     "placeholder": "Was einkaufen?",
     "empty": "Liste ist leer.",
     "clear_completed": "Gekauftes entfernen ({{count}})",
-    "claim": "Ich übernehme das"
+    "claim": "Ich übernehme das",
+    "add": "Hinzufügen"
   },
   "family": {
     "placeholder": "Ereignis für die ganze Familie",
@@ -181,7 +201,8 @@
     "delete": "Ziffer löschen",
     "error": "Falscher Code",
     "who_are_you": "Wer bist du?",
-    "new_person": "Neue Person — Name"
+    "new_person": "Neue Person — Name",
+    "add_person": "Person hinzufügen"
   },
   "status": {
     "home": "Zuhause",

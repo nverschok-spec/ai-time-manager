@@ -163,6 +163,7 @@ export default function CalendarPage() {
                 setCategoryFilter('')
               }
             }}
+            aria-label={t('calendar.toggle_search')}
             className={`rounded-full p-2 transition-colors ${
               showSearch ? 'bg-brand-cta text-brand-ctaForeground' : 'bg-app-card text-slate-300 hover:text-slate-100'
             }`}
@@ -312,7 +313,8 @@ export default function CalendarPage() {
                 <button
                   type="button"
                   onClick={() => setSelectedMonthDate(null)}
-                  className="text-slate-500 hover:text-slate-300 transition-colors"
+                  aria-label={t('ask.dismiss')}
+                  className="p-1 text-slate-500 hover:text-slate-300 transition-colors"
                 >
                   <X size={16} />
                 </button>

@@ -1,0 +1,67 @@
+{
+  "$schema": "https://docs.claude.com/claude-code/project-config",
+  "project": "ai-time-manager",
+  "description": "Project-level Claude Code metadata for ai-time-manager. Note: this file is a human/tooling-facing convention, not an official Claude Code runtime schema — actual runtime behavior (hooks, permissions) is controlled by .claude/settings.json and .claude/settings.local.json.",
+  "stack": {
+    "language": "JavaScript (JSX, no TypeScript)",
+    "frontend": ["react@18", "vite@5", "tailwindcss@3", "zustand", "react-i18next"],
+    "backend": ["vercel-serverless-functions (api/)", "@upstash/redis", "web-push"],
+    "ai": ["@anthropic-ai/sdk (server-side only, api/ai.js)"],
+    "pwa": ["vite-plugin-pwa", "workbox-precaching"],
+    "deploy": "Vercel",
+    "scheduling": "GitHub Actions (.github/workflows/push-check.yml, keepalive.yml) — Vercel Hobby cron is once/day only"
+  },
+  "commands": {
+    "dev": "npm run dev",
+    "build": "npm run build",
+    "preview": "npm run preview",
+    "lint": null,
+    "test": null,
+    "note": "No lint or test script/config exists in this repo — do not invent npm run lint or npm test."
+  },
+  "context": {
+    "autoCompactContext": true,
+    "requirePlanningForLargeTasks": true
+  },
+  "models": {
+    "planning": "claude-opus-5",
+    "coding": "claude-sonnet-5"
+  },
+  "skills": {
+    "autoDiscover": true,
+    "installed": [
+      "impeccable",
+      "apple-design",
+      "design-taste-frontend",
+      "design-taste-frontend-v1",
+      "emil-design-eng",
+      "high-end-visual-design",
+      "minimalist-ui",
+      "animate",
+      "animation-vocabulary",
+      "improve-animations",
+      "review-animations",
+      "find-animation-opportunities",
+      "ask-sonner",
+      "brandkit",
+      "gpt-taste",
+      "image-to-code",
+      "imagegen-frontend-mobile",
+      "imagegen-frontend-web",
+      "industrial-brutalist-ui",
+      "pick-ui-library",
+      "prototype",
+      "redesign-existing-projects",
+      "stitch-design-taste",
+      "full-output-enforcement"
+    ],
+    "note": "Skills live under .claude/skills/ and are auto-discovered by Claude Code; this list mirrors what's already installed for reference."
+  },
+  "mcpServers": {},
+  "guardrails": {
+    "noStructuralChangesWithoutApproval": true,
+    "noUnrelatedRefactors": true,
+    "secretsOnlyInDotEnv": true,
+    "noWorkflowEditsWithoutApproval": true
+  }
+}

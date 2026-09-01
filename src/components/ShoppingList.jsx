@@ -45,10 +45,11 @@ export default function ShoppingList() {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder={t('shopping.placeholder')}
-          className="min-w-0 flex-1 rounded-full bg-app-card px-4 py-2 text-sm text-slate-100 placeholder:text-muted outline-none focus:ring-2 focus:ring-brand-cta"
+          className="min-w-0 flex-1 rounded-full bg-app-card px-4 py-2 text-sm text-slate-100 placeholder:text-muted outline-none focus:ring-1 focus:ring-brand-cta"
         />
         <button
           type="submit"
+          aria-label={t('shopping.add')}
           className="rounded-full bg-brand-cta p-2.5 text-brand-ctaForeground hover:brightness-110 transition-all"
         >
           <Plus size={18} />
@@ -81,7 +82,8 @@ export default function ShoppingList() {
                         type="button"
                         onClick={() => toggleShoppingClaim(item.id)}
                         title={claimant ? claimant.name : t('shopping.claim')}
-                        className="shrink-0"
+                        aria-label={claimant ? claimant.name : t('shopping.claim')}
+                        className="shrink-0 p-1"
                       >
                         {claimant ? (
                           <span
@@ -104,7 +106,8 @@ export default function ShoppingList() {
                   <button
                     type="button"
                     onClick={() => handleRemove(item)}
-                    className="text-slate-500 hover:text-priority-high transition-colors"
+                    aria-label={t('task_row.delete')}
+                    className="p-1 text-slate-500 hover:text-priority-high transition-colors"
                   >
                     <Trash2 size={16} />
                   </button>

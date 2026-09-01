@@ -70,6 +70,7 @@ export default function AiRescheduleCard() {
               <button
                 type="button"
                 onClick={() => handleAccept(index)}
+                aria-label={t('suggestion.accept')}
                 className="shrink-0 rounded-md bg-app-cardMuted p-1.5 text-slate-300 hover:text-brand-cta transition-colors"
               >
                 <Check size={16} />
@@ -77,6 +78,7 @@ export default function AiRescheduleCard() {
               <button
                 type="button"
                 onClick={() => dismissRescheduleOp(index)}
+                aria-label={t('suggestion.dismiss')}
                 className="shrink-0 rounded-md bg-app-cardMuted p-1.5 text-slate-300 hover:text-priority-high transition-colors"
               >
                 <X size={16} />

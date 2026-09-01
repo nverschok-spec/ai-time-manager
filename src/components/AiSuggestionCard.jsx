@@ -45,8 +45,9 @@ export default function AiSuggestionCard() {
                     <button
                       type="button"
                       onClick={() => handleResolveConflict(index)}
-                      className="flex items-center gap-0.5 rounded-full bg-priority-high/20 pl-1 hover:text-priority-high/70"
+                      className="flex items-center gap-0.5 rounded-full bg-priority-high/20 p-1 hover:text-priority-high/70"
                       title={t('suggestion.find_free_slot')}
+                      aria-label={t('suggestion.find_free_slot')}
                     >
                       <Wand2 size={11} />
                     </button>

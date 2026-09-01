@@ -216,7 +216,8 @@ export default function TaskForm({ task, defaultDate, prefill, onCancel }) {
                     <button
                       type="button"
                       onClick={() => removeChecklistItem(item.id)}
-                      className="shrink-0 text-slate-500 transition-transform active:scale-90 hover:text-priority-high"
+                      aria-label={t('calendar.remove_item')}
+                      className="shrink-0 p-1 text-slate-500 transition-transform active:scale-90 hover:text-priority-high"
                     >
                       <X size={14} />
                     </button>
@@ -241,6 +242,7 @@ export default function TaskForm({ task, defaultDate, prefill, onCancel }) {
               <button
                 type="button"
                 onClick={addChecklistItem}
+                aria-label={t('calendar.add_item')}
                 className="shrink-0 rounded-md bg-app-cardMuted px-2.5 py-1.5 text-sm text-slate-200 transition-transform active:scale-[0.97] hover:bg-white/10"
               >
                 <Plus size={14} />

@@ -15,6 +15,7 @@ export default function AiInputFab({ onOpen, isLoading }) {
       type="button"
       onClick={onOpen}
       title={t('input.open')}
+      aria-label={t('input.open')}
       className="fixed bottom-20 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-brand-cta text-brand-ctaForeground shadow-lg shadow-black/30 transition-transform active:scale-90"
     >
       {isLoading ? (
@@ -57,7 +58,8 @@ export function AiInputSheet({ open, onClose, onSubmit, isLoading }) {
             type="button"
             onClick={onClose}
             title={t('input.close')}
-            className="absolute right-3 top-3 text-slate-500 transition-transform active:scale-90 hover:text-slate-300"
+            aria-label={t('input.close')}
+            className="absolute right-3 top-3 p-1 text-slate-500 transition-transform active:scale-90 hover:text-slate-300"
           >
             <X size={18} />
           </button>

@@ -83,7 +83,8 @@ export default function WeeklyReview() {
           <button
             type="button"
             onClick={handleShare}
-            className="shrink-0 text-slate-500 hover:text-brand-cta transition-colors"
+            aria-label={t('weekly.share')}
+            className="shrink-0 p-1 text-slate-500 hover:text-brand-cta transition-colors"
           >
             <Share2 size={16} />
           </button>

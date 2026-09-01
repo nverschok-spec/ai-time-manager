@@ -16,7 +16,7 @@ export default function AiAnswerCard() {
       <button
         type="button"
         onClick={() => setScheduleAnswer(null)}
-        className="shrink-0 text-slate-500 hover:text-slate-300 transition-colors"
+        className="shrink-0 p-1 text-slate-500 hover:text-slate-300 transition-colors"
         aria-label={t('ask.dismiss')}
       >
         <X size={16} />

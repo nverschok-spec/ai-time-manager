@@ -22,6 +22,7 @@ export default function PeopleSettings() {
                 key={color}
                 type="button"
                 onClick={() => updatePersonColor(color)}
+                aria-label={`${t('settings.my_color_choose')} ${color}`}
                 className="flex h-7 w-7 items-center justify-center rounded-full transition-transform hover:scale-110 active:scale-95"
                 style={{ backgroundColor: color }}
               >
@@ -47,7 +48,8 @@ export default function PeopleSettings() {
               <button
                 type="button"
                 onClick={() => removePerson(p.id)}
-                className="text-slate-500 hover:text-priority-high transition-colors"
+                aria-label={t('settings.remove_person')}
+                className="p-1 text-slate-500 hover:text-priority-high transition-colors"
               >
                 <X size={14} />
               </button>

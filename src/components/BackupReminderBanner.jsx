@@ -36,7 +36,8 @@ export default function BackupReminderBanner() {
       <button
         type="button"
         onClick={() => setDismissed(true)}
-        className="text-sky-400/70 hover:text-sky-400 transition-colors"
+        aria-label={t('ask.dismiss')}
+        className="p-1 text-sky-400/70 hover:text-sky-400 transition-colors"
       >
         <X size={16} />
       </button>

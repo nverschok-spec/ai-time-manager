@@ -36,6 +36,7 @@ export default function PersonAvatar() {
         type="button"
         onClick={() => setOpen((v) => !v)}
         title={person.name}
+        aria-label={person.name}
         className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold transition-transform active:scale-90"
         style={{ backgroundColor: person.color, color: `rgb(${readableForegroundChannels(person.color)})` }}
       >
@@ -57,7 +58,7 @@ export default function PersonAvatar() {
             onClick={() => setOpen(false)}
             className="fixed inset-0 z-40 cursor-default"
           />
-          <div className="animate-modal-in absolute right-0 top-11 z-50 w-40 rounded-2xl border border-white/[0.06] bg-app-card p-1.5 shadow-xl">
+          <div className="animate-modal-in absolute right-0 top-11 z-50 w-40 rounded-2xl border border-white/[0.06] bg-app-card p-1.5 shadow-lg shadow-black/30">
             {STATUS_OPTIONS.map(({ key, emoji }) => {
               const active = person.status === key
               return (

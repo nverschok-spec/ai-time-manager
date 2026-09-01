@@ -48,6 +48,7 @@ export default function SettingsPanel({ onClose }) {
           <button
             type="button"
             onClick={onClose}
+            aria-label={t('settings.back')}
             className="rounded-lg bg-app-card p-2 text-slate-300 hover:text-slate-100"
           >
             <ArrowLeft size={18} />

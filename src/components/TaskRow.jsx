@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   AlarmClockPlus,
   Bell,
@@ -24,6 +25,7 @@ import { useAppStore } from '../store/useAppStore'
 import SwipeableRow from './SwipeableRow'
 
 export default function TaskRow({ task, todayKey, pushEnabled, onToggle, onEdit, onRemove, onOpenTimer, onOpenReminder }) {
+  const { t } = useTranslation()
   const snoozeTask = useAppStore((s) => s.snoozeTask)
   const toggleChecklistItem = useAppStore((s) => s.toggleChecklistItem)
   const meta = priorityMeta(task.priority)
@@ -99,12 +101,13 @@ export default function TaskRow({ task, todayKey, pushEnabled, onToggle, onEdit,
               <Flame size={12} /> {streak}
             </span>
           )}
-          <div className="ml-auto flex items-center gap-3">
+          <div className="ml-auto flex items-center gap-1 -mr-1">
             {pushEnabled && (
               <button
                 type="button"
                 onClick={() => onOpenReminder(task)}
-                className="text-slate-500 hover:text-priority-medium transition-colors"
+                aria-label={t('task_row.remind')}
+                className="p-1 text-slate-500 hover:text-priority-medium transition-colors"
               >
                 <Bell size={16} />
               </button>
@@ -113,8 +116,9 @@ export default function TaskRow({ task, todayKey, pushEnabled, onToggle, onEdit,
               <button
                 type="button"
                 onClick={handleSnooze}
+                aria-label={t('task_row.snooze')}
                 title="+1h"
-                className="text-slate-500 hover:text-priority-medium transition-colors"
+                className="p-1 text-slate-500 hover:text-priority-medium transition-colors"
               >
                 <AlarmClockPlus size={16} />
               </button>
@@ -122,28 +126,32 @@ export default function TaskRow({ task, todayKey, pushEnabled, onToggle, onEdit,
             <button
               type="button"
               onClick={() => onOpenTimer(task)}
-              className="text-slate-500 hover:text-brand-cta transition-colors"
+              aria-label={t('task_row.timer')}
+              className="p-1 text-slate-500 hover:text-brand-cta transition-colors"
             >
               <Timer size={16} />
             </button>
             <button
               type="button"
               onClick={handleShare}
-              className="text-slate-500 hover:text-sky-400 transition-colors"
+              aria-label={t('task_row.share')}
+              className="p-1 text-slate-500 hover:text-sky-400 transition-colors"
             >
               {justCopied ? <Check size={16} className="text-brand-cta" /> : <Share2 size={16} />}
             </button>
             <button
               type="button"
               onClick={() => onEdit(task)}
-              className="text-slate-500 hover:text-sky-400 transition-colors"
+              aria-label={t('task_row.edit')}
+              className="p-1 text-slate-500 hover:text-sky-400 transition-colors"
             >
               <Pencil size={16} />
             </button>
             <button
               type="button"
               onClick={handleRemove}
-              className="text-slate-500 hover:text-priority-high transition-colors"
+              aria-label={t('task_row.delete')}
+              className="p-1 text-slate-500 hover:text-priority-high transition-colors"
             >
               <Trash2 size={16} />
             </button>

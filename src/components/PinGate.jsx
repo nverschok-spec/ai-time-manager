@@ -175,11 +175,12 @@ export default function PinGate({ children }) {
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               placeholder={t('pin.new_person')}
-              className="min-w-0 flex-1 rounded-xl bg-app-card px-3 py-2.5 text-sm text-white placeholder:text-muted outline-none focus:ring-2 focus:ring-brand-cta"
+              className="min-w-0 flex-1 rounded-xl bg-app-card px-3 py-2.5 text-sm text-white placeholder:text-muted outline-none focus:ring-1 focus:ring-brand-cta"
             />
             <button
               type="submit"
               disabled={isSubmitting || !newName.trim()}
+              aria-label={t('pin.add_person')}
               className="flex shrink-0 items-center justify-center rounded-xl bg-brand-cta px-3 text-brand-ctaForeground disabled:opacity-40"
             >
               <Plus size={18} />
