@@ -204,6 +204,21 @@ export async function fetchWeeklyReview(stats, locale, household) {
   return data?.review || ''
 }
 
+// Not best-effort like the digest/weekly-review helpers below — a failed
+// generation needs to surface as an error so StudyHome can show "try again"
+// instead of silently saving an empty bank.
+export async function generateTestQuestions(topic, blocks, count) {
+  const data = await callAi('generate-test-questions', { topic, blocks, count })
+  return Array.isArray(data.questions) ? data.questions : []
+}
+
+// Best-effort, same shape as fetchWeeklyReview — a quiet AI hiccup here
+// shouldn't block the health weekly-review button, just show nothing.
+export async function fetchHealthWeeklyReview(summary) {
+  const data = await callAiSoft('health-weekly-review', { summary })
+  return data?.review || ''
+}
+
 // Best-effort — returns '' on any failure so the caller can silently fall
 // back to the plain task list instead of blocking the morning review.
 export async function fetchDailyDigest(todayTasks, locale) {

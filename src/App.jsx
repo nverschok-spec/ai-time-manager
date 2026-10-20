@@ -13,6 +13,7 @@ import BottomNav from './components/BottomNav'
 import TodayPage from './components/pages/TodayPage'
 import CalendarPage from './components/pages/CalendarPage'
 import SharedPage from './components/pages/SharedPage'
+import TrackerPage from './components/pages/TrackerPage'
 import StatsPage from './components/pages/StatsPage'
 import { getStoredPerson } from './components/PinGate'
 import { useAppStore } from './store/useAppStore'
@@ -39,6 +40,7 @@ const PAGES = {
   today: TodayPage,
   calendar: CalendarPage,
   shared: SharedPage,
+  tracker: TrackerPage,
   stats: StatsPage
 }
 
@@ -55,6 +57,7 @@ export default function App() {
   const setScheduleAnswer = useAppStore((s) => s.setScheduleAnswer)
   const archiveOldCompleted = useAppStore((s) => s.archiveOldCompleted)
   const syncRecurringReminders = useAppStore((s) => s.syncRecurringReminders)
+  const syncHealthReminders = useAppStore((s) => s.syncHealthReminders)
   const flushPendingMutations = useAppStore((s) => s.flushPendingMutations)
   const addShoppingItem = useAppStore((s) => s.addShoppingItem)
   const activeTab = useAppStore((s) => s.activeTab)
@@ -71,6 +74,7 @@ export default function App() {
       await loadAll()
       archiveOldCompleted()
       syncRecurringReminders()
+      syncHealthReminders()
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadAll, setPerson])

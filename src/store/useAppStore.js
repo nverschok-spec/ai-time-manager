@@ -4,6 +4,10 @@ import { scheduleReminder } from '../lib/push'
 import { addMinutes, toDateKey } from '../lib/date'
 import { nextOccurrenceOnOrAfter } from '../lib/occurrences'
 import { getStoredToken, clearStoredToken, updateStoredPersonColor } from '../components/PinGate'
+import { createHealthSlice } from './health'
+import { createStudySlice } from './study'
+import { PINKI_DEFS, nextPinokDateKey } from '../lib/pinki'
+import i18n from '../i18n/config'
 
 const ARCHIVE_AFTER_DAYS = 60
 
@@ -54,6 +58,8 @@ export const useAppStore = create(
       }
 
       return {
+        ...createHealthSlice(set, get),
+        ...createStudySlice(set, get),
         person: null,
         tasks: [],
         people: [],
@@ -72,6 +78,8 @@ export const useAppStore = create(
         focusSessions: [],
         pendingMutations: [],
         lastRecurringReminderSyncDate: null,
+        lastHealthReminderSyncDate: null,
+        lastHardKickDismissedDate: null,
         lastBackupExportDate: null,
         dataLoaded: false,
         activeTab: 'today',
@@ -121,10 +129,37 @@ export const useAppStore = create(
           if (!force) set({ lastRecurringReminderSyncDate: todayKey })
         },
 
+        // Same recompute-on-every-open approach as syncRecurringReminders
+        // above, but for the fixed-time health/study nudges (lib/pinki.js)
+        // instead of calendar tasks — same scheduleReminder/push-schedule
+        // path, no new cron job.
+        syncHealthReminders: (force = false) => {
+          const { health, pushEnabled, lastHealthReminderSyncDate } = get()
+          if (!pushEnabled) return
+          const todayKey = toDateKey(new Date())
+          if (!force && lastHealthReminderSyncDate === todayKey) return
+
+          for (const def of PINKI_DEFS) {
+            if (health.pinki?.[def.key] === false) continue
+            const dateKey = nextPinokDateKey(def)
+            if (!dateKey) continue
+            scheduleReminder({
+              taskId: `pinok-${def.key}`,
+              title: i18n.t(def.titleKey),
+              date: dateKey,
+              startTime: def.time,
+              offsetMinutes: 0,
+              quietHours: get().quietHoursConfig()
+            })
+          }
+          if (!force) set({ lastHealthReminderSyncDate: todayKey })
+        },
+
         setPerson: (person) => set({ person }),
       setActiveTab: (activeTab) => set({ activeTab }),
       setLastReviewDate: (dateKey) => set({ lastReviewDate: dateKey }),
       setLastWeeklyReviewWeek: (weekKey) => set({ lastWeeklyReviewWeek: weekKey }),
+      setLastHardKickDismissedDate: (dateKey) => set({ lastHardKickDismissedDate: dateKey }),
       setPushEnabled: (pushEnabled) => set({ pushEnabled }),
       setQuietHours: (patch) => set(patch),
       setScheduleAnswer: (scheduleAnswer) => set({ scheduleAnswer }),
@@ -520,9 +555,9 @@ export const useAppStore = create(
       },
 
       exportData: () => {
-        const { tasks, shoppingItems, familyEvents } = get()
+        const { tasks, shoppingItems, familyEvents, health, study } = get()
         return JSON.stringify(
-          { version: 3, exportedAt: new Date().toISOString(), tasks, shoppingItems, familyEvents },
+          { version: 5, exportedAt: new Date().toISOString(), tasks, shoppingItems, familyEvents, health, study },
           null,
           2
         )
@@ -562,11 +597,19 @@ export const useAppStore = create(
         const prevTasks = get().tasks
         const importedShopping = Array.isArray(parsed.shoppingItems) ? parsed.shoppingItems : get().shoppingItems
         const importedFamilyEvents = Array.isArray(parsed.familyEvents) ? parsed.familyEvents : get().familyEvents
+        // Health/study are local-only (never on the server), so unlike
+        // tasks/shopping there's no prior-server state to reconcile — a
+        // straight overwrite (or keep-current, if the file predates the
+        // field) is enough.
+        const importedHealth = parsed.health && typeof parsed.health === 'object' ? parsed.health : get().health
+        const importedStudy = parsed.study && typeof parsed.study === 'object' ? parsed.study : get().study
 
         set({
           tasks: parsed.tasks,
           shoppingItems: importedShopping,
-          familyEvents: importedFamilyEvents
+          familyEvents: importedFamilyEvents,
+          health: importedHealth,
+          study: importedStudy
         })
 
         const importedTaskIds = new Set(parsed.tasks.map((t) => t.id))
@@ -598,9 +641,13 @@ export const useAppStore = create(
       // live on the server (see loadAll) so they can't drift out of sync
       // with what other household members see.
       partialize: (state) => ({
+        health: state.health,
+        study: state.study,
         activeTab: state.activeTab,
         lastReviewDate: state.lastReviewDate,
         lastWeeklyReviewWeek: state.lastWeeklyReviewWeek,
+        lastHealthReminderSyncDate: state.lastHealthReminderSyncDate,
+        lastHardKickDismissedDate: state.lastHardKickDismissedDate,
         pushEnabled: state.pushEnabled,
         quietHoursEnabled: state.quietHoursEnabled,
         quietHoursStart: state.quietHoursStart,
@@ -608,6 +655,23 @@ export const useAppStore = create(
         focusSessions: state.focusSessions,
         pendingMutations: state.pendingMutations,
         lastBackupExportDate: state.lastBackupExportDate
+      }),
+      // zustand's default merge is shallow at the top level — a persisted
+      // `health`/`study` blob from before a new nested field (pinki,
+      // reviewHistory, settings, ...) existed would wholesale replace the
+      // fresh default object and silently drop that field. Merging those
+      // two one level deeper keeps old data (dailyLog, banks, etc.) while
+      // still backfilling any newly-added sub-field from the current
+      // in-code default.
+      merge: (persistedState, currentState) => ({
+        ...currentState,
+        ...persistedState,
+        health: { ...currentState.health, ...persistedState?.health },
+        study: {
+          ...currentState.study,
+          ...persistedState?.study,
+          settings: { ...currentState.study.settings, ...persistedState?.study?.settings }
+        }
       })
     }
   )

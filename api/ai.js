@@ -55,6 +55,29 @@ const SUGGESTION_SCHEMA = {
   additionalProperties: false
 }
 
+const TEST_QUESTIONS_SCHEMA = {
+  type: 'object',
+  properties: {
+    questions: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          block: { type: 'string', description: 'One of the given blocks this question belongs to' },
+          question: { type: 'string' },
+          options: { type: 'array', items: { type: 'string' }, minItems: 4, maxItems: 4 },
+          correct: { type: 'integer', description: '0-3, index into options of the correct answer' },
+          explanation: { type: 'string', description: '1-2 short sentences in Russian explaining the correct answer' }
+        },
+        required: ['block', 'question', 'options', 'correct', 'explanation'],
+        additionalProperties: false
+      }
+    }
+  },
+  required: ['questions'],
+  additionalProperties: false
+}
+
 const RESCHEDULE_SCHEMA = {
   type: 'object',
   properties: {
@@ -140,6 +163,66 @@ Write 2-3 short sentences: acknowledge the completion rate (be encouraging even 
 If total is 0, write one short encouraging sentence about a quiet week.
 
 You may also receive "household" context: shared family events coming up in the next 7 days, the partner's current status (home/work/out/do-not-disturb, or none set), and how many items are still on the shared shopping list. This is the ONLY visibility you have into the partner — you never see their personal tasks, only these three shared signals. If there's anything worth mentioning there (an upcoming shared event, a long pending-shopping count), fold ONE brief mention of it into your last sentence. Don't force it if there's nothing notable — most of the response should still be about the user's own week.`
+}
+
+function generateTestQuestionsPrompt() {
+  return `You generate multiple-choice practice questions for a personal exam-prep trainer (TERTIA-style admissions test format).
+Each question has exactly 4 answer options with exactly one correct.
+Always write the question, options, and explanation in Russian, regardless of the topic's own language — the user studies in Russian.
+Group every question under exactly one of the given "blocks" (topic subsections) — pick the single best-fitting one, never invent a new block name.
+The explanation is 1-2 short sentences: why the correct answer is right, and briefly why the most tempting wrong option is wrong, if there is one.
+Vary difficulty across the set and avoid near-duplicate questions.`
+}
+
+function healthWeeklyReviewPrompt() {
+  return `You write a short weekly check-in for a personal health/fitness tracker, for one person working on weight loss (currently ~95-96kg, height 182cm, goal 90kg then 85kg) through walking and light back-friendly strength training, who is also studying for an exam in parallel.
+Always reply in Russian, in a direct, "по-пацански" (blokey, plainspoken, zero fluff) tone — but never insulting or shaming, always respectful.
+You will receive a 7-day summary as JSON: average weight in kg (null if not weighed), waist in cm (null if not measured), average daily steps, current treadmill/steps streak in days, total beer bottles this week, average sleep hours, average stress level (1-5), and test-prep stats (questions answered, score %) — any field can be null if there's no data.
+Write 3-4 short sentences: what went well, where it slipped, then exactly 3 concrete and specific action items for the coming week, and (only if weight data is available) one short line on the trajectory toward the goal weight.
+Never give a medical diagnosis. Only if stress is consistently high (4-5), sleep is very low, or something else looks like a genuine concern, add one short line suggesting a Hausarzt visit — otherwise don't bring it up.
+No bullet points, no markdown, no greeting. If every field is null, write one short encouraging sentence instead and nothing else.`
+}
+
+async function handleGenerateTestQuestions(client, body) {
+  const { topic, blocks, count } = body
+  if (!topic) return { status: 400, json: { error: 'Missing "topic" in request body' } }
+
+  const blockList = Array.isArray(blocks) && blocks.length ? blocks : ['Общее']
+  const questionCount = Math.min(Math.max(Number(count) || 10, 1), 30)
+
+  const response = await client.messages.create({
+    model: 'claude-haiku-4-5',
+    max_tokens: 4096,
+    system: generateTestQuestionsPrompt(),
+    output_config: { format: { type: 'json_schema', schema: TEST_QUESTIONS_SCHEMA } },
+    messages: [
+      {
+        role: 'user',
+        content: `Topic: ${topic}\nBlocks (JSON): ${JSON.stringify(blockList)}\nGenerate exactly ${questionCount} questions.`
+      }
+    ]
+  })
+
+  if (response.stop_reason === 'refusal') return { status: 200, json: { questions: [] } }
+  const textBlock = response.content.find((b) => b.type === 'text')
+  const parsed = textBlock ? JSON.parse(textBlock.text) : { questions: [] }
+  return { status: 200, json: { questions: parsed.questions || [] } }
+}
+
+async function handleHealthWeeklyReview(client, body) {
+  const { summary } = body
+  if (!summary) return { status: 400, json: { error: 'Missing "summary" in request body' } }
+
+  const response = await client.messages.create({
+    model: 'claude-haiku-4-5',
+    max_tokens: 400,
+    system: healthWeeklyReviewPrompt(),
+    messages: [{ role: 'user', content: `Summary (JSON): ${JSON.stringify(summary)}` }]
+  })
+
+  if (response.stop_reason === 'refusal') return { status: 200, json: { review: '' } }
+  const textBlock = response.content.find((b) => b.type === 'text')
+  return { status: 200, json: { review: textBlock?.text?.trim() || '' } }
 }
 
 async function handleParse(client, body) {
@@ -254,7 +337,9 @@ const ACTIONS = {
   reschedule: handleReschedule,
   ask: handleAsk,
   digest: handleDigest,
-  'weekly-review': handleWeeklyReview
+  'weekly-review': handleWeeklyReview,
+  'generate-test-questions': handleGenerateTestQuestions,
+  'health-weekly-review': handleHealthWeeklyReview
 }
 
 export default async function handler(req, res) {

@@ -5,6 +5,7 @@ import { useAppStore } from '../store/useAppStore'
 import LanguageSwitcher from './LanguageSwitcher'
 import PushSettings from './PushSettings'
 import PeopleSettings from './PeopleSettings'
+import PinkiSettings from './PinkiSettings'
 
 const FEATURE_KEYS = ['feature_attach', 'feature_shared', 'feature_claim', 'feature_status', 'feature_search']
 
@@ -75,6 +76,9 @@ export default function SettingsPanel({ onClose }) {
           </h2>
           <div className="rounded-3xl border border-white/[0.06] bg-app-card p-4">
             <PushSettings />
+          </div>
+          <div className="rounded-3xl border border-white/[0.06] bg-app-card p-4">
+            <PinkiSettings />
           </div>
         </section>
 

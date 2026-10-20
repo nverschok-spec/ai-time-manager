@@ -1,10 +1,11 @@
 import { useTranslation } from 'react-i18next'
-import { BarChart3, CalendarDays, ListTodo, Settings as SettingsIcon, Users } from 'lucide-react'
+import { Activity, BarChart3, CalendarDays, ListTodo, Settings as SettingsIcon, Users } from 'lucide-react'
 
 const TABS = [
   { key: 'today', icon: ListTodo, labelKey: 'nav.today' },
   { key: 'calendar', icon: CalendarDays, labelKey: 'nav.calendar' },
   { key: 'shared', icon: Users, labelKey: 'nav.shared' },
+  { key: 'tracker', icon: Activity, labelKey: 'nav.tracker' },
   { key: 'stats', icon: BarChart3, labelKey: 'nav.stats' }
 ]
 

@@ -14,6 +14,8 @@ import UndoSnackbar from '../UndoSnackbar'
 import EmptyStateIllustration from '../EmptyStateIllustration'
 import Confetti from '../Confetti'
 import AiActivityStack from '../AiActivityStack'
+import DayOverviewStrip from '../DayOverviewStrip'
+import HardKickBanner from '../HardKickBanner'
 
 // The default landing page — just today, nothing else. Week/Month browsing
 // and search live on the Calendar page; this one page's whole job is "what
@@ -27,6 +29,7 @@ export default function TodayPage() {
   const removeTask = useAppStore((s) => s.removeTask)
   const restoreTask = useAppStore((s) => s.restoreTask)
   const pushEnabled = useAppStore((s) => s.pushEnabled)
+  const setActiveTab = useAppStore((s) => s.setActiveTab)
 
   const [showAddForm, setShowAddForm] = useState(false)
   const [prefillTemplate, setPrefillTemplate] = useState(null)
@@ -97,6 +100,9 @@ export default function TodayPage() {
 
   return (
     <div className="space-y-5">
+      <DayOverviewStrip todayTasks={todayTasks} onOpenTracker={() => setActiveTab('tracker')} />
+      <HardKickBanner />
+
       <div className="flex items-center justify-between gap-2">
         {!showAddForm && !editingTask && (
           <div className="flex flex-wrap gap-1.5">
