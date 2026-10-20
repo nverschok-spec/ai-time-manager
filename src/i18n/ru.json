@@ -320,8 +320,10 @@
   },
   "study": {
     "topic": "Тема",
-    "topic_placeholder": "Тема теста (например: биология, часть 1)",
+    "topic_placeholder": "Тема (например: немецкий B2, Fachinformatiker Grundlagen)",
     "blocks_placeholder": "Блоки через запятую (необязательно)",
+    "rules_button": "Справочник по грамматике (B1)",
+    "load_seed_button": "Загрузить стартовый банк: немецкий B1",
     "generate_title": "Сгенерировать вопросы через ИИ",
     "generate_button": "Создать",
     "generate_error": "Не получилось сгенерировать вопросы. Попробуй ещё раз.",

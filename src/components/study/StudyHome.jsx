@@ -1,14 +1,18 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Loader2, Sparkles, Trash2 } from 'lucide-react'
+import { BookOpen, Loader2, Sparkles, Trash2 } from 'lucide-react'
 import { useAppStore } from '../../store/useAppStore'
 import { generateTestQuestions } from '../../services/ai'
 import { validateQuestions } from '../../lib/testBank'
 import { toDateKey } from '../../lib/date'
+import deB1Grammar from '../../data/tests/de-b1-grammar.json'
 import TestMode from './TestMode'
 import TrainMode from './TrainMode'
 import MistakesMode from './MistakesMode'
 import StudyStats from './StudyStats'
+import StudyRules from './StudyRules'
+
+const SEED_BANK_SLUG = 'de-b1-grammar'
 
 function slugify(topic) {
   return topic.trim().toLowerCase().replace(/[^a-z0-9а-яё]+/gi, '-').slice(0, 40) || `topic-${Date.now()}`
@@ -30,9 +34,10 @@ export default function StudyHome() {
   const [countInput, setCountInput] = useState(15)
   const [generating, setGenerating] = useState(false)
   const [genError, setGenError] = useState(false)
-  const [mode, setMode] = useState(null) // null | 'test' | 'train' | 'mistakes' | 'stats'
+  const [mode, setMode] = useState(null) // null | 'test' | 'train' | 'mistakes' | 'stats' | 'rules'
 
   const topicSlugs = Object.keys(study.banks)
+  const hasSeedBank = !!study.banks[SEED_BANK_SLUG]
   const activeSlug =
     study.activeTopicSlug && study.banks[study.activeTopicSlug] ? study.activeTopicSlug : topicSlugs[0] || null
   const activeBank = activeSlug ? study.banks[activeSlug] : null
@@ -43,6 +48,12 @@ export default function StudyHome() {
     [study.answerLog, todayKey]
   )
   const goalRatio = Math.min(1, questionsToday / (study.settings.dailyGoalQuestions || 15))
+
+  function handleLoadSeedBank() {
+    const questions = validateQuestions(deB1Grammar.questions)
+    saveStudyBank(SEED_BANK_SLUG, { topic: deB1Grammar.topic, blocks: deB1Grammar.blocks, questions })
+    setActiveTopicSlug(SEED_BANK_SLUG)
+  }
 
   async function handleGenerate(e) {
     e.preventDefault()
@@ -95,9 +106,37 @@ export default function StudyHome() {
       </div>
     )
   }
+  if (mode === 'rules') {
+    return (
+      <div className="space-y-3">
+        <button type="button" onClick={() => setMode(null)} className="text-sm text-slate-400 hover:text-slate-100">
+          ← {t('study.back_to_study')}
+        </button>
+        <StudyRules />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-4">
+      <button
+        type="button"
+        onClick={() => setMode('rules')}
+        className="flex w-full items-center justify-center gap-1.5 rounded-full bg-app-cardMuted py-2 text-sm text-slate-200 transition-colors hover:bg-white/10"
+      >
+        <BookOpen size={14} /> {t('study.rules_button')}
+      </button>
+
+      {!hasSeedBank && (
+        <button
+          type="button"
+          onClick={handleLoadSeedBank}
+          className="flex w-full items-center justify-center gap-1.5 rounded-full bg-brand-cta py-2 text-sm font-medium text-brand-ctaForeground transition-all hover:brightness-110"
+        >
+          <Sparkles size={14} /> {t('study.load_seed_button')}
+        </button>
+      )}
+
       <div className="space-y-2 rounded-3xl border border-white/[0.06] bg-app-card p-4">
         <div className="flex items-center justify-between text-xs text-slate-500">
           <span>{t('study.daily_goal')}</span>

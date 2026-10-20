@@ -320,8 +320,10 @@
   },
   "study": {
     "topic": "Topic",
-    "topic_placeholder": "Test topic (e.g. biology, part 1)",
+    "topic_placeholder": "Topic (e.g. German B2, Fachinformatiker basics)",
     "blocks_placeholder": "Blocks, comma-separated (optional)",
+    "rules_button": "Grammar reference (B1)",
+    "load_seed_button": "Load starter bank: German B1",
     "generate_title": "Generate questions with AI",
     "generate_button": "Generate",
     "generate_error": "Couldn't generate questions. Try again.",

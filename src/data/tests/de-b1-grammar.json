@@ -1,0 +1,198 @@
+{
+  "topic": "Немецкий B1 — грамматика",
+  "blocks": [
+    "Артикли и падежи",
+    "Предлоги с фиксированным падежом",
+    "Wechselpräpositionen",
+    "Глаголы с предлогами",
+    "Nebensatz",
+    "Окончания прилагательных",
+    "Relativsatz",
+    "Perfekt: sein или haben",
+    "Passiv"
+  ],
+  "questions": [
+    {
+      "block": "Артикли и падежи",
+      "question": "Ich sehe ___ Mann.",
+      "options": ["der", "den", "dem", "des"],
+      "correct": 1,
+      "explanation": "Mann — мужской род, винительный падеж (Akkusativ): der → den. Вопрос «кого? что?» — Ich sehe wen? — den Mann."
+    },
+    {
+      "block": "Артикли и падежи",
+      "question": "Ich spreche mit ___ Kollegin.",
+      "options": ["die", "der", "den", "dem"],
+      "correct": 1,
+      "explanation": "mit всегда требует Dativ; женский род в Dativ: die → der. Поэтому mit der Kollegin."
+    },
+    {
+      "block": "Артикли и падежи",
+      "question": "___ Kinder spielen im Garten.",
+      "options": ["der", "das", "die", "den"],
+      "correct": 2,
+      "explanation": "Множественное число в Nominativ всегда die: die Kinder."
+    },
+    {
+      "block": "Предлоги с фиксированным падежом",
+      "question": "Das Geschenk ist für ___ Sohn.",
+      "options": ["mein", "meinen", "meinem", "meines"],
+      "correct": 1,
+      "explanation": "für всегда требует Akkusativ. Мужской род: mein → meinen."
+    },
+    {
+      "block": "Предлоги с фиксированным падежом",
+      "question": "Sie kommt aus ___ Schweiz.",
+      "options": ["die", "der", "den", "das"],
+      "correct": 1,
+      "explanation": "aus всегда требует Dativ. die Schweiz — женский род, в Dativ die → der: aus der Schweiz."
+    },
+    {
+      "block": "Предлоги с фиксированным падежом",
+      "question": "Wir fahren ohne ___ Gutschein.",
+      "options": ["ein", "einen", "einem", "eines"],
+      "correct": 1,
+      "explanation": "ohne всегда требует Akkusativ. Мужской род: ein → einen (как в шпаргалке: ohne einen Gutschein)."
+    },
+    {
+      "block": "Wechselpräpositionen",
+      "question": "Ich lege das Buch auf ___ Tisch.",
+      "options": ["der", "den", "dem", "des"],
+      "correct": 1,
+      "explanation": "legen отвечает на вопрос «куда?» (Wohin?) → Akkusativ: auf den Tisch."
+    },
+    {
+      "block": "Wechselpräpositionen",
+      "question": "Das Buch liegt auf ___ Tisch.",
+      "options": ["der", "den", "dem", "des"],
+      "correct": 2,
+      "explanation": "liegen отвечает на вопрос «где?» (Wo?) → Dativ: auf dem Tisch."
+    },
+    {
+      "block": "Wechselpräpositionen",
+      "question": "Er hängt das Bild an ___ Wand.",
+      "options": ["die", "der", "den", "dem"],
+      "correct": 0,
+      "explanation": "hängen (куда?) → Akkusativ. Женский род в Akk не меняется: an die Wand."
+    },
+    {
+      "block": "Глаголы с предлогами",
+      "question": "Ich warte ___ den Bus.",
+      "options": ["auf", "für", "an", "über"],
+      "correct": 0,
+      "explanation": "warten auf + Akkusativ — ждать (что-то/кого-то)."
+    },
+    {
+      "block": "Глаголы с предлогами",
+      "question": "Er interessiert sich ___ Musik.",
+      "options": ["an", "für", "über", "auf"],
+      "correct": 1,
+      "explanation": "sich interessieren für + Akkusativ — интересоваться чем-либо."
+    },
+    {
+      "block": "Глаголы с предлогами",
+      "question": "Wir nehmen ___ dem Kurs teil.",
+      "options": ["an", "auf", "für", "mit"],
+      "correct": 0,
+      "explanation": "teilnehmen an + Dativ — участвовать в чём-либо."
+    },
+    {
+      "block": "Nebensatz",
+      "question": "Ich weiß nicht, ___ er heute kommt.",
+      "options": ["ob", "wann", "wenn", "als"],
+      "correct": 0,
+      "explanation": "«ли» в косвенном вопросе = ob. Глагол (kommt) уходит в конец: ..., ob er heute kommt."
+    },
+    {
+      "block": "Nebensatz",
+      "question": "___ ich klein war, habe ich in Berlin gewohnt.",
+      "options": ["wenn", "als", "wann", "ob"],
+      "correct": 1,
+      "explanation": "Однократное действие в прошлом = als, не wenn."
+    },
+    {
+      "block": "Nebensatz",
+      "question": "Ich bleibe zu Hause, ___ ich krank bin.",
+      "options": ["denn", "weil", "dass", "wenn"],
+      "correct": 1,
+      "explanation": "Глагол «bin» стоит в конце — значит нужен weil. С denn был бы обычный порядок: denn ich bin krank."
+    },
+    {
+      "block": "Nebensatz",
+      "question": "Je mehr ich übe, ___ besser spreche ich.",
+      "options": ["desto", "so", "als", "wie"],
+      "correct": 0,
+      "explanation": "Парная конструкция je ... desto — чем ..., тем ...: je mehr ..., desto besser ..."
+    },
+    {
+      "block": "Окончания прилагательных",
+      "question": "Das ist ___ guter Job.",
+      "options": ["gut", "guter", "gute", "gutes"],
+      "correct": 1,
+      "explanation": "После ein в Nominativ мужского рода окончание само показывает род: ein guter Job."
+    },
+    {
+      "block": "Окончания прилагательных",
+      "question": "Ich habe ___ wichtigen Termin.",
+      "options": ["wichtiger", "wichtige", "wichtigen", "wichtiges"],
+      "correct": 2,
+      "explanation": "Akkusativ мужского рода всегда ‑en: einen wichtigen Termin."
+    },
+    {
+      "block": "Окончания прилагательных",
+      "question": "Das ist ___ gutes Buch.",
+      "options": ["guter", "gute", "gutes", "guten"],
+      "correct": 2,
+      "explanation": "Средний род после ein показывает окончание сам: ein gutes Buch."
+    },
+    {
+      "block": "Relativsatz",
+      "question": "Das ist der Kurs, für ___ ich mich interessiere.",
+      "options": ["der", "den", "dem", "das"],
+      "correct": 1,
+      "explanation": "sich interessieren für + Akkusativ, мужской род → den: für den ich mich interessiere."
+    },
+    {
+      "block": "Relativsatz",
+      "question": "Die Firma, in ___ ich arbeite, ist groß.",
+      "options": ["die", "der", "den", "dem"],
+      "correct": 1,
+      "explanation": "arbeiten in (где?) → Dativ. Женский род в Dativ: die → der: in der ich arbeite."
+    },
+    {
+      "block": "Relativsatz",
+      "question": "Die Kollegin, mit ___ ich spreche, heißt Anna.",
+      "options": ["die", "der", "dem", "den"],
+      "correct": 1,
+      "explanation": "mit всегда Dativ. Женский род: die → der: mit der ich spreche."
+    },
+    {
+      "block": "Perfekt: sein или haben",
+      "question": "Ich ___ ins Büro gegangen.",
+      "options": ["habe", "bin", "hat", "ist"],
+      "correct": 1,
+      "explanation": "gehen — глагол движения, Perfekt образуется с sein: ich bin gegangen."
+    },
+    {
+      "block": "Perfekt: sein или haben",
+      "question": "Wir ___ den Test bestanden.",
+      "options": ["sind", "haben", "bin", "hat"],
+      "correct": 1,
+      "explanation": "bestehen — не движение и не изменение состояния, Perfekt с haben: wir haben bestanden."
+    },
+    {
+      "block": "Passiv",
+      "question": "Der Server ___ neu gestartet.",
+      "options": ["wird", "ist", "hat", "war"],
+      "correct": 0,
+      "explanation": "Passiv (действие над предметом) = werden + Partizip II: wird gestartet."
+    },
+    {
+      "block": "Passiv",
+      "question": "Das Formular ___ abgegeben werden.",
+      "options": ["muss", "hat", "ist", "wird"],
+      "correct": 0,
+      "explanation": "Пассив с модальным глаголом: muss + Partizip II + werden: muss abgegeben werden."
+    }
+  ]
+}

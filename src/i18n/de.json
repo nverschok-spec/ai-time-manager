@@ -320,8 +320,10 @@
   },
   "study": {
     "topic": "Thema",
-    "topic_placeholder": "Testthema (z. B. Biologie, Teil 1)",
+    "topic_placeholder": "Thema (z. B. Deutsch B2, Fachinformatiker Grundlagen)",
     "blocks_placeholder": "Blöcke, mit Komma getrennt (optional)",
+    "rules_button": "Grammatik-Spickzettel (B1)",
+    "load_seed_button": "Starter-Bank laden: Deutsch B1",
     "generate_title": "Fragen per KI generieren",
     "generate_button": "Erstellen",
     "generate_error": "Fragen konnten nicht generiert werden. Nochmal versuchen.",
