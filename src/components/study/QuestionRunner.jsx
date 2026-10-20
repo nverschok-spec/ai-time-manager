@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Check, X } from 'lucide-react'
+import { sanitizeExplanationHtml } from '../../lib/testBank'
 
 // Shared mechanics for all 3 study modes — the only real behavioral
 // difference between Training/Mistakes (immediate feedback) and Test
@@ -100,7 +101,10 @@ export default function QuestionRunner({ questions, immediateFeedback, timerSeco
 
       {immediateFeedback && selected !== null && (
         <div className="space-y-2 rounded-2xl border border-white/[0.06] bg-app-card p-3">
-          <p className="text-sm text-slate-300">{question.explanation}</p>
+          <p
+            className="text-sm text-slate-300"
+            dangerouslySetInnerHTML={{ __html: sanitizeExplanationHtml(question.explanation) }}
+          />
           <button
             type="button"
             onClick={() => advance(results)}

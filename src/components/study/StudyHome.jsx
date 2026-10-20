@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { BookOpen, Loader2, Sparkles, Trash2 } from 'lucide-react'
+import { BookOpen, Database, Loader2, Sparkles, Trash2 } from 'lucide-react'
 import { useAppStore } from '../../store/useAppStore'
 import { generateTestQuestions } from '../../services/ai'
 import { validateQuestions } from '../../lib/testBank'
@@ -11,6 +11,7 @@ import TrainMode from './TrainMode'
 import MistakesMode from './MistakesMode'
 import StudyStats from './StudyStats'
 import StudyRules from './StudyRules'
+import StudyDataTools from './StudyDataTools'
 
 const SEED_BANK_SLUG = 'de-b1-grammar'
 
@@ -116,16 +117,37 @@ export default function StudyHome() {
       </div>
     )
   }
+  if (mode === 'data') {
+    return (
+      <div className="space-y-3">
+        <button type="button" onClick={() => setMode(null)} className="text-sm text-slate-400 hover:text-slate-100">
+          ← {t('study.back_to_study')}
+        </button>
+        <StudyDataTools />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-4">
-      <button
-        type="button"
-        onClick={() => setMode('rules')}
-        className="flex w-full items-center justify-center gap-1.5 rounded-full bg-app-cardMuted py-2 text-sm text-slate-200 transition-colors hover:bg-white/10"
-      >
-        <BookOpen size={14} /> {t('study.rules_button')}
-      </button>
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => setMode('rules')}
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-app-cardMuted py-2 text-sm text-slate-200 transition-colors hover:bg-white/10"
+        >
+          <BookOpen size={14} /> {t('study.rules_button')}
+        </button>
+        <button
+          type="button"
+          onClick={() => setMode('data')}
+          className="flex items-center justify-center gap-1.5 rounded-full bg-app-cardMuted px-3 py-2 text-sm text-slate-200 transition-colors hover:bg-white/10"
+          aria-label={t('study.data_button')}
+          title={t('study.data_button')}
+        >
+          <Database size={14} />
+        </button>
+      </div>
 
       {!hasSeedBank && (
         <button

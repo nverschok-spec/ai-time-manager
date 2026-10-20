@@ -64,6 +64,39 @@ export function createStudySlice(set, get) {
     },
 
     recordStudyAttempt: (attempt) =>
-      set((state) => ({ study: { ...state.study, attempts: [...state.study.attempts, attempt].slice(-100) } }))
+      set((state) => ({ study: { ...state.study, attempts: [...state.study.attempts, attempt].slice(-100) } })),
+
+    // Scoped backup of just this module (settings/banks/attempts/answerLog/
+    // mistakes) — separate from the whole-app export in useAppStore.js,
+    // which already includes `study` wholesale; this one's for someone who
+    // wants to back up or move only their study progress.
+    exportStudyData: () => {
+      const { settings, banks, activeTopicSlug, attempts, answerLog, mistakes } = get().study
+      return JSON.stringify(
+        { schemaVersion: 1, exportedAt: new Date().toISOString(), settings, banks, activeTopicSlug, attempts, answerLog, mistakes },
+        null,
+        2
+      )
+    },
+
+    // Full replace, same semantics as the "Заменить текущие данные?"
+    // confirmation shown before calling this — missing arrays/objects in an
+    // older or hand-edited file fall back to empty rather than crashing.
+    importStudyData: (json) => {
+      const parsed = JSON.parse(json)
+      if (!parsed || typeof parsed !== 'object' || typeof parsed.banks !== 'object') {
+        throw new Error('Invalid study backup file: missing banks')
+      }
+      set((state) => ({
+        study: {
+          settings: { ...state.study.settings, ...(parsed.settings || {}) },
+          banks: parsed.banks || {},
+          activeTopicSlug: parsed.activeTopicSlug ?? null,
+          attempts: Array.isArray(parsed.attempts) ? parsed.attempts : [],
+          answerLog: Array.isArray(parsed.answerLog) ? parsed.answerLog : [],
+          mistakes: parsed.mistakes && typeof parsed.mistakes === 'object' ? parsed.mistakes : {}
+        }
+      }))
+    }
   }
 }
