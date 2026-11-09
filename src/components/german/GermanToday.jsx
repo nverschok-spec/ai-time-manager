@@ -1,9 +1,10 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import ZoneProgress from './ZoneProgress'
 import { Check, Flame } from 'lucide-react'
 import { useAppStore } from '../../store/useAppStore'
 import { toDateKey } from '../../lib/date'
-import { computeDayStreak, nextControlTestDate, daysBetween } from '../../lib/german'
+import { activeDays, computeDayStreak, isStreakAtRisk, nextControlTestDate, daysBetween } from '../../lib/german'
 
 const PLANS = {
   min: [
@@ -35,7 +36,7 @@ export default function GermanToday({ onOpenTab }) {
   const today = toDateKey(new Date())
   const done = german.doneDates.includes(today)
   const checked = german.planChecks[today] || []
-  const streak = useMemo(() => computeDayStreak(german.doneDates, today), [german.doneDates, today])
+  const streak = useMemo(() => computeDayStreak(activeDays(german), today), [german.doneDates, german.activeDates, today])
   const plan = PLANS[settings.dayMode] || PLANS.min
   const totalMinutes = plan.reduce((s, i) => s + i.minutes, 0)
 
@@ -52,8 +53,12 @@ export default function GermanToday({ onOpenTab }) {
             <p className="text-xs text-slate-500">{t('german.streak')}</p>
           </div>
         </div>
-        <p className="max-w-[11rem] text-right text-xs text-slate-500">{t('german.streak_note')}</p>
+        <p className="max-w-[11rem] text-right text-xs text-slate-500">
+          {isStreakAtRisk(german, today) && streak > 0 ? t('german.streak_at_risk') : t('german.streak_note')}
+        </p>
       </div>
+
+      <ZoneProgress />
 
       <div className="inline-flex gap-1 rounded-lg bg-app-card p-1">
         {['min', 'norm'].map((m) => (

@@ -6,7 +6,8 @@ import {
   nextControlTestDate,
   makeWord,
   STARTER_GRAMMAR_TOPICS,
-  addDaysKey
+  addDaysKey,
+  RATING_XP
 } from '../lib/german'
 import seedWords from '../data/german/words.json'
 import i18n from '../i18n/config'
@@ -41,6 +42,10 @@ function defaultGerman() {
     words: [],
     newLog: {}, // dateKey -> how many new words were introduced that day
     doneDates: [], // days marked "Сделано"
+    activeDates: [], // days with any XP earned (feeds the streak, not the reminders)
+    progress: { zoneXp: { vocab: 0, grammar: 0, writing: 0 }, history: [] }, // history: { date, zone, xp }
+    weak: {}, // error category -> count, from Lückentext misses and AI sentence tools
+    drills: {}, // grammar topic block -> { correct, total }
     planChecks: {}, // dateKey -> [plan item keys]
     grammar: STARTER_GRAMMAR_TOPICS.map((title, i) => ({
       id: `g-${i}`,
@@ -58,6 +63,23 @@ export function createGermanSlice(set, get) {
 
   return {
     german: defaultGerman(),
+
+    // XP per zone (vocab / grammar / writing) + marks today as an active day.
+    addGermanXp: (amount, zone) => {
+      const today = toDateKey(new Date())
+      patch((g) => ({
+        progress: {
+          zoneXp: { ...g.progress.zoneXp, [zone]: (g.progress.zoneXp[zone] || 0) + amount },
+          history: [...g.progress.history, { date: today, zone, xp: amount }].slice(-300)
+        },
+        activeDates: g.activeDates.includes(today) ? g.activeDates : [...g.activeDates, today].slice(-730)
+      }))
+    },
+
+    recordGermanWeak: (category) => {
+      if (!category) return
+      patch((g) => ({ weak: { ...g.weak, [category]: (g.weak[category] || 0) + 1 } }))
+    },
 
     setGermanSettings: (p) => {
       patch((g) => ({ settings: { ...g.settings, ...p } }))
@@ -95,6 +117,7 @@ export function createGermanSlice(set, get) {
           newLog: wasNew ? { ...g.newLog, [today]: (g.newLog[today] || 0) + 1 } : g.newLog
         }
       })
+      get().addGermanXp(RATING_XP[rating] || 1, 'vocab')
     },
 
     // ----- day plan -----
@@ -136,13 +159,13 @@ export function createGermanSlice(set, get) {
     deleteGermanTopic: (id) => patch((g) => ({ grammar: g.grammar.filter((t) => t.id !== id) })),
 
     // ----- writing -----
-    saveGermanWriting: (entry) =>
-      patch((g) => {
-        const exists = g.writings.some((w) => w.id === entry.id)
-        return {
-          writings: exists ? g.writings.map((w) => (w.id === entry.id ? entry : w)) : [entry, ...g.writings]
-        }
-      }),
+    saveGermanWriting: (entry) => {
+      const isNew = !get().german.writings.some((w) => w.id === entry.id)
+      patch((g) => ({
+        writings: isNew ? [entry, ...g.writings] : g.writings.map((w) => (w.id === entry.id ? entry : w))
+      }))
+      if (isNew) get().addGermanXp(8, 'writing') // editing an existing text earns nothing twice
+    },
 
     deleteGermanWriting: (id) => patch((g) => ({ writings: g.writings.filter((w) => w.id !== id) })),
 

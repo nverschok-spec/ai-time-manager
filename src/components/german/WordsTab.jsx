@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Sparkles, Trash2 } from 'lucide-react'
 import { useAppStore } from '../../store/useAppStore'
 import { toDateKey } from '../../lib/date'
-import { buildSession, computeDayStreak, germanDisplay, intervalDays, isNewWord, parseImport, wordStats, MAX_NEW_PER_DAY } from '../../lib/german'
+import { buildSession, computeDayStreak, activeDays, germanDisplay, intervalDays, isNewWord, parseImport, wordStats, MAX_NEW_PER_DAY } from '../../lib/german'
 import { loadNouns, makeNounLookup } from '../../lib/germanNouns'
 import WordSession from './WordSession'
 
@@ -26,7 +26,7 @@ export default function WordsTab() {
   const today = toDateKey(new Date())
   const { words, settings } = german
   const stats = useMemo(() => wordStats(words, today), [words, today])
-  const streak = useMemo(() => computeDayStreak(german.doneDates, today), [german.doneDates, today])
+  const streak = useMemo(() => computeDayStreak(activeDays(german), today), [german.doneDates, german.activeDates, today])
   const sessionSize = useMemo(
     () => buildSession(words, today, settings.newPerDay, german.newLog[today] || 0).length,
     [words, today, settings.newPerDay, german.newLog]

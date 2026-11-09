@@ -379,7 +379,7 @@
     "tab_writing": "Письмо",
     "tab_control": "Контроль",
     "streak": "дней подряд",
-    "streak_note": "Пропуск дня обнуляет только серию — слова и прогресс остаются.",
+    "streak_note": "День засчитывается за любую активность. Пропуск сбрасывает только серию.",
     "mode_min": "Минимум",
     "mode_norm": "Норма",
     "plan_min": "Минимум: 20–30 мин",
@@ -491,6 +491,20 @@
     "bucket_mature": "Выучено (21+ дн.)",
     "d": " д.",
     "import_enriched": "Артикль/мн. число подставлены из базы: {{count}}.",
-    "import_no_db": "База артиклей недоступна (офлайн?) — слова без артикля добавлены как есть."
+    "import_no_db": "База артиклей недоступна (офлайн?) — слова без артикля добавлены как есть.",
+    "zones_title": "За 7 дней, по зонам (XP)",
+    "zone_vocab": "Слова",
+    "zone_grammar": "Грамматика",
+    "zone_writing": "Письмо",
+    "zone_weakest": "← подтянуть",
+    "weak_spots": "Слабые места",
+    "streak_at_risk": "Серия под угрозой — займись сегодня!",
+    "err_nominativ": "Nominativ",
+    "err_akkusativ": "Akkusativ",
+    "err_dativ": "Dativ",
+    "err_genitiv": "Genitiv",
+    "err_konjunktiv": "Konjunktiv",
+    "err_passiv": "Passiv",
+    "err_sonstiges": "Прочее"
   }
 }

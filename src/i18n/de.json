@@ -379,7 +379,7 @@
     "tab_writing": "Schreiben",
     "tab_control": "Tests",
     "streak": "Tage in Folge",
-    "streak_note": "Ein verpasster Tag setzt nur die Serie zurück — Wörter und Fortschritt bleiben.",
+    "streak_note": "Jede Aktivität zählt für den Tag. Ein verpasster Tag setzt nur die Serie zurück.",
     "mode_min": "Minimum",
     "mode_norm": "Normal",
     "plan_min": "Minimum: 20–30 Min.",
@@ -491,6 +491,20 @@
     "bucket_mature": "Gelernt (21+ T.)",
     "d": " T.",
     "import_enriched": "Artikel/Plural aus der Nomenliste ergänzt: {{count}}.",
-    "import_no_db": "Nomenliste nicht verfügbar (offline?) — Wörter ohne Artikel wurden unverändert hinzugefügt."
+    "import_no_db": "Nomenliste nicht verfügbar (offline?) — Wörter ohne Artikel wurden unverändert hinzugefügt.",
+    "zones_title": "Letzte 7 Tage nach Bereich (XP)",
+    "zone_vocab": "Wörter",
+    "zone_grammar": "Grammatik",
+    "zone_writing": "Schreiben",
+    "zone_weakest": "← nacharbeiten",
+    "weak_spots": "Schwachstellen",
+    "streak_at_risk": "Serie in Gefahr — heute üben!",
+    "err_nominativ": "Nominativ",
+    "err_akkusativ": "Akkusativ",
+    "err_dativ": "Dativ",
+    "err_genitiv": "Genitiv",
+    "err_konjunktiv": "Konjunktiv",
+    "err_passiv": "Passiv",
+    "err_sonstiges": "Sonstiges"
   }
 }

@@ -379,7 +379,7 @@
     "tab_writing": "Writing",
     "tab_control": "Checks",
     "streak": "day streak",
-    "streak_note": "Skipping a day only resets the streak — words and progress stay.",
+    "streak_note": "Any activity counts for the day. Skipping only resets the streak.",
     "mode_min": "Minimum",
     "mode_norm": "Normal",
     "plan_min": "Minimum: 20–30 min",
@@ -491,6 +491,20 @@
     "bucket_mature": "Learned (21+ d)",
     "d": " d",
     "import_enriched": "Article/plural filled from the noun list: {{count}}.",
-    "import_no_db": "Noun list unavailable (offline?) — words without article were added as-is."
+    "import_no_db": "Noun list unavailable (offline?) — words without article were added as-is.",
+    "zones_title": "Last 7 days by zone (XP)",
+    "zone_vocab": "Words",
+    "zone_grammar": "Grammar",
+    "zone_writing": "Writing",
+    "zone_weakest": "← needs work",
+    "weak_spots": "Weak spots",
+    "streak_at_risk": "Streak at risk — practise today!",
+    "err_nominativ": "Nominativ",
+    "err_akkusativ": "Akkusativ",
+    "err_dativ": "Dativ",
+    "err_genitiv": "Genitiv",
+    "err_konjunktiv": "Konjunktiv",
+    "err_passiv": "Passiv",
+    "err_sonstiges": "Other"
   }
 }

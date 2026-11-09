@@ -22,19 +22,30 @@ export const STARTER_GRAMMAR_TOPICS = [
 
 export const GRAMMAR_STATUSES = ['todo', 'doing', 'review', 'known']
 
-// Error categories for the writing log.
+// One shared list of error categories — used by the writing log, the
+// Lückentext drills and the AI sentence tools, so "weak spots" add up
+// instead of splitting across slightly different labels.
 export const ERROR_CATEGORIES = [
   'artikel',
-  'kasus',
+  'nominativ',
+  'akkusativ',
+  'dativ',
+  'genitiv',
   'adjektivendung',
   'verb',
-  'wortstellung',
   'praeposition',
+  'wortstellung',
   'nebensatz',
+  'konjunktiv',
+  'passiv',
   'wortschatz',
   'rechtschreibung',
-  'stil'
+  'stil',
+  'sonstiges'
 ]
+
+export const ZONES = ['vocab', 'grammar', 'writing']
+export const RATING_XP = { again: 1, hard: 2, good: 3, easy: 3 }
 
 // ---------- dates ----------
 
@@ -323,4 +334,41 @@ export function nextControlTestDate(checks) {
   if (!checks.length) return null
   const last = checks.map((c) => c.date).sort().at(-1)
   return addDaysKey(last, CONTROL_TEST_INTERVAL_DAYS)
+}
+
+// ---------- progress zones / activity ----------
+
+// A day is "active" if any XP was earned OR it was explicitly marked done;
+// the streak counts either. Reminders only react to the explicit "done".
+export function activeDays(german) {
+  return [...new Set([...(german.doneDates || []), ...(german.activeDates || [])])]
+}
+
+// Active yesterday but not yet today → streak is alive but at risk.
+export function isStreakAtRisk(german, todayKey) {
+  const days = new Set(activeDays(german))
+  return !days.has(todayKey) && days.has(addDaysKey(todayKey, -1))
+}
+
+// XP per zone over the last 7 days (today included).
+export function zoneWeek(history, todayKey) {
+  const from = addDaysKey(todayKey, -6)
+  const sum = { vocab: 0, grammar: 0, writing: 0 }
+  for (const h of history || []) {
+    if (h.date >= from && h.date <= todayKey && h.zone in sum) sum[h.zone] += h.xp
+  }
+  return sum
+}
+
+// Error categories from the writing log + drills/AI (german.weak), top N.
+export function weakSpots(german, n = 3) {
+  const sum = { ...(german.weak || {}) }
+  for (const w of german.writings || []) {
+    for (const [k, c] of Object.entries(w.errors || {})) sum[k] = (sum[k] || 0) + c
+  }
+  return Object.entries(sum)
+    .filter(([, c]) => c > 0)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, n)
+    .map(([category, count]) => ({ category, count }))
 }

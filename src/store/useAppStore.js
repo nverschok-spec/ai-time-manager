@@ -6,7 +6,7 @@ import { nextOccurrenceOnOrAfter } from '../lib/occurrences'
 import { getStoredToken, clearStoredToken, updateStoredPersonColor } from '../components/PinGate'
 import { createHealthSlice } from './health'
 import { createStudySlice } from './study'
-import { createGermanSlice } from './german'
+import { createGermanSlice, defaultGerman } from './german'
 import { migrateWord } from '../lib/german'
 import { PINKI_DEFS, nextPinokDateKey } from '../lib/pinki'
 import i18n from '../i18n/config'
@@ -608,7 +608,7 @@ export const useAppStore = create(
         const importedStudy = parsed.study && typeof parsed.study === 'object' ? parsed.study : get().study
         const importedGerman =
           parsed.german && typeof parsed.german === 'object'
-            ? { ...parsed.german, words: (parsed.german.words || []).map(migrateWord) }
+            ? { ...defaultGerman(), ...parsed.german, words: (parsed.german.words || []).map(migrateWord) }
             : get().german
 
         set({
