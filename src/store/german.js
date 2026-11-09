@@ -46,6 +46,7 @@ function defaultGerman() {
     progress: { zoneXp: { vocab: 0, grammar: 0, writing: 0 }, history: [] }, // history: { date, zone, xp }
     weak: {}, // error category -> count, from Lückentext misses and AI sentence tools
     drills: {}, // grammar topic block -> { correct, total }
+    briefing: { date: null, data: null }, // AI daily briefing, cached for the day it was fetched
     planChecks: {}, // dateKey -> [plan item keys]
     grammar: STARTER_GRAMMAR_TOPICS.map((title, i) => ({
       id: `g-${i}`,
@@ -80,6 +81,10 @@ export function createGermanSlice(set, get) {
       if (!category) return
       patch((g) => ({ weak: { ...g.weak, [category]: (g.weak[category] || 0) + 1 } }))
     },
+
+    // Once-a-day cache: the (paid) briefing call is made at most once per
+    // local day; later opens read this.
+    setGermanBriefing: (data) => patch(() => ({ briefing: { date: toDateKey(new Date()), data } })),
 
     setGermanSettings: (p) => {
       patch((g) => ({ settings: { ...g.settings, ...p } }))

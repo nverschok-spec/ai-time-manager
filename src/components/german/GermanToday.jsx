@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import ZoneProgress from './ZoneProgress'
+import GermanBriefing from './GermanBriefing'
 import { Check, Flame } from 'lucide-react'
 import { useAppStore } from '../../store/useAppStore'
 import { toDateKey } from '../../lib/date'
@@ -59,6 +60,8 @@ export default function GermanToday({ onOpenTab }) {
       </div>
 
       <ZoneProgress />
+
+      <GermanBriefing />
 
       <div className="inline-flex gap-1 rounded-lg bg-app-card p-1">
         {['min', 'norm'].map((m) => (

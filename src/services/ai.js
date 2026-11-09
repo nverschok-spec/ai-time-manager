@@ -233,3 +233,20 @@ export async function fetchDailyDigest(todayTasks, locale) {
   })
   return data?.digest || ''
 }
+
+// ---- Deutsch B2 helpers (optional; the trainer works without any of these).
+// Failures are normalised to a code so the UI can say "limit reached" vs
+// "AI unavailable" instead of a raw status: 'daily_limit' | 'unavailable'.
+async function callGermanAi(action, payload) {
+  try {
+    return await callAi(action, payload)
+  } catch (err) {
+    const e = new Error(String(err?.message || err))
+    e.code = /: 429/.test(e.message) ? 'daily_limit' : 'unavailable'
+    throw e
+  }
+}
+
+export const fetchGermanBriefing = (date, avoid) => callGermanAi('daily-briefing', { date, avoid })
+export const fetchUpgradeSentence = (sentence) => callGermanAi('upgrade-sentence', { sentence })
+export const fetchGrammarAnalysis = (text) => callGermanAi('grammar-analysis', { text })

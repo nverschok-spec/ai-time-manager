@@ -10,6 +10,7 @@
 // - ключ читается только из process.env, никогда не возвращается клиенту
 
 import Anthropic from '@anthropic-ai/sdk'
+import { Redis } from '@upstash/redis'
 import { requirePersonAuth } from './_lib/auth.js'
 
 const SUGGESTION_SCHEMA = {
@@ -332,6 +333,195 @@ async function handleWeeklyReview(client, body) {
   return { status: 200, json: { review: textBlock?.text?.trim() || '' } }
 }
 
+// ---- Deutsch B2 (optional AI helpers; the word trainer, plan and reminders
+// never call these). Same closed topic list as src/lib/german.js'
+// ERROR_CATEGORIES so weak spots add up on the client.
+const GERMAN_TOPICS = [
+  'artikel', 'nominativ', 'akkusativ', 'dativ', 'genitiv', 'adjektivendung', 'verb', 'praeposition',
+  'wortstellung', 'nebensatz', 'konjunktiv', 'passiv', 'wortschatz', 'rechtschreibung', 'stil', 'sonstiges'
+]
+
+const UPGRADE_SENTENCE_SCHEMA = {
+  type: 'object',
+  properties: {
+    upgraded: { type: 'string', description: 'The sentence rewritten at B2 level, in German' },
+    changes: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          original: { type: 'string' },
+          improved: { type: 'string' },
+          explanationRu: { type: 'string', description: '1-2 short sentences in Russian: what changed and why it sounds more professional' },
+          topic: { type: 'string', enum: GERMAN_TOPICS }
+        },
+        required: ['original', 'improved', 'explanationRu', 'topic'],
+        additionalProperties: false
+      }
+    }
+  },
+  required: ['upgraded', 'changes'],
+  additionalProperties: false
+}
+
+const GRAMMAR_ANALYSIS_SCHEMA = {
+  type: 'object',
+  properties: {
+    satzklammer: {
+      type: 'object',
+      properties: {
+        finiteVerb: { type: 'string' },
+        secondPart: { type: ['string', 'null'], description: 'Separable prefix / participle / infinitive closing the bracket, or null' },
+        explanationRu: { type: 'string' }
+      },
+      required: ['finiteVerb', 'secondPart', 'explanationRu'],
+      additionalProperties: false
+    },
+    verbsWithPrepositions: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          verb: { type: 'string' },
+          preposition: { type: 'string' },
+          caseRequired: { type: 'string', enum: ['Akkusativ', 'Dativ', 'Genitiv'] },
+          noteRu: { type: 'string' }
+        },
+        required: ['verb', 'preposition', 'caseRequired', 'noteRu'],
+        additionalProperties: false
+      }
+    },
+    cases: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          phrase: { type: 'string' },
+          case: { type: 'string', enum: ['Nominativ', 'Akkusativ', 'Dativ', 'Genitiv'] },
+          reasonRu: { type: 'string' }
+        },
+        required: ['phrase', 'case', 'reasonRu'],
+        additionalProperties: false
+      }
+    }
+  },
+  required: ['satzklammer', 'verbsWithPrepositions', 'cases'],
+  additionalProperties: false
+}
+
+const DAILY_BRIEFING_SCHEMA = {
+  type: 'object',
+  properties: {
+    wordOfDay: {
+      type: 'object',
+      properties: {
+        word: { type: 'string', description: 'Lemma without article' },
+        article: { type: ['string', 'null'], description: 'der, die or das; null if not a noun' },
+        plural: { type: ['string', 'null'] },
+        meaningRu: { type: 'string' },
+        example: { type: 'string', description: 'One B2-level German example sentence' }
+      },
+      required: ['word', 'article', 'plural', 'meaningRu', 'example'],
+      additionalProperties: false
+    },
+    nvVerbindung: {
+      type: 'object',
+      properties: {
+        phrase: { type: 'string', description: 'A Nomen-Verb-Verbindung, e.g. "eine Entscheidung treffen"' },
+        meaningRu: { type: 'string' },
+        example: { type: 'string' }
+      },
+      required: ['phrase', 'meaningRu', 'example'],
+      additionalProperties: false
+    },
+    quiz: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          question: { type: 'string' },
+          options: { type: 'array', items: { type: 'string' }, description: 'Exactly 4 answer options' },
+          correct: { type: 'integer', description: '0-3, index of the correct option' },
+          explanationRu: { type: 'string' }
+        },
+        required: ['question', 'options', 'correct', 'explanationRu'],
+        additionalProperties: false
+      }
+    }
+  },
+  required: ['wordOfDay', 'nvVerbindung', 'quiz'],
+  additionalProperties: false
+}
+
+const GERMAN_CONTEXT = 'The learner is a Russian speaker at B1 aiming for B2 (telc Deutsch-Test für den Beruf); weak areas: adjective declension, prepositions + case, verbs with prepositions, subordinate clauses/connectors, relative clauses, Passiv, Konjunktiv II, n-declension, Nomen-Verb-Verbindungen.'
+
+function upgradeSentencePrompt() {
+  return `You are an experienced German teacher (C2) coaching B1→B2. ${GERMAN_CONTEXT}
+The user sends one simple German sentence (A2/B1). Rewrite it at B2 level, using where natural: Nomen-Verb-Verbindungen, Passiv, Konjunktiv II, subordinate clauses (obwohl, dadurch dass, je ... desto). Keep the meaning.
+For every change give a short Russian explanation and exactly ONE topic from the allowed list (never invent one). If the sentence already reads as B2, return it unchanged with an empty changes array.`
+}
+
+function grammarAnalysisPrompt() {
+  return `You are a grammar analysis tool for German learners at B2 level. ${GERMAN_CONTEXT}
+Analyse the given German sentence or short text: the Satzklammer (finite verb position and the second part closing the bracket), verbs with fixed prepositions (with the case the preposition takes), and the case of each noun phrase with a short reason. Explanations in Russian. Only report what is really in the text; use empty arrays when there is none.`
+}
+
+function dailyBriefingPrompt() {
+  return `Create a short daily B2 German briefing: one word of the day (a useful B2 noun, with article and plural), one Nomen-Verb-Verbindung of the day, and exactly 3 multiple-choice quiz questions (4 options, one correct) testing the weak areas. ${GERMAN_CONTEXT}
+German content at B2 level, Russian explanations. Vary the choice by the given date; avoid words from the optional "avoid" list.`
+}
+
+async function runGermanTool(client, { system, schema, user, maxTokens }) {
+  const response = await client.messages.create({
+    model: 'claude-haiku-4-5',
+    max_tokens: maxTokens,
+    system,
+    output_config: { format: { type: 'json_schema', schema } },
+    messages: [{ role: 'user', content: user }]
+  })
+  if (response.stop_reason === 'refusal') return { status: 502, json: { error: 'refused' } }
+  const textBlock = response.content.find((b) => b.type === 'text')
+  return { status: 200, json: textBlock ? JSON.parse(textBlock.text) : {} }
+}
+
+async function handleUpgradeSentence(client, body) {
+  const sentence = typeof body.sentence === 'string' ? body.sentence.trim().slice(0, 500) : ''
+  if (!sentence) return { status: 400, json: { error: 'Missing "sentence"' } }
+  return runGermanTool(client, { system: upgradeSentencePrompt(), schema: UPGRADE_SENTENCE_SCHEMA, user: sentence, maxTokens: 1200 })
+}
+
+async function handleGrammarAnalysis(client, body) {
+  const text = typeof body.text === 'string' ? body.text.trim().slice(0, 800) : ''
+  if (!text) return { status: 400, json: { error: 'Missing "text"' } }
+  return runGermanTool(client, { system: grammarAnalysisPrompt(), schema: GRAMMAR_ANALYSIS_SCHEMA, user: text, maxTokens: 1500 })
+}
+
+async function handleDailyBriefing(client, body) {
+  const avoid = Array.isArray(body.avoid) ? body.avoid.slice(0, 40).map(String) : []
+  return runGermanTool(client, {
+    system: dailyBriefingPrompt(),
+    schema: DAILY_BRIEFING_SCHEMA,
+    user: `date: ${String(body.date || '').slice(0, 10)}\navoid: ${JSON.stringify(avoid)}`,
+    maxTokens: 1800
+  })
+}
+
+// Server-side daily cap per person on the German AI helpers, so a stuck
+// retry loop or a leaked token can't run up the bill. Fails open if Redis is
+// unreachable — a missed cap is cheaper than breaking the feature.
+const GERMAN_DAILY_LIMIT = 10
+async function underGermanLimit(personId) {
+  try {
+    const redis = new Redis({ url: process.env.KV_REST_API_URL, token: process.env.KV_REST_API_TOKEN })
+    const key = `german-ai:${personId}:${new Date().toISOString().slice(0, 10)}`
+    const used = await redis.incr(key)
+    if (used === 1) await redis.expire(key, 2 * 24 * 60 * 60)
+    return used <= GERMAN_DAILY_LIMIT
+  } catch {
+    return true
+  }
+}
+
 const ACTIONS = {
   parse: handleParse,
   reschedule: handleReschedule,
@@ -339,8 +529,13 @@ const ACTIONS = {
   digest: handleDigest,
   'weekly-review': handleWeeklyReview,
   'generate-test-questions': handleGenerateTestQuestions,
-  'health-weekly-review': handleHealthWeeklyReview
+  'health-weekly-review': handleHealthWeeklyReview,
+  'upgrade-sentence': handleUpgradeSentence,
+  'grammar-analysis': handleGrammarAnalysis,
+  'daily-briefing': handleDailyBriefing
 }
+
+const GERMAN_ACTIONS = new Set(['upgrade-sentence', 'grammar-analysis', 'daily-briefing'])
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -352,12 +547,17 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'ANTHROPIC_API_KEY is not configured' })
   }
 
-  if (!requirePersonAuth(req, res, process.env.APP_PIN)) return
+  const personId = requirePersonAuth(req, res, process.env.APP_PIN)
+  if (!personId) return
 
   const { action, ...body } = req.body || {}
   const runAction = ACTIONS[action]
   if (!runAction) {
     return res.status(400).json({ error: `Unknown or missing "action": ${action}` })
+  }
+
+  if (GERMAN_ACTIONS.has(action) && !(await underGermanLimit(personId))) {
+    return res.status(429).json({ error: 'daily_limit' })
   }
 
   const client = new Anthropic({ apiKey })

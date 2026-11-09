@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Trash2 } from 'lucide-react'
 import { useAppStore } from '../../store/useAppStore'
 import { GRAMMAR_STATUSES } from '../../lib/german'
+import GermanAiTools from './GermanAiTools'
 
 const STATUS_COLOR = {
   todo: 'text-slate-400',
@@ -80,6 +81,8 @@ export default function GrammarTab() {
           </div>
         )
       })}
+
+      <GermanAiTools />
 
       <form onSubmit={handleAdd} className="flex gap-2">
         <input
