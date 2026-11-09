@@ -6,6 +6,7 @@ import { nextOccurrenceOnOrAfter } from '../lib/occurrences'
 import { getStoredToken, clearStoredToken, updateStoredPersonColor } from '../components/PinGate'
 import { createHealthSlice } from './health'
 import { createStudySlice } from './study'
+import { createGermanSlice } from './german'
 import { PINKI_DEFS, nextPinokDateKey } from '../lib/pinki'
 import i18n from '../i18n/config'
 
@@ -60,6 +61,7 @@ export const useAppStore = create(
       return {
         ...createHealthSlice(set, get),
         ...createStudySlice(set, get),
+        ...createGermanSlice(set, get),
         person: null,
         tasks: [],
         people: [],
@@ -555,9 +557,9 @@ export const useAppStore = create(
       },
 
       exportData: () => {
-        const { tasks, shoppingItems, familyEvents, health, study } = get()
+        const { tasks, shoppingItems, familyEvents, health, study, german } = get()
         return JSON.stringify(
-          { version: 5, exportedAt: new Date().toISOString(), tasks, shoppingItems, familyEvents, health, study },
+          { version: 5, exportedAt: new Date().toISOString(), tasks, shoppingItems, familyEvents, health, study, german },
           null,
           2
         )
@@ -603,13 +605,15 @@ export const useAppStore = create(
         // field) is enough.
         const importedHealth = parsed.health && typeof parsed.health === 'object' ? parsed.health : get().health
         const importedStudy = parsed.study && typeof parsed.study === 'object' ? parsed.study : get().study
+        const importedGerman = parsed.german && typeof parsed.german === 'object' ? parsed.german : get().german
 
         set({
           tasks: parsed.tasks,
           shoppingItems: importedShopping,
           familyEvents: importedFamilyEvents,
           health: importedHealth,
-          study: importedStudy
+          study: importedStudy,
+          german: importedGerman
         })
 
         const importedTaskIds = new Set(parsed.tasks.map((t) => t.id))
@@ -643,6 +647,7 @@ export const useAppStore = create(
       partialize: (state) => ({
         health: state.health,
         study: state.study,
+        german: state.german,
         activeTab: state.activeTab,
         lastReviewDate: state.lastReviewDate,
         lastWeeklyReviewWeek: state.lastWeeklyReviewWeek,
@@ -671,6 +676,11 @@ export const useAppStore = create(
           ...currentState.study,
           ...persistedState?.study,
           settings: { ...currentState.study.settings, ...persistedState?.study?.settings }
+        },
+        german: {
+          ...currentState.german,
+          ...persistedState?.german,
+          settings: { ...currentState.german.settings, ...persistedState?.german?.settings }
         }
       })
     }

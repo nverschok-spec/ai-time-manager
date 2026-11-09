@@ -4,6 +4,7 @@ import HealthToday from '../health/HealthToday'
 import HealthProgress from '../health/HealthProgress'
 import HealthRules from '../health/HealthRules'
 import StudyHome from '../study/StudyHome'
+import GermanHome from '../german/GermanHome'
 
 const HEALTH_TABS = [
   { key: 'today', labelKey: 'health.tab_today' },
@@ -39,6 +40,15 @@ export default function TrackerPage() {
         >
           {t('tracker.study')}
         </button>
+        <button
+          type="button"
+          onClick={() => setSection('german')}
+          className={`px-3 py-1 text-sm rounded-md transition-colors ${
+            section === 'german' ? 'bg-slate-100 text-slate-900' : 'text-slate-400 hover:text-slate-100'
+          }`}
+        >
+          {t('tracker.german')}
+        </button>
       </div>
 
       {section === 'health' && (
@@ -64,6 +74,7 @@ export default function TrackerPage() {
       )}
 
       {section === 'study' && <StudyHome />}
+      {section === 'german' && <GermanHome />}
     </div>
   )
 }

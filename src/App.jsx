@@ -58,6 +58,7 @@ export default function App() {
   const archiveOldCompleted = useAppStore((s) => s.archiveOldCompleted)
   const syncRecurringReminders = useAppStore((s) => s.syncRecurringReminders)
   const syncHealthReminders = useAppStore((s) => s.syncHealthReminders)
+  const syncGermanReminders = useAppStore((s) => s.syncGermanReminders)
   const flushPendingMutations = useAppStore((s) => s.flushPendingMutations)
   const addShoppingItem = useAppStore((s) => s.addShoppingItem)
   const activeTab = useAppStore((s) => s.activeTab)
@@ -75,6 +76,7 @@ export default function App() {
       archiveOldCompleted()
       syncRecurringReminders()
       syncHealthReminders()
+      syncGermanReminders()
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadAll, setPerson])

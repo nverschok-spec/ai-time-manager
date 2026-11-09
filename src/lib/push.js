@@ -84,3 +84,17 @@ export async function scheduleReminder({ taskId, title, date, startTime, offsetM
     // best-effort — a missed reminder schedule shouldn't block task creation
   }
 }
+
+// Drops a still-pending reminder — used when the thing it nags about was
+// already done (e.g. the German evening reminder after "Сделано").
+export async function cancelReminder(taskId) {
+  try {
+    await fetch('/api/push-schedule', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
+      body: JSON.stringify({ taskId })
+    })
+  } catch {
+    // best-effort
+  }
+}

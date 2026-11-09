@@ -8,11 +8,20 @@ const redis = new Redis({ url: process.env.KV_REST_API_URL, token: process.env.K
 const REMINDER_TTL_SECONDS = 7 * 24 * 60 * 60
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
+  if (req.method !== 'POST' && req.method !== 'DELETE') {
+    return res.status(405).json({ error: 'Method not allowed' })
+  }
 
   const appPin = process.env.APP_PIN
   const personId = requirePersonAuth(req, res, appPin)
   if (!personId) return
+
+  if (req.method === 'DELETE') {
+    const { taskId: cancelId } = req.body || {}
+    if (!cancelId) return res.status(400).json({ error: 'Missing fields' })
+    await redis.del(`reminder:${personId}:${cancelId}`)
+    return res.status(200).json({ ok: true })
+  }
 
   const { taskId, title, sendAt } = req.body || {}
   if (!taskId || !title || !sendAt) {
