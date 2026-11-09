@@ -529,6 +529,13 @@
     "ai_satzklammer": "Satzklammer",
     "ai_verbs_prep": "Verben mit Präpositionen",
     "ai_cases": "Kasus",
-    "ai_nothing": "Nichts gefunden."
+    "ai_nothing": "Nichts gefunden.",
+    "lt_mixed": "Lückentext: gemischtes Training (10)",
+    "lt_practice": "Üben",
+    "lt_accuracy": "Richtig: {{correct}} von {{total}}",
+    "lt_none_yet": "Übungen: 8 Aufgaben",
+    "lt_done": "Training beendet",
+    "lt_result": "{{correct}} von {{total}} richtig",
+    "err_ndeklination": "n-Deklination"
   }
 }

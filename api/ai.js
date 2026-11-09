@@ -337,7 +337,7 @@ async function handleWeeklyReview(client, body) {
 // never call these). Same closed topic list as src/lib/german.js'
 // ERROR_CATEGORIES so weak spots add up on the client.
 const GERMAN_TOPICS = [
-  'artikel', 'nominativ', 'akkusativ', 'dativ', 'genitiv', 'adjektivendung', 'verb', 'praeposition',
+  'artikel', 'nominativ', 'akkusativ', 'dativ', 'genitiv', 'adjektivendung', 'ndeklination', 'verb', 'praeposition',
   'wortstellung', 'nebensatz', 'konjunktiv', 'passiv', 'wortschatz', 'rechtschreibung', 'stil', 'sonstiges'
 ]
 

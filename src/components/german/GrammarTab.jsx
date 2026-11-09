@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Trash2 } from 'lucide-react'
 import { useAppStore } from '../../store/useAppStore'
-import { GRAMMAR_STATUSES } from '../../lib/german'
+import { DRILL_BLOCK_BY_TOPIC, GRAMMAR_STATUSES } from '../../lib/german'
+import LueckentextRunner from './LueckentextRunner'
 import GermanAiTools from './GermanAiTools'
 
 const STATUS_COLOR = {
@@ -18,7 +19,9 @@ export default function GrammarTab() {
   const updateTopic = useAppStore((s) => s.updateGermanTopic)
   const addTopic = useAppStore((s) => s.addGermanTopic)
   const deleteTopic = useAppStore((s) => s.deleteGermanTopic)
+  const drills = useAppStore((s) => s.german.drills)
   const [openId, setOpenId] = useState(null)
+  const [drill, setDrill] = useState(null) // null | { block: string | null (mixed), count }
   const [newTitle, setNewTitle] = useState('')
 
   const known = grammar.filter((g) => g.status === 'known').length
@@ -30,8 +33,17 @@ export default function GrammarTab() {
     setNewTitle('')
   }
 
+  if (drill) return <LueckentextRunner block={drill.block} count={drill.count} onExit={() => setDrill(null)} />
+
   return (
     <div className="space-y-3">
+      <button
+        type="button"
+        onClick={() => setDrill({ block: null, count: 10 })}
+        className="w-full rounded-full bg-brand-cta py-2 text-sm font-medium text-brand-ctaForeground transition-all hover:brightness-110 active:scale-[0.98]"
+      >
+        {t('german.lt_mixed')}
+      </button>
       <p className="text-xs text-slate-500">{t('german.grammar_progress', { known, total: grammar.length })}</p>
 
       {grammar.map((topic) => {
@@ -60,6 +72,25 @@ export default function GrammarTab() {
                 ))}
               </select>
             </div>
+            {DRILL_BLOCK_BY_TOPIC[topic.id] && (
+              <div className="flex items-center justify-between text-xs text-slate-500">
+                <span>
+                  {drills[DRILL_BLOCK_BY_TOPIC[topic.id]]?.total
+                    ? t('german.lt_accuracy', {
+                        correct: drills[DRILL_BLOCK_BY_TOPIC[topic.id]].correct,
+                        total: drills[DRILL_BLOCK_BY_TOPIC[topic.id]].total
+                      })
+                    : t('german.lt_none_yet')}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setDrill({ block: DRILL_BLOCK_BY_TOPIC[topic.id], count: 8 })}
+                  className="rounded-full bg-app-cardMuted px-3 py-1 text-xs text-slate-300 transition-colors hover:bg-white/10"
+                >
+                  {t('german.lt_practice')}
+                </button>
+              </div>
+            )}
             {open && (
               <>
                 <textarea

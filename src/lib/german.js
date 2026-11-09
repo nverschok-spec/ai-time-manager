@@ -32,6 +32,7 @@ export const ERROR_CATEGORIES = [
   'dativ',
   'genitiv',
   'adjektivendung',
+  'ndeklination',
   'verb',
   'praeposition',
   'wortstellung',
@@ -371,4 +372,33 @@ export function weakSpots(german, n = 3) {
     .sort((a, b) => b[1] - a[1])
     .slice(0, n)
     .map(([category, count]) => ({ category, count }))
+}
+
+// ---------- Lückentext drills ----------
+
+// Starter checklist topics (ids g-0..g-8, see store/german.js) → the block
+// name of their static exercises in data/german/lueckentext.json.
+export const DRILL_BLOCK_BY_TOPIC = {
+  'g-0': 'Adjektivdeklination',
+  'g-1': 'Präpositionen + Kasus',
+  'g-2': 'Verben mit Präpositionen',
+  'g-3': 'Konnektoren',
+  'g-4': 'Relativsätze',
+  'g-5': 'Passiv',
+  'g-6': 'Konjunktiv II',
+  'g-7': 'n-Deklination',
+  'g-8': 'Nomen-Verb-Verbindungen'
+}
+
+// A miss in a drill block feeds the shared weak-spot categories.
+export const DRILL_WEAK_CATEGORY = {
+  Adjektivdeklination: 'adjektivendung',
+  'Präpositionen + Kasus': 'praeposition',
+  'Verben mit Präpositionen': 'praeposition',
+  Konnektoren: 'nebensatz',
+  Relativsätze: 'nebensatz',
+  Passiv: 'passiv',
+  'Konjunktiv II': 'konjunktiv',
+  'n-Deklination': 'ndeklination',
+  'Nomen-Verb-Verbindungen': 'wortschatz'
 }

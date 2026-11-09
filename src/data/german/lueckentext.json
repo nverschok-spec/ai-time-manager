@@ -1,0 +1,951 @@
+{
+ "blocks": [
+  "Adjektivdeklination",
+  "Präpositionen + Kasus",
+  "Verben mit Präpositionen",
+  "Konnektoren",
+  "Relativsätze",
+  "Passiv",
+  "Konjunktiv II",
+  "n-Deklination",
+  "Nomen-Verb-Verbindungen"
+ ],
+ "questions": [
+  {
+   "id": "lt-1",
+   "block": "Adjektivdeklination",
+   "question": "Ich suche einen ___ Job.",
+   "options": [
+    "neuen",
+    "neuer",
+    "neue",
+    "neues"
+   ],
+   "correct": 0,
+   "explanation": "einen Job — Akkusativ, мужской род, неопределённый артикль: прилагательное получает -en (einen neuen Job)."
+  },
+  {
+   "id": "lt-2",
+   "block": "Adjektivdeklination",
+   "question": "Das ist ein ___ Auto.",
+   "options": [
+    "neue",
+    "neues",
+    "neuen",
+    "neuer"
+   ],
+   "correct": 1,
+   "explanation": "ein без окончания (Nom., ср. род) — окончание «берёт» прилагательное: ein neues Auto."
+  },
+  {
+   "id": "lt-3",
+   "block": "Adjektivdeklination",
+   "question": "Die ___ Kollegin hilft mir.",
+   "options": [
+    "netten",
+    "netter",
+    "nette",
+    "nettes"
+   ],
+   "correct": 2,
+   "explanation": "После определённого артикля, Nominativ женского рода: -e (die nette Kollegin)."
+  },
+  {
+   "id": "lt-4",
+   "block": "Adjektivdeklination",
+   "question": "Ich spreche mit dem ___ Chef.",
+   "options": [
+    "netter",
+    "nette",
+    "nettes",
+    "netten"
+   ],
+   "correct": 3,
+   "explanation": "mit + Dativ; после определённого артикля в Dativ всегда -en (dem netten Chef)."
+  },
+  {
+   "id": "lt-5",
+   "block": "Adjektivdeklination",
+   "question": "Er hat viele ___ Ideen.",
+   "options": [
+    "gute",
+    "guten",
+    "guter",
+    "gutes"
+   ],
+   "correct": 0,
+   "explanation": "После viele (без артикля) множественное число склоняется как с сильным окончанием: -e (viele gute Ideen)."
+  },
+  {
+   "id": "lt-6",
+   "block": "Adjektivdeklination",
+   "question": "Mit ___ Erfahrung bekommt man leichter eine Stelle.",
+   "options": [
+    "lange",
+    "langer",
+    "langen",
+    "langes"
+   ],
+   "correct": 1,
+   "explanation": "Без артикля, Dativ женского рода: прилагательное несёт окончание артикля -er (mit langer Erfahrung)."
+  },
+  {
+   "id": "lt-7",
+   "block": "Adjektivdeklination",
+   "question": "Ich wohne in einer ___ Wohnung.",
+   "options": [
+    "kleine",
+    "kleiner",
+    "kleinen",
+    "kleines"
+   ],
+   "correct": 2,
+   "explanation": "in einer — Dativ ж. рода; после ein-слов в Dativ окончание -en (in einer kleinen Wohnung)."
+  },
+  {
+   "id": "lt-8",
+   "block": "Adjektivdeklination",
+   "question": "Das Geld meines ___ Bruders reicht nicht.",
+   "options": [
+    "älterer",
+    "ältere",
+    "älteres",
+    "älteren"
+   ],
+   "correct": 3,
+   "explanation": "Genitiv после притяжательного местоимения: -en (meines älteren Bruders)."
+  },
+  {
+   "id": "lt-9",
+   "block": "Präpositionen + Kasus",
+   "question": "Ich fahre mit ___ Bus zur Arbeit.",
+   "options": [
+    "den",
+    "der",
+    "das",
+    "dem"
+   ],
+   "correct": 3,
+   "explanation": "mit всегда + Dativ; Bus — мужской род: dem Bus."
+  },
+  {
+   "id": "lt-10",
+   "block": "Präpositionen + Kasus",
+   "question": "Das Geschenk ist für ___ Kollegin.",
+   "options": [
+    "die",
+    "der",
+    "dem",
+    "den"
+   ],
+   "correct": 0,
+   "explanation": "für всегда + Akkusativ; женский род в Akkusativ — die."
+  },
+  {
+   "id": "lt-11",
+   "block": "Präpositionen + Kasus",
+   "question": "Wir wohnen seit ___ Jahr in Berlin.",
+   "options": [
+    "ein",
+    "einem",
+    "einen",
+    "einer"
+   ],
+   "correct": 1,
+   "explanation": "seit всегда + Dativ; Jahr — средний род: seit einem Jahr."
+  },
+  {
+   "id": "lt-12",
+   "block": "Präpositionen + Kasus",
+   "question": "Er geht ohne ___ Schirm hinaus.",
+   "options": [
+    "einem",
+    "ein",
+    "einen",
+    "einer"
+   ],
+   "correct": 2,
+   "explanation": "ohne всегда + Akkusativ; мужской род: einen Schirm."
+  },
+  {
+   "id": "lt-13",
+   "block": "Präpositionen + Kasus",
+   "question": "Das Bild hängt an ___ Wand. (wo?)",
+   "options": [
+    "die",
+    "den",
+    "dem",
+    "der"
+   ],
+   "correct": 3,
+   "explanation": "Wechselpräposition + вопрос «wo?» → Dativ; Wand — женский род: an der Wand."
+  },
+  {
+   "id": "lt-14",
+   "block": "Präpositionen + Kasus",
+   "question": "Ich hänge das Bild an ___ Wand. (wohin?)",
+   "options": [
+    "die",
+    "der",
+    "dem",
+    "den"
+   ],
+   "correct": 0,
+   "explanation": "Wechselpräposition + вопрос «wohin?» → Akkusativ: an die Wand."
+  },
+  {
+   "id": "lt-15",
+   "block": "Präpositionen + Kasus",
+   "question": "Wegen ___ Regens bleiben wir zu Hause.",
+   "options": [
+    "dem",
+    "des",
+    "den",
+    "der"
+   ],
+   "correct": 1,
+   "explanation": "wegen + Genitiv (в разговорной речи часто Dativ): wegen des Regens."
+  },
+  {
+   "id": "lt-16",
+   "block": "Präpositionen + Kasus",
+   "question": "Nach ___ Arbeit gehe ich einkaufen.",
+   "options": [
+    "die",
+    "dem",
+    "der",
+    "den"
+   ],
+   "correct": 2,
+   "explanation": "nach всегда + Dativ; Arbeit — женский род: nach der Arbeit."
+  },
+  {
+   "id": "lt-17",
+   "block": "Verben mit Präpositionen",
+   "question": "Ich warte ___ den Bus.",
+   "options": [
+    "für",
+    "an",
+    "auf",
+    "über"
+   ],
+   "correct": 2,
+   "explanation": "warten auf + Akkusativ (ждать чего-то)."
+  },
+  {
+   "id": "lt-18",
+   "block": "Verben mit Präpositionen",
+   "question": "Sie interessiert sich ___ Musik.",
+   "options": [
+    "auf",
+    "an",
+    "mit",
+    "für"
+   ],
+   "correct": 3,
+   "explanation": "sich interessieren für + Akkusativ."
+  },
+  {
+   "id": "lt-19",
+   "block": "Verben mit Präpositionen",
+   "question": "Er träumt ___ einem eigenen Haus.",
+   "options": [
+    "von",
+    "für",
+    "über",
+    "auf"
+   ],
+   "correct": 0,
+   "explanation": "träumen von + Dativ (мечтать о чём-то)."
+  },
+  {
+   "id": "lt-20",
+   "block": "Verben mit Präpositionen",
+   "question": "Wir sprechen ___ das Projekt.",
+   "options": [
+    "von",
+    "über",
+    "an",
+    "bei"
+   ],
+   "correct": 1,
+   "explanation": "sprechen über + Akkusativ (говорить о чём-то): über das Projekt. Вариант von потребовал бы Dativ (von dem Projekt)."
+  },
+  {
+   "id": "lt-21",
+   "block": "Verben mit Präpositionen",
+   "question": "Ich kümmere mich ___ meine Eltern.",
+   "options": [
+    "für",
+    "auf",
+    "um",
+    "an"
+   ],
+   "correct": 2,
+   "explanation": "sich kümmern um + Akkusativ."
+  },
+  {
+   "id": "lt-22",
+   "block": "Verben mit Präpositionen",
+   "question": "Er hat sich ___ die Stelle beworben.",
+   "options": [
+    "für",
+    "auf",
+    "an",
+    "um"
+   ],
+   "correct": 3,
+   "explanation": "sich bewerben um + Akkusativ (подавать заявку на вакансию)."
+  },
+  {
+   "id": "lt-23",
+   "block": "Verben mit Präpositionen",
+   "question": "Das hängt ___ dem Wetter ab.",
+   "options": [
+    "von",
+    "an",
+    "auf",
+    "mit"
+   ],
+   "correct": 0,
+   "explanation": "abhängen von + Dativ (зависеть от)."
+  },
+  {
+   "id": "lt-24",
+   "block": "Verben mit Präpositionen",
+   "question": "Ich ärgere mich ___ den Lärm.",
+   "options": [
+    "auf",
+    "über",
+    "für",
+    "an"
+   ],
+   "correct": 1,
+   "explanation": "sich ärgern über + Akkusativ (злиться из-за)."
+  },
+  {
+   "id": "lt-25",
+   "block": "Konnektoren",
+   "question": "Ich lerne jeden Tag, ___ ich die Prüfung bestehe.",
+   "options": [
+    "weil",
+    "damit",
+    "obwohl",
+    "trotzdem"
+   ],
+   "correct": 1,
+   "explanation": "damit — цель («чтобы»), глагол в конце придаточного."
+  },
+  {
+   "id": "lt-26",
+   "block": "Konnektoren",
+   "question": "___ es regnet, gehen wir spazieren.",
+   "options": [
+    "Weil",
+    "Deshalb",
+    "Obwohl",
+    "Damit"
+   ],
+   "correct": 2,
+   "explanation": "obwohl — уступка («хотя»), придаточное: глагол в конце."
+  },
+  {
+   "id": "lt-27",
+   "block": "Konnektoren",
+   "question": "Es regnet. ___ gehen wir spazieren.",
+   "options": [
+    "Obwohl",
+    "Weil",
+    "Damit",
+    "Trotzdem"
+   ],
+   "correct": 3,
+   "explanation": "trotzdem — наречие («всё равно»), после него в главном предложении инверсия: Trotzdem gehen wir."
+  },
+  {
+   "id": "lt-28",
+   "block": "Konnektoren",
+   "question": "Er ist krank, ___ bleibt er zu Hause.",
+   "options": [
+    "deshalb",
+    "obwohl",
+    "weil",
+    "dass"
+   ],
+   "correct": 0,
+   "explanation": "deshalb — следствие, инверсия в главном предложении: deshalb bleibt er."
+  },
+  {
+   "id": "lt-29",
+   "block": "Konnektoren",
+   "question": "Ich weiß nicht, ___ er heute kommt.",
+   "options": [
+    "dass",
+    "ob",
+    "weil",
+    "damit"
+   ],
+   "correct": 1,
+   "explanation": "ob — косвенный вопрос «да/нет» («ли»)."
+  },
+  {
+   "id": "lt-30",
+   "block": "Konnektoren",
+   "question": "Sie hat die Stelle bekommen, ___ sie gut vorbereitet war.",
+   "options": [
+    "deshalb",
+    "trotzdem",
+    "weil",
+    "damit"
+   ],
+   "correct": 2,
+   "explanation": "weil — причина, глагол в конце придаточного (vorbereitet war)."
+  },
+  {
+   "id": "lt-31",
+   "block": "Konnektoren",
+   "question": "___ du Zeit hast, ruf mich an.",
+   "options": [
+    "Als",
+    "Ob",
+    "Weil",
+    "Wenn"
+   ],
+   "correct": 3,
+   "explanation": "wenn — условие/повторяющееся событие; als только для одного события в прошлом."
+  },
+  {
+   "id": "lt-32",
+   "block": "Konnektoren",
+   "question": "Ich lerne Deutsch, ___ einen besseren Job zu finden.",
+   "options": [
+    "um",
+    "damit",
+    "weil",
+    "obwohl"
+   ],
+   "correct": 0,
+   "explanation": "um ... zu + Infinitiv, когда подлежащее одно и то же; damit — когда подлежащие разные."
+  },
+  {
+   "id": "lt-33",
+   "block": "Relativsätze",
+   "question": "Der Mann, ___ dort steht, ist mein Chef.",
+   "options": [
+    "der",
+    "den",
+    "dem",
+    "dessen"
+   ],
+   "correct": 0,
+   "explanation": "Относительное местоимение — подлежащее придаточного (Nominativ, м. р.): der."
+  },
+  {
+   "id": "lt-34",
+   "block": "Relativsätze",
+   "question": "Das ist die Kollegin, ___ ich gestern geholfen habe.",
+   "options": [
+    "die",
+    "der",
+    "den",
+    "deren"
+   ],
+   "correct": 1,
+   "explanation": "helfen + Dativ; женский род в Dativ — der."
+  },
+  {
+   "id": "lt-35",
+   "block": "Relativsätze",
+   "question": "Der Film, ___ wir gestern gesehen haben, war toll.",
+   "options": [
+    "der",
+    "dem",
+    "den",
+    "dessen"
+   ],
+   "correct": 2,
+   "explanation": "sehen + Akkusativ; мужской род — den."
+  },
+  {
+   "id": "lt-36",
+   "block": "Relativsätze",
+   "question": "Das ist der Kunde, ___ Auto kaputt ist.",
+   "options": [
+    "dem",
+    "den",
+    "deren",
+    "dessen"
+   ],
+   "correct": 3,
+   "explanation": "Принадлежность («чья машина») → Genitiv, м. р.: dessen (без артикля после него)."
+  },
+  {
+   "id": "lt-37",
+   "block": "Relativsätze",
+   "question": "Die Stadt, in ___ ich wohne, ist klein.",
+   "options": [
+    "der",
+    "die",
+    "den",
+    "dem"
+   ],
+   "correct": 0,
+   "explanation": "in + Dativ (wo?), женский род — der: in der Stadt → in der ich wohne."
+  },
+  {
+   "id": "lt-38",
+   "block": "Relativsätze",
+   "question": "Das Buch, ___ ich dir empfohlen habe, ist spannend.",
+   "options": [
+    "dem",
+    "das",
+    "dessen",
+    "was"
+   ],
+   "correct": 1,
+   "explanation": "empfehlen + Akkusativ; средний род — das."
+  },
+  {
+   "id": "lt-39",
+   "block": "Relativsätze",
+   "question": "Alles, ___ er sagt, ist falsch.",
+   "options": [
+    "das",
+    "dem",
+    "was",
+    "der"
+   ],
+   "correct": 2,
+   "explanation": "После alles, nichts, etwas, viel — was."
+  },
+  {
+   "id": "lt-40",
+   "block": "Relativsätze",
+   "question": "Die Kinder, mit ___ ich spiele, sind nett.",
+   "options": [
+    "die",
+    "den",
+    "deren",
+    "denen"
+   ],
+   "correct": 3,
+   "explanation": "mit + Dativ, множественное число — denen."
+  },
+  {
+   "id": "lt-41",
+   "block": "Passiv",
+   "question": "Das Auto ___ gestern repariert.",
+   "options": [
+    "wird",
+    "wurden",
+    "ist",
+    "wurde"
+   ],
+   "correct": 3,
+   "explanation": "Präteritum Passiv: wurde + Partizip II (gestern — прошлое)."
+  },
+  {
+   "id": "lt-42",
+   "block": "Passiv",
+   "question": "Die Rechnung ___ schon bezahlt worden.",
+   "options": [
+    "ist",
+    "wird",
+    "wurde",
+    "hat"
+   ],
+   "correct": 0,
+   "explanation": "Perfekt Passiv: ist + Partizip II + worden."
+  },
+  {
+   "id": "lt-43",
+   "block": "Passiv",
+   "question": "In diesem Büro ___ viele Fehler gemacht.",
+   "options": [
+    "wird",
+    "werden",
+    "wurde",
+    "ist"
+   ],
+   "correct": 1,
+   "explanation": "Подлежащее «viele Fehler» — множественное число: werden gemacht."
+  },
+  {
+   "id": "lt-44",
+   "block": "Passiv",
+   "question": "Der Vertrag muss noch unterschrieben ___.",
+   "options": [
+    "wird",
+    "worden",
+    "werden",
+    "wurde"
+   ],
+   "correct": 2,
+   "explanation": "Passiv с модальным глаголом: muss + Partizip II + werden (Infinitiv)."
+  },
+  {
+   "id": "lt-45",
+   "block": "Passiv",
+   "question": "Schau mal, die Tür ___ schon geschlossen.",
+   "options": [
+    "wird",
+    "wurde",
+    "wurden",
+    "ist"
+   ],
+   "correct": 3,
+   "explanation": "Zustandspassiv — результат/состояние: sein + Partizip II (die Tür ist geschlossen)."
+  },
+  {
+   "id": "lt-46",
+   "block": "Passiv",
+   "question": "Von wem ___ das Projekt geleitet?",
+   "options": [
+    "wird",
+    "hat",
+    "ist",
+    "werden"
+   ],
+   "correct": 0,
+   "explanation": "Vorgangspassiv Präsens, ед. число: wird + Partizip II."
+  },
+  {
+   "id": "lt-47",
+   "block": "Passiv",
+   "question": "Aktiv: «Man baut hier ein Haus.» → Passiv: Hier ___ ein Haus gebaut.",
+   "options": [
+    "werden",
+    "wird",
+    "ist",
+    "hat"
+   ],
+   "correct": 1,
+   "explanation": "Объект Aktiv становится подлежащим: ein Haus (ед. число) → wird gebaut."
+  },
+  {
+   "id": "lt-48",
+   "block": "Passiv",
+   "question": "Das Paket ist gestern geliefert ___.",
+   "options": [
+    "geworden",
+    "wurden",
+    "worden",
+    "werden"
+   ],
+   "correct": 2,
+   "explanation": "В Perfekt Passiv используется форма worden (не geworden)."
+  },
+  {
+   "id": "lt-49",
+   "block": "Konjunktiv II",
+   "question": "Wenn ich mehr Zeit ___, würde ich mehr lesen.",
+   "options": [
+    "habe",
+    "hatte",
+    "hätte",
+    "hat"
+   ],
+   "correct": 2,
+   "explanation": "Нереальное условие: Konjunktiv II от haben — hätte."
+  },
+  {
+   "id": "lt-50",
+   "block": "Konjunktiv II",
+   "question": "Höflich gefragt: ___ Sie mir bitte helfen?",
+   "options": [
+    "Können",
+    "Konnten",
+    "Kannten",
+    "Könnten"
+   ],
+   "correct": 3,
+   "explanation": "Вежливая просьба — Konjunktiv II: Könnten Sie ...?"
+  },
+  {
+   "id": "lt-51",
+   "block": "Konjunktiv II",
+   "question": "Wenn ich du ___, würde ich den Job annehmen.",
+   "options": [
+    "wäre",
+    "bin",
+    "war",
+    "wurde"
+   ],
+   "correct": 0,
+   "explanation": "Нереальное условие: Konjunktiv II от sein — wäre."
+  },
+  {
+   "id": "lt-52",
+   "block": "Konjunktiv II",
+   "question": "An deiner Stelle ___ ich das nicht machen.",
+   "options": [
+    "werde",
+    "würde",
+    "wurde",
+    "wird"
+   ],
+   "correct": 1,
+   "explanation": "Совет: würde + Infinitiv (ich würde das nicht machen)."
+  },
+  {
+   "id": "lt-53",
+   "block": "Konjunktiv II",
+   "question": "Wenn er früher aufgestanden ___, hätte er den Zug erreicht.",
+   "options": [
+    "hätte",
+    "war",
+    "wäre",
+    "ist"
+   ],
+   "correct": 2,
+   "explanation": "Прошедшее нереальное: aufstehen образует Perfekt с sein → wäre aufgestanden."
+  },
+  {
+   "id": "lt-54",
+   "block": "Konjunktiv II",
+   "question": "Ich wünschte, ich ___ schon fertig.",
+   "options": [
+    "bin",
+    "war",
+    "würde",
+    "wäre"
+   ],
+   "correct": 3,
+   "explanation": "Нереальное желание: Konjunktiv II — wäre."
+  },
+  {
+   "id": "lt-55",
+   "block": "Konjunktiv II",
+   "question": "Er tut so, ___ er alles wüsste.",
+   "options": [
+    "als ob",
+    "obwohl",
+    "weil",
+    "damit"
+   ],
+   "correct": 0,
+   "explanation": "als ob + Konjunktiv II — «как будто» (глагол в конце)."
+  },
+  {
+   "id": "lt-56",
+   "block": "Konjunktiv II",
+   "question": "Wenn wir mehr Personal ___, könnten wir das Projekt schneller abschließen.",
+   "options": [
+    "haben",
+    "hätten",
+    "hatten",
+    "würden haben"
+   ],
+   "correct": 1,
+   "explanation": "Konjunktiv II от haben во множественном числе — hätten."
+  },
+  {
+   "id": "lt-57",
+   "block": "n-Deklination",
+   "question": "Ich kenne den ___ gut.",
+   "options": [
+    "Student",
+    "Studenten",
+    "Studentes",
+    "Studentens"
+   ],
+   "correct": 1,
+   "explanation": "Student — слово n-склонения: во всех падежах, кроме Nominativ Singular, окончание -en."
+  },
+  {
+   "id": "lt-58",
+   "block": "n-Deklination",
+   "question": "Der Chef spricht mit dem ___.",
+   "options": [
+    "Kollege",
+    "Kollegem",
+    "Kollegen",
+    "Kolleges"
+   ],
+   "correct": 2,
+   "explanation": "Kollege — n-склонение: Dativ → Kollegen."
+  },
+  {
+   "id": "lt-59",
+   "block": "n-Deklination",
+   "question": "Das ist das Auto des ___.",
+   "options": [
+    "Herr",
+    "Herren",
+    "Herrs",
+    "Herrn"
+   ],
+   "correct": 3,
+   "explanation": "Herr — особый случай: Genitiv/Dativ/Akkusativ Singular — Herrn (во множественном — Herren)."
+  },
+  {
+   "id": "lt-60",
+   "block": "n-Deklination",
+   "question": "Er hat den ___ gesehen.",
+   "options": [
+    "Menschen",
+    "Mensch",
+    "Menschens",
+    "Menschem"
+   ],
+   "correct": 0,
+   "explanation": "Mensch — n-склонение: Akkusativ → den Menschen."
+  },
+  {
+   "id": "lt-61",
+   "block": "n-Deklination",
+   "question": "Genitiv von «der Name»:",
+   "options": [
+    "des Names",
+    "des Namens",
+    "des Namen",
+    "des Name"
+   ],
+   "correct": 1,
+   "explanation": "Name — смешанный тип: в Genitiv окончание -ns (des Namens)."
+  },
+  {
+   "id": "lt-62",
+   "block": "n-Deklination",
+   "question": "Ich habe einen ___ getroffen. (Kunde)",
+   "options": [
+    "Kunde",
+    "Kundes",
+    "Kunden",
+    "Kundem"
+   ],
+   "correct": 2,
+   "explanation": "Kunde — n-склонение: Akkusativ → einen Kunden."
+  },
+  {
+   "id": "lt-63",
+   "block": "n-Deklination",
+   "question": "Sie fragt den ___ nach dem Weg. (Polizist)",
+   "options": [
+    "Polizist",
+    "Polizistes",
+    "Polizistem",
+    "Polizisten"
+   ],
+   "correct": 3,
+   "explanation": "Polizist — n-склонение: Akkusativ → den Polizisten."
+  },
+  {
+   "id": "lt-64",
+   "block": "n-Deklination",
+   "question": "Welches Wort gehört NICHT zur n-Deklination?",
+   "options": [
+    "der Tisch",
+    "der Junge",
+    "der Kollege",
+    "der Experte"
+   ],
+   "correct": 0,
+   "explanation": "Tisch склоняется обычно (den Tisch). Junge, Kollege, Experte — слова n-склонения (den Jungen, Kollegen, Experten)."
+  },
+  {
+   "id": "lt-65",
+   "block": "Nomen-Verb-Verbindungen",
+   "question": "eine Entscheidung ___",
+   "options": [
+    "treffen",
+    "machen",
+    "geben",
+    "nehmen"
+   ],
+   "correct": 0,
+   "explanation": "eine Entscheidung treffen — принять решение."
+  },
+  {
+   "id": "lt-66",
+   "block": "Nomen-Verb-Verbindungen",
+   "question": "Wir müssen einen Termin ___.",
+   "options": [
+    "stellen",
+    "vereinbaren",
+    "führen",
+    "ziehen"
+   ],
+   "correct": 1,
+   "explanation": "einen Termin vereinbaren — договориться о встрече."
+  },
+  {
+   "id": "lt-67",
+   "block": "Nomen-Verb-Verbindungen",
+   "question": "eine Frage ___",
+   "options": [
+    "machen",
+    "legen",
+    "stellen",
+    "setzen"
+   ],
+   "correct": 2,
+   "explanation": "eine Frage stellen — задать вопрос."
+  },
+  {
+   "id": "lt-68",
+   "block": "Nomen-Verb-Verbindungen",
+   "question": "Wir sollten diese Möglichkeit in Betracht ___.",
+   "options": [
+    "stellen",
+    "nehmen",
+    "setzen",
+    "ziehen"
+   ],
+   "correct": 3,
+   "explanation": "in Betracht ziehen — принимать во внимание."
+  },
+  {
+   "id": "lt-69",
+   "block": "Nomen-Verb-Verbindungen",
+   "question": "Bitte ___ Sie Rücksicht auf die Kollegen.",
+   "options": [
+    "nehmen",
+    "machen",
+    "geben",
+    "haben"
+   ],
+   "correct": 0,
+   "explanation": "Rücksicht nehmen auf + Akkusativ — считаться с кем-то."
+  },
+  {
+   "id": "lt-70",
+   "block": "Nomen-Verb-Verbindungen",
+   "question": "Ich möchte Ihnen eine Rückmeldung ___.",
+   "options": [
+    "tun",
+    "geben",
+    "setzen",
+    "führen"
+   ],
+   "correct": 1,
+   "explanation": "eine Rückmeldung geben — дать обратную связь."
+  },
+  {
+   "id": "lt-71",
+   "block": "Nomen-Verb-Verbindungen",
+   "question": "Die Unterlagen ___ Ihnen zur Verfügung.",
+   "options": [
+    "liegen",
+    "sitzen",
+    "stehen",
+    "gehen"
+   ],
+   "correct": 2,
+   "explanation": "zur Verfügung stehen — быть в распоряжении (zur Verfügung stellen — предоставить)."
+  },
+  {
+   "id": "lt-72",
+   "block": "Nomen-Verb-Verbindungen",
+   "question": "Das neue Gesetz ___ nächste Woche in Kraft.",
+   "options": [
+    "geht",
+    "kommt",
+    "läuft",
+    "tritt"
+   ],
+   "correct": 3,
+   "explanation": "in Kraft treten — вступать в силу (er/es tritt)."
+  }
+ ]
+}

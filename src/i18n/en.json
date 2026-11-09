@@ -529,6 +529,13 @@
     "ai_satzklammer": "Satzklammer",
     "ai_verbs_prep": "Verbs with prepositions",
     "ai_cases": "Cases",
-    "ai_nothing": "Nothing found."
+    "ai_nothing": "Nothing found.",
+    "lt_mixed": "Lückentext: mixed practice (10)",
+    "lt_practice": "Practice",
+    "lt_accuracy": "Correct: {{correct}} of {{total}}",
+    "lt_none_yet": "Exercises: 8 items",
+    "lt_done": "Practice complete",
+    "lt_result": "{{correct}} of {{total}} correct",
+    "err_ndeklination": "n-Deklination"
   }
 }

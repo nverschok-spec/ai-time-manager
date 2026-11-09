@@ -529,6 +529,13 @@
     "ai_satzklammer": "Рамочная конструкция",
     "ai_verbs_prep": "Глаголы с предлогами",
     "ai_cases": "Падежи",
-    "ai_nothing": "Ничего не найдено."
+    "ai_nothing": "Ничего не найдено.",
+    "lt_mixed": "Lückentext: смешанная тренировка (10)",
+    "lt_practice": "Практика",
+    "lt_accuracy": "Верно: {{correct}} из {{total}}",
+    "lt_none_yet": "Упражнения: 8 заданий",
+    "lt_done": "Тренировка завершена",
+    "lt_result": "{{correct}} из {{total}} верно",
+    "err_ndeklination": "n-Deklination"
   }
 }

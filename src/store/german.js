@@ -7,7 +7,8 @@ import {
   makeWord,
   STARTER_GRAMMAR_TOPICS,
   addDaysKey,
-  RATING_XP
+  RATING_XP,
+  DRILL_WEAK_CATEGORY
 } from '../lib/german'
 import seedWords from '../data/german/words.json'
 import i18n from '../i18n/config'
@@ -75,6 +76,17 @@ export function createGermanSlice(set, get) {
         },
         activeDates: g.activeDates.includes(today) ? g.activeDates : [...g.activeDates, today].slice(-730)
       }))
+    },
+
+    // One Lückentext answer: per-topic accuracy, grammar XP, and — on a miss —
+    // a weak-spot tick for the topic's error category.
+    recordGermanDrill: (block, correct) => {
+      patch((g) => {
+        const cur = g.drills[block] || { correct: 0, total: 0 }
+        return { drills: { ...g.drills, [block]: { correct: cur.correct + (correct ? 1 : 0), total: cur.total + 1 } } }
+      })
+      get().addGermanXp(correct ? 2 : 1, 'grammar')
+      if (!correct) get().recordGermanWeak(DRILL_WEAK_CATEGORY[block] || 'sonstiges')
     },
 
     recordGermanWeak: (category) => {
