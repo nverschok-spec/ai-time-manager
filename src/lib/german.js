@@ -1,12 +1,12 @@
+import { fsrs, createEmptyCard, generatorParameters, Rating, State } from 'ts-fsrs'
 import { toDateKey } from './date'
 
 // Everything in this file is plain logic — no network, no API. The word
 // trainer, the day plan and the reminders must keep working with no
 // ANTHROPIC_API_KEY at all.
 
-export const LEITNER_INTERVALS = [1, 2, 4, 8, 16] // days, index = box - 1
 export const MAX_NEW_PER_DAY = 20
-export const LEARNED_FROM_BOX = 4 // "выучено" = box 4 or 5
+export const LEARNED_FROM_INTERVAL = 21 // "выучено" = next interval >= 21 days (FSRS "mature")
 
 export const STARTER_GRAMMAR_TOPICS = [
   'Adjektivdeklination',
@@ -119,35 +119,80 @@ export function checkAnswer(word, direction, input) {
   return { correct: false, missingArticle }
 }
 
-// ---------- Leitner ----------
+// ---------- FSRS ----------
+// Spaced repetition on FSRS (ts-fsrs, same algorithm as modern Anki).
+// enable_short_term is off: intra-day learning steps (10 min etc.) make no
+// sense for a once-a-day session, so a first correct answer goes straight
+// to a day-based interval. Fully local — no API involved.
+const scheduler = fsrs(generatorParameters({ enable_fuzz: true, enable_short_term: false }))
+
+export const RATINGS = { again: Rating.Again, hard: Rating.Hard, good: Rating.Good, easy: Rating.Easy }
+
+function endOfDay(dateKey) {
+  return new Date(`${dateKey}T23:59:59`).getTime()
+}
+
+function withDueDate(card) {
+  return { ...card, dueDate: new Date(card.due).getTime() }
+}
+
+export function newSrsFields(now = new Date()) {
+  return withDueDate(createEmptyCard(now))
+}
 
 export function isNewWord(word) {
-  return !word.reviewed_at
+  return (word.state ?? State.New) === State.New
 }
 
 export function isDue(word, todayKey) {
-  return !isNewWord(word) && word.next_review <= todayKey
+  return !isNewWord(word) && word.dueDate <= endOfDay(todayKey)
 }
 
-// Right → box+1 (max 5); wrong → back to box 1 and wrong_count+1.
-// next_review = today + interval of the NEW box.
-export function applyLeitner(word, correct, todayKey) {
-  const box = correct ? Math.min(5, (word.box || 1) + 1) : 1
+// Old Leitner-era words (box/next_review/reviewed_at, no FSRS fields) are
+// converted once: reviewed words become Review cards whose stability equals
+// their old interval, so nothing resets to "new".
+const LEGACY_INTERVALS = [1, 2, 4, 8, 16]
+export function migrateWord(word) {
+  if (word.state !== undefined) return word
+  const base = createEmptyCard(new Date())
+  if (!word.reviewed_at) return { ...word, ...withDueDate(base) }
+  const interval = LEGACY_INTERVALS[(word.box || 1) - 1]
+  const due = new Date(`${word.next_review || word.reviewed_at}T09:00:00`)
   return {
     ...word,
-    box,
-    next_review: addDaysKey(todayKey, LEITNER_INTERVALS[box - 1]),
-    reviewed_at: todayKey,
-    wrong_count: (word.wrong_count || 0) + (correct ? 0 : 1)
+    ...withDueDate({
+      ...base,
+      due,
+      stability: interval,
+      difficulty: 5,
+      scheduled_days: interval,
+      reps: word.box || 1,
+      lapses: word.wrong_count || 0,
+      state: State.Review,
+      last_review: new Date(`${word.reviewed_at}T09:00:00`)
+    })
   }
 }
 
-// Day session: due words first (oldest due, then lowest box), then new
-// words up to the daily cap minus what's already been introduced today.
+// rating: 'again' | 'hard' | 'good' | 'easy'
+export function scheduleWord(word, rating, now = new Date()) {
+  const { card } = scheduler.next(migrateWord(word), now, RATINGS[rating])
+  return {
+    ...word,
+    ...withDueDate(card),
+    reviewed_at: toDateKey(now),
+    wrong_count: (word.wrong_count || 0) + (rating === 'again' ? 1 : 0)
+  }
+}
+
+export function intervalDays(word) {
+  return Math.max(0, Math.round(word.scheduled_days || 0))
+}
+
+// Day session: due words first (most overdue first), then new words up to
+// the daily cap minus what's already been introduced today.
 export function buildSession(words, todayKey, newPerDay, newIntroducedToday = 0) {
-  const due = words
-    .filter((w) => isDue(w, todayKey))
-    .sort((a, b) => a.next_review.localeCompare(b.next_review) || a.box - b.box)
+  const due = words.filter((w) => isDue(w, todayKey)).sort((a, b) => a.dueDate - b.dueDate)
   const cap = Math.max(0, Math.min(MAX_NEW_PER_DAY, newPerDay) - newIntroducedToday)
   const fresh = words.filter(isNewWord).slice(0, cap)
   return [...due, ...fresh]
@@ -178,8 +223,8 @@ export function makeWord({ de, ru, example_de = '', plural = '', tags = [], id }
     plural: String(plural || '').trim(),
     example_de: String(example_de || '').trim(),
     tags,
-    box: 1,
-    next_review: null,
+    createdAt: Date.now(),
+    ...newSrsFields(),
     reviewed_at: null,
     wrong_count: 0
   }
@@ -226,25 +271,26 @@ export function parseImport(text, existingWords = []) {
 
 // ---------- stats ----------
 
+// Buckets by current interval: new / young (<7 d) / mid (7-20 d) / mature (21+ d).
 export function wordStats(words, todayKey) {
-  const boxes = [0, 0, 0, 0, 0]
-  let learned = 0
+  const buckets = { new: 0, young: 0, mid: 0, mature: 0 }
   let due = 0
-  let fresh = 0
   for (const w of words) {
     if (isNewWord(w)) {
-      fresh++
+      buckets.new++
       continue
     }
-    boxes[(w.box || 1) - 1]++
-    if (w.box >= LEARNED_FROM_BOX) learned++
-    if (w.next_review <= todayKey) due++
+    const d = intervalDays(w)
+    if (d >= LEARNED_FROM_INTERVAL) buckets.mature++
+    else if (d >= 7) buckets.mid++
+    else buckets.young++
+    if (isDue(w, todayKey)) due++
   }
   const topMistakes = words
     .filter((w) => w.wrong_count > 0)
     .sort((a, b) => b.wrong_count - a.wrong_count)
     .slice(0, 10)
-  return { total: words.length, learned, due, fresh, boxes, topMistakes }
+  return { total: words.length, learned: buckets.mature, due, fresh: buckets.new, buckets, topMistakes }
 }
 
 // ---------- control tests ----------

@@ -7,6 +7,7 @@ import { getStoredToken, clearStoredToken, updateStoredPersonColor } from '../co
 import { createHealthSlice } from './health'
 import { createStudySlice } from './study'
 import { createGermanSlice } from './german'
+import { migrateWord } from '../lib/german'
 import { PINKI_DEFS, nextPinokDateKey } from '../lib/pinki'
 import i18n from '../i18n/config'
 
@@ -605,7 +606,10 @@ export const useAppStore = create(
         // field) is enough.
         const importedHealth = parsed.health && typeof parsed.health === 'object' ? parsed.health : get().health
         const importedStudy = parsed.study && typeof parsed.study === 'object' ? parsed.study : get().study
-        const importedGerman = parsed.german && typeof parsed.german === 'object' ? parsed.german : get().german
+        const importedGerman =
+          parsed.german && typeof parsed.german === 'object'
+            ? { ...parsed.german, words: (parsed.german.words || []).map(migrateWord) }
+            : get().german
 
         set({
           tasks: parsed.tasks,
@@ -680,6 +684,8 @@ export const useAppStore = create(
         german: {
           ...currentState.german,
           ...persistedState?.german,
+          // Leitner-era words get FSRS fields once (no-op for already-migrated ones).
+          words: (persistedState?.german?.words || currentState.german.words).map(migrateWord),
           settings: { ...currentState.german.settings, ...persistedState?.german?.settings }
         }
       })

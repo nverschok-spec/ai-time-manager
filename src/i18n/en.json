@@ -414,9 +414,8 @@
     "new_per_day": "New words per day (max {{max}})",
     "load_seed": "Load starter word set",
     "stats_title": "Word stats",
-    "stat_learned": "learned (boxes 4–5)",
+    "stat_learned": "learned (interval 21+ d)",
     "stat_total": "total",
-    "box": "Box {{n}}",
     "top_mistakes": "Most frequent mistakes",
     "import_title": "Import words",
     "import_hint": "One word per line: de;ru;example (optional: ;plural;tags). Write nouns with the article: der Tisch.",
@@ -437,7 +436,6 @@
     "correct": "Correct",
     "wrong": "Wrong",
     "missing_article": "Article required!",
-    "box_info": "Box {{box}} · next review in {{days}} d",
     "next": "Next",
     "check": "Check",
     "grammar_progress": "Known: {{known}} of {{total}}",
@@ -483,6 +481,14 @@
     "part_grammatik": "Grammatik",
     "part_wortschatz": "Wortschatz",
     "part_schreiben": "Schreiben",
-    "part_sprachbausteine": "Sprachbausteine"
+    "part_sprachbausteine": "Sprachbausteine",
+    "grade_hard": "Hard",
+    "grade_good": "Good",
+    "grade_easy": "Easy",
+    "bucket_new": "New",
+    "bucket_young": "Learning (<7 d)",
+    "bucket_mid": "Known (7–20 d)",
+    "bucket_mature": "Learned (21+ d)",
+    "d": " d"
   }
 }

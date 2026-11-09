@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Sparkles, Trash2 } from 'lucide-react'
 import { useAppStore } from '../../store/useAppStore'
 import { toDateKey } from '../../lib/date'
-import { buildSession, computeDayStreak, germanDisplay, parseImport, wordStats, MAX_NEW_PER_DAY } from '../../lib/german'
+import { buildSession, computeDayStreak, germanDisplay, intervalDays, isNewWord, parseImport, wordStats, MAX_NEW_PER_DAY } from '../../lib/german'
 import WordSession from './WordSession'
 
 const MODES = ['mixed', 'de-ru', 'ru-de']
@@ -115,16 +115,16 @@ export default function WordsTab() {
           </div>
         </div>
         <div className="space-y-1">
-          {stats.boxes.map((n, i) => (
-            <div key={i} className="flex items-center gap-2 text-xs text-slate-400">
-              <span className="w-14">{t('german.box', { n: i + 1 })}</span>
+          {['new', 'young', 'mid', 'mature'].map((k) => (
+            <div key={k} className="flex items-center gap-2 text-xs text-slate-400">
+              <span className="w-24">{t(`german.bucket_${k}`)}</span>
               <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-app-bg">
                 <div
                   className="h-full rounded-full bg-brand-cta transition-all duration-300"
-                  style={{ width: `${stats.total ? (n / stats.total) * 100 : 0}%` }}
+                  style={{ width: `${stats.total ? (stats.buckets[k] / stats.total) * 100 : 0}%` }}
                 />
               </div>
-              <span className="w-6 text-right tabular-nums">{n}</span>
+              <span className="w-6 text-right tabular-nums">{stats.buckets[k]}</span>
             </div>
           ))}
         </div>
@@ -181,7 +181,7 @@ export default function WordsTab() {
                   {germanDisplay(w)} <span className="text-slate-500">— {w.ru}</span>
                 </span>
                 <span className="mx-2 text-xs tabular-nums text-slate-500">
-                  {w.reviewed_at ? `${w.box}` : t('german.new')}
+                  {isNewWord(w) ? t('german.new') : `${intervalDays(w)}${t('german.d')}`}
                 </span>
                 <button
                   type="button"

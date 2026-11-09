@@ -414,9 +414,8 @@
     "new_per_day": "Новых слов в день (макс. {{max}})",
     "load_seed": "Загрузить стартовый набор слов",
     "stats_title": "Статистика слов",
-    "stat_learned": "выучено (коробки 4–5)",
+    "stat_learned": "выучено (интервал 21+ дн.)",
     "stat_total": "всего",
-    "box": "Коробка {{n}}",
     "top_mistakes": "Чаще всего ошибаюсь",
     "import_title": "Импорт слов",
     "import_hint": "По одному слову в строке: de;ru;пример (необязательно: ;мн.число;теги). Для существительных пиши с артиклем: der Tisch.",
@@ -437,7 +436,6 @@
     "correct": "Верно",
     "wrong": "Неверно",
     "missing_article": "Нужен артикль!",
-    "box_info": "Коробка {{box}} · следующий повтор через {{days}} дн.",
     "next": "Дальше",
     "check": "Проверить",
     "grammar_progress": "Знаю: {{known}} из {{total}}",
@@ -483,6 +481,14 @@
     "part_grammatik": "Grammatik",
     "part_wortschatz": "Wortschatz",
     "part_schreiben": "Schreiben",
-    "part_sprachbausteine": "Sprachbausteine"
+    "part_sprachbausteine": "Sprachbausteine",
+    "grade_hard": "Трудно",
+    "grade_good": "Хорошо",
+    "grade_easy": "Легко",
+    "bucket_new": "Новые",
+    "bucket_young": "Учу (<7 дн.)",
+    "bucket_mid": "Знаю (7–20 дн.)",
+    "bucket_mature": "Выучено (21+ дн.)",
+    "d": " д."
   }
 }

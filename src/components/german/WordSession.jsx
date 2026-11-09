@@ -2,11 +2,12 @@ import { useMemo, useRef, useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAppStore } from '../../store/useAppStore'
 import { toDateKey } from '../../lib/date'
-import { buildSession, checkAnswer, germanDisplay, pickDirection, LEITNER_INTERVALS } from '../../lib/german'
+import { buildSession, checkAnswer, germanDisplay, pickDirection } from '../../lib/german'
 
 // One day's session: due words first, then new ones (capped). A missed word
 // shows the right answer + example, and comes back once more at the end of
-// the queue (that retry doesn't move the Leitner box again).
+// the queue (that retry doesn't reschedule the card again). A correct
+// first answer is graded Hard / Good / Easy by the learner (FSRS); a wrong one is Again.
 export default function WordSession({ onExit }) {
   const { t } = useTranslation()
   const words = useAppStore((s) => s.german.words)
@@ -26,6 +27,7 @@ export default function WordSession({ onExit }) {
   const [pos, setPos] = useState(0)
   const [input, setInput] = useState('')
   const [feedback, setFeedback] = useState(null) // { correct, missingArticle }
+  const [graded, setGraded] = useState(false)
   const [stats, setStats] = useState({ right: 0, wrong: 0 })
   const inputRef = useRef(null)
 
@@ -76,25 +78,33 @@ export default function WordSession({ onExit }) {
   const prompt = current.dir === 'de-ru' ? germanDisplay(word) : word.ru
   const expected = current.dir === 'de-ru' ? word.ru : germanDisplay(word)
 
+  const needsGrade = !!feedback && feedback.correct && !current.retry && !graded
+
   function submit(e) {
     e.preventDefault()
+    if (needsGrade) return grade('good')
     if (feedback) return next()
     const result = checkAnswer(word, current.dir, input)
     setFeedback(result)
-    if (!current.retry) answerWord(word.id, result.correct)
     setStats((s) => ({ right: s.right + (result.correct ? 1 : 0), wrong: s.wrong + (result.correct ? 0 : 1) }))
     if (!result.correct && !current.retry) {
+      answerWord(word.id, 'again')
+      setGraded(true)
       setQueue((q) => [...q, { id: word.id, retry: true, dir: current.dir }])
     }
   }
 
+  function grade(rating) {
+    answerWord(word.id, rating)
+    next()
+  }
+
   function next() {
     setFeedback(null)
+    setGraded(false)
     setInput('')
     setPos((p) => p + 1)
   }
-
-  const nextBox = feedback && !current.retry ? words.find((w) => w.id === word.id)?.box : null
 
   return (
     <form onSubmit={submit} className="space-y-4">
@@ -145,20 +155,34 @@ export default function WordSession({ onExit }) {
             {word.plural && current.dir === 'ru-de' ? <span className="text-slate-500"> · pl. {word.plural}</span> : null}
           </p>
           {word.example_de && <p className="italic text-slate-400">{word.example_de}</p>}
-          {nextBox != null && (
-            <p className="text-xs text-slate-500">
-              {t('german.box_info', { box: nextBox, days: LEITNER_INTERVALS[nextBox - 1] })}
-            </p>
-          )}
         </div>
       )}
 
-      <button
-        type="submit"
-        className="w-full rounded-full bg-brand-cta py-2.5 text-sm font-medium text-brand-ctaForeground transition-all hover:brightness-110 active:scale-[0.98]"
-      >
-        {feedback ? t('german.next') : t('german.check')}
-      </button>
+      {needsGrade ? (
+        <div className="grid grid-cols-3 gap-2">
+          {['hard', 'good', 'easy'].map((r) => (
+            <button
+              key={r}
+              type="button"
+              onClick={() => grade(r)}
+              className={`rounded-full py-2.5 text-sm transition-all active:scale-[0.98] ${
+                r === 'good'
+                  ? 'bg-brand-cta font-medium text-brand-ctaForeground hover:brightness-110'
+                  : 'bg-app-cardMuted text-slate-200 hover:bg-white/10'
+              }`}
+            >
+              {t(`german.grade_${r}`)}
+            </button>
+          ))}
+        </div>
+      ) : (
+        <button
+          type="submit"
+          className="w-full rounded-full bg-brand-cta py-2.5 text-sm font-medium text-brand-ctaForeground transition-all hover:brightness-110 active:scale-[0.98]"
+        >
+          {feedback ? t('german.next') : t('german.check')}
+        </button>
+      )}
     </form>
   )
 }

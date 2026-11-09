@@ -1,7 +1,8 @@
 import { toDateKey } from '../lib/date'
 import { scheduleReminder, cancelReminder } from '../lib/push'
 import {
-  applyLeitner,
+  scheduleWord,
+  isNewWord,
   nextControlTestDate,
   makeWord,
   STARTER_GRAMMAR_TOPICS,
@@ -79,16 +80,18 @@ export function createGermanSlice(set, get) {
 
     deleteGermanWord: (id) => patch((g) => ({ words: g.words.filter((w) => w.id !== id) })),
 
-    // Records a first-attempt answer: moves the Leitner box and counts a
-    // new word against today's daily cap the first time it's seen.
-    answerGermanWord: (id, correct) => {
-      const today = toDateKey(new Date())
+    // Records a first-attempt answer: reschedules the card on FSRS and counts
+    // a new word against today's daily cap the first time it's seen.
+    // rating: 'again' | 'hard' | 'good' | 'easy'
+    answerGermanWord: (id, rating) => {
+      const now = new Date()
+      const today = toDateKey(now)
       patch((g) => {
         const target = g.words.find((w) => w.id === id)
         if (!target) return {}
-        const wasNew = !target.reviewed_at
+        const wasNew = isNewWord(target)
         return {
-          words: g.words.map((w) => (w.id === id ? applyLeitner(w, correct, today) : w)),
+          words: g.words.map((w) => (w.id === id ? scheduleWord(w, rating, now) : w)),
           newLog: wasNew ? { ...g.newLog, [today]: (g.newLog[today] || 0) + 1 } : g.newLog
         }
       })

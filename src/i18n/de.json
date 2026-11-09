@@ -414,9 +414,8 @@
     "new_per_day": "Neue Wörter pro Tag (max. {{max}})",
     "load_seed": "Starter-Wortschatz laden",
     "stats_title": "Wortstatistik",
-    "stat_learned": "gelernt (Fach 4–5)",
+    "stat_learned": "gelernt (Intervall 21+ T.)",
     "stat_total": "gesamt",
-    "box": "Fach {{n}}",
     "top_mistakes": "Häufigste Fehler",
     "import_title": "Wörter importieren",
     "import_hint": "Ein Wort pro Zeile: de;ru;Beispiel (optional: ;Plural;Tags). Nomen mit Artikel schreiben: der Tisch.",
@@ -437,7 +436,6 @@
     "correct": "Richtig",
     "wrong": "Falsch",
     "missing_article": "Artikel fehlt!",
-    "box_info": "Fach {{box}} · nächste Wiederholung in {{days}} T.",
     "next": "Weiter",
     "check": "Prüfen",
     "grammar_progress": "Kann ich: {{known}} von {{total}}",
@@ -483,6 +481,14 @@
     "part_grammatik": "Grammatik",
     "part_wortschatz": "Wortschatz",
     "part_schreiben": "Schreiben",
-    "part_sprachbausteine": "Sprachbausteine"
+    "part_sprachbausteine": "Sprachbausteine",
+    "grade_hard": "Schwer",
+    "grade_good": "Gut",
+    "grade_easy": "Leicht",
+    "bucket_new": "Neu",
+    "bucket_young": "Lerne (<7 T.)",
+    "bucket_mid": "Kann ich (7–20 T.)",
+    "bucket_mature": "Gelernt (21+ T.)",
+    "d": " T."
   }
 }
