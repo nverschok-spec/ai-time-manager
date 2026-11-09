@@ -238,11 +238,12 @@ function wordKey(w) {
 // Tab-separated (copied from a spreadsheet) works too. Lines without both a
 // German and a Russian part are reported as invalid, duplicates (same
 // article+lemma already in the list or earlier in the paste) are skipped.
-export function parseImport(text, existingWords = []) {
+export function parseImport(text, existingWords = [], lookupNoun = null) {
   const seen = new Set(existingWords.map(wordKey))
   const words = []
   let skipped = 0
   const invalid = []
+  let enriched = 0
 
   const lines = String(text || '').split(/\r?\n/)
   lines.forEach((raw, i) => {
@@ -258,15 +259,30 @@ export function parseImport(text, existingWords = []) {
     }
     const tags = tagsRaw ? tagsRaw.split(/[,\s]+/).filter(Boolean) : []
     const word = makeWord({ de, ru, example_de, plural, tags })
+    // Bare capitalised word, or a noun without plural: fill from the static
+    // noun list (never overrides what the user typed).
+    const found = lookupNoun && lookupNoun(word.de)
+    let filled = false
+    if (found) {
+      if (!word.article && found.article) {
+        word.article = found.article
+        filled = true
+      }
+      if (!word.plural && found.plural && word.article === found.article) {
+        word.plural = found.plural
+        filled = true
+      }
+    }
     const key = wordKey(word)
     if (seen.has(key)) {
       skipped++
       return
     }
     seen.add(key)
+    if (filled) enriched++
     words.push(word)
   })
-  return { words, skipped, invalid }
+  return { words, skipped, invalid, enriched }
 }
 
 // ---------- stats ----------

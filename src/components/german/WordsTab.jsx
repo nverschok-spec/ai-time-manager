@@ -4,6 +4,7 @@ import { Sparkles, Trash2 } from 'lucide-react'
 import { useAppStore } from '../../store/useAppStore'
 import { toDateKey } from '../../lib/date'
 import { buildSession, computeDayStreak, germanDisplay, intervalDays, isNewWord, parseImport, wordStats, MAX_NEW_PER_DAY } from '../../lib/german'
+import { loadNouns, makeNounLookup } from '../../lib/germanNouns'
 import WordSession from './WordSession'
 
 const MODES = ['mixed', 'de-ru', 'ru-de']
@@ -19,6 +20,7 @@ export default function WordsTab() {
   const [session, setSession] = useState(false)
   const [importText, setImportText] = useState('')
   const [importResult, setImportResult] = useState(null)
+  const [importing, setImporting] = useState(false)
   const [showList, setShowList] = useState(false)
 
   const today = toDateKey(new Date())
@@ -32,11 +34,15 @@ export default function WordsTab() {
 
   if (session) return <WordSession onExit={() => setSession(false)} />
 
-  function handleImport() {
-    const { words: parsed, skipped, invalid } = parseImport(importText, words)
+  async function handleImport() {
+    setImporting(true)
+    const dataset = await loadNouns()
+    const lookup = Object.keys(dataset).length ? makeNounLookup(dataset) : null
+    const { words: parsed, skipped, invalid, enriched } = parseImport(importText, words, lookup)
     if (parsed.length) addWords(parsed)
-    setImportResult({ added: parsed.length, skipped, invalid })
+    setImportResult({ added: parsed.length, skipped, invalid, enriched, noDb: !lookup })
     if (parsed.length || (!skipped && !invalid.length)) setImportText('')
+    setImporting(false)
   }
 
   return (
@@ -155,7 +161,7 @@ export default function WordsTab() {
         />
         <button
           type="button"
-          disabled={!importText.trim()}
+          disabled={!importText.trim() || importing}
           onClick={handleImport}
           className="w-full rounded-md bg-brand-cta py-1.5 text-sm font-medium text-brand-ctaForeground transition-all hover:brightness-110 disabled:opacity-50"
         >
@@ -164,6 +170,8 @@ export default function WordsTab() {
         {importResult && (
           <p className="text-xs text-slate-400">
             {t('german.import_result', { added: importResult.added, skipped: importResult.skipped })}
+            {importResult.enriched > 0 && ` ${t('german.import_enriched', { count: importResult.enriched })}`}
+            {importResult.noDb && ` ${t('german.import_no_db')}`}
             {importResult.invalid.length > 0 && ` ${t('german.import_invalid', { lines: importResult.invalid.join(', ') })}`}
           </p>
         )}

@@ -418,7 +418,7 @@
     "stat_total": "gesamt",
     "top_mistakes": "Häufigste Fehler",
     "import_title": "Wörter importieren",
-    "import_hint": "Ein Wort pro Zeile: de;ru;Beispiel (optional: ;Plural;Tags). Nomen mit Artikel schreiben: der Tisch.",
+    "import_hint": "Ein Wort pro Zeile: de;ru;Beispiel (optional: ;Plural;Tags). Artikel und Plural von Nomen werden aus einer Nomenliste ergänzt: einfach Tisch;стол schreiben.",
     "import_button": "Importieren",
     "import_result": "Hinzugefügt: {{added}}, Duplikate übersprungen: {{skipped}}.",
     "import_invalid": "Ungültige Zeilen: {{lines}}.",
@@ -489,6 +489,8 @@
     "bucket_young": "Lerne (<7 T.)",
     "bucket_mid": "Kann ich (7–20 T.)",
     "bucket_mature": "Gelernt (21+ T.)",
-    "d": " T."
+    "d": " T.",
+    "import_enriched": "Artikel/Plural aus der Nomenliste ergänzt: {{count}}.",
+    "import_no_db": "Nomenliste nicht verfügbar (offline?) — Wörter ohne Artikel wurden unverändert hinzugefügt."
   }
 }

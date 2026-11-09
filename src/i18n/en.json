@@ -418,7 +418,7 @@
     "stat_total": "total",
     "top_mistakes": "Most frequent mistakes",
     "import_title": "Import words",
-    "import_hint": "One word per line: de;ru;example (optional: ;plural;tags). Write nouns with the article: der Tisch.",
+    "import_hint": "One word per line: de;ru;example (optional: ;plural;tags). Article and plural for nouns are filled from a noun list: just write Tisch;стол.",
     "import_button": "Import",
     "import_result": "Added: {{added}}, duplicates skipped: {{skipped}}.",
     "import_invalid": "Invalid lines: {{lines}}.",
@@ -489,6 +489,8 @@
     "bucket_young": "Learning (<7 d)",
     "bucket_mid": "Known (7–20 d)",
     "bucket_mature": "Learned (21+ d)",
-    "d": " d"
+    "d": " d",
+    "import_enriched": "Article/plural filled from the noun list: {{count}}.",
+    "import_no_db": "Noun list unavailable (offline?) — words without article were added as-is."
   }
 }
